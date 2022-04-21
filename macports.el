@@ -22,10 +22,12 @@
   ["Arguments"
    ("d" "Debug" "-d")
    ("n" "Non-interactive" "-N")]
-  ["MacPorts"
+  ["Commands"
    ("s" "Selfupdate" macports-selfupdate)
+   ("r" "Reclaim" macports-reclaim)]
+  ["Lists"
    ("o" "Outdated" macports-outdated)
-   ("r" "Reclaim" macports-reclaim)])
+   ("i" "Installed" macports-installed)])
 
 (defun macports-selfupdate (args)
   "Run MacPorts selfupdate with ARGS."
@@ -89,7 +91,7 @@
       (user-error "No ports specified"))))
 
 (define-derived-mode macports-outdated-mode tabulated-list-mode "MacPorts outdated"
-  "Major mode for handling a list of MacPorts ports."
+  "Major mode for handling a list of outdated MacPorts ports."
   (setq tabulated-list-format macports-outdated-columns)
   (setq tabulated-list-padding 2)
   (setq tabulated-list-sort-key `("Port" . nil))
@@ -112,6 +114,44 @@
   "Parse a LINE output by `macports--outdated-lines'."
   (let ((fields (split-string line)))
     (list (nth 0 fields) (vector (nth 0 fields) (nth 1 fields) (nth 3 fields)))))
+
+;;;###autoload
+(defun macports-installed ()
+  "List installed ports."
+  (interactive)
+  (pop-to-buffer "*macports-installed*")
+  (macports-installed-mode)
+  (tablist-revert))
+
+(defvar macports-installed-columns
+  [("Port" 32 t)
+   ("Version" 48 t)
+   ("Active" 8 t)]
+  "Columns to be shown in `macports-installed-mode'.")
+
+(define-derived-mode macports-installed-mode tabulated-list-mode "MacPorts installed"
+  "Major mode for handling a list of installed MacPorts ports."
+  (setq tabulated-list-format macports-installed-columns)
+  (setq tabulated-list-padding 2)
+  (setq tabulated-list-sort-key `("Port" . nil))
+  (add-hook 'tabulated-list-revert-hook #'macports-installed-refresh nil t)
+  (tabulated-list-init-header))
+
+(defun macports-installed-refresh ()
+  "Refresh the list of installed ports."
+  (setq tabulated-list-entries
+        (mapcar #'macports--parse-installed (macports--installed-lines))))
+
+(defun macports--installed-lines ()
+  "Return linewise output of `port installed'."
+  (let ((output (string-trim (shell-command-to-string "port installed"))))
+    (cond ((string-prefix-p "The following ports are currently installed:" output)
+           (cdr (mapcar #'string-trim (split-string output "\n")))))))
+
+(defun macports--parse-installed (line)
+  "Parse a LINE output by `macports--installed-lines'."
+  (let ((fields (split-string line)))
+    (list (nth 0 fields) (vector (nth 0 fields) (nth 1 fields) (if (nth 2 fields) "Yes" "")))))
 
 (provide 'macports)
 ;;; macports.el ends here
