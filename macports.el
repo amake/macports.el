@@ -20,7 +20,8 @@
 (transient-define-prefix macports ()
   "Transient for MacPorts."
   ["Arguments"
-   ("d" "Debug" "-d")]
+   ("d" "Debug" "-d")
+   ("n" "Non-interactive" "-N")]
   ["MacPorts"
    ("s" "Selfupdate" macports-selfupdate)
    ("o" "Outdated" macports-outdated)
