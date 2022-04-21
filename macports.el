@@ -23,12 +23,18 @@
    ("d" "Debug" "-d")]
   ["MacPorts"
    ("s" "Selfupdate" macports-selfupdate)
-   ("o" "Outdated" macports-outdated)])
+   ("o" "Outdated" macports-outdated)
+   ("r" "Reclaim" macports-reclaim)])
 
 (defun macports-selfupdate (args)
   "Run MacPorts selfupdate with ARGS."
   (interactive (list (transient-args transient-current-command)))
   (compilation-start (string-join `("sudo port" ,@args "selfupdate") " ") t))
+
+(defun macports-reclaim (args)
+  "Run MacPorts reclaim with ARGS."
+  (interactive (list (transient-args transient-current-command)))
+  (compilation-start (string-join `("sudo port" ,@args "reclaim") " ") t))
 
 ;;;###autoload
 (defun macports-outdated ()
