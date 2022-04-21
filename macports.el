@@ -51,14 +51,50 @@
    ("Latest" 16 t)]
   "Columns to be shown in `macports-outdated-mode'.")
 
+(defvar macports-outdated-mode-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map "u" #'macports-outdated-mark-upgrade)
+    (define-key map "U" #'macports-outdated-mark-upgrades)
+    (define-key map "x" #'macports-outdated-upgrade)
+    map)
+  "Keymap for `macports-outdated-mode'.")
+
+(defun macports-outdated-mark-upgrade (&optional _num)
+  "Mark a port for upgrade and move to the next line."
+  (interactive "p" macports-outdated-mode)
+  (tabulated-list-put-tag "U" t))
+
+(defun macports-outdated-mark-upgrades ()
+  "Mark all ports for upgrade."
+  (interactive nil macports-outdated-mode)
+  (save-excursion
+    (goto-char (point-min))
+    (while (not (eobp))
+      (macports-outdated-mark-upgrade))))
+
+(defun macports-outdated-upgrade ()
+  "Perform marked upgrades."
+  (interactive nil macports-outdated-mode)
+  (let (ports)
+    (save-excursion
+      (goto-char (point-min))
+      (while (not (eobp))
+        (cond ((eq (char-after) ?U)
+               (push (tabulated-list-get-id) ports)))
+        (forward-line)))
+    (if ports
+        (when (y-or-n-p
+               (format "Ports to upgrade: %s.  Proceed? " (string-join ports " ")))
+          (compilation-start (string-join `("sudo port upgrade" ,@ports) " ") t))
+      (user-error "No ports specified"))))
+
 (define-derived-mode macports-outdated-mode tabulated-list-mode "MacPorts outdated"
   "Major mode for handling a list of MacPorts ports."
   (setq tabulated-list-format macports-outdated-columns)
   (setq tabulated-list-padding 2)
   (setq tabulated-list-sort-key `("Port" . nil))
   (add-hook 'tabulated-list-revert-hook #'macports-outdated-refresh nil t)
-  (tabulated-list-init-header)
-  (tablist-minor-mode))
+  (tabulated-list-init-header))
 
 (defun macports-outdated-refresh ()
   "Refresh the list of outdated ports."
@@ -75,7 +111,7 @@
 (defun macports--parse-outdated (line)
   "Parse a LINE output by `macports--outdated-lines'."
   (let ((fields (split-string line)))
-    (list nil (vector (nth 0 fields) (nth 1 fields) (nth 3 fields)))))
+    (list (nth 0 fields) (vector (nth 0 fields) (nth 1 fields) (nth 3 fields)))))
 
 (provide 'macports)
 ;;; macports.el ends here
