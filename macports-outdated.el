@@ -33,6 +33,7 @@
     (define-key map "u" #'macports-outdated-mark-upgrade)
     (define-key map "U" #'macports-outdated-mark-upgrades)
     (define-key map "x" #'macports-outdated-upgrade)
+    (define-key map "\177" #'macports-installed-backup-unmark)
     (define-key map "?" #'macports)
     map)
   "Keymap for `macports-outdated-mode'.")
@@ -65,6 +66,12 @@
                (format "Ports to upgrade: %s.  Proceed? " (string-join ports " ")))
           (compilation-start (string-join `("sudo port upgrade" ,@ports) " ") t))
       (user-error "No ports specified"))))
+
+(defun macports-outdated-backup-unmark ()
+  "Back up one line and clear any marks on that port."
+  (interactive nil macports-outdated-mode)
+  (forward-line -1)
+  (tabulated-list-put-tag " "))
 
 (define-derived-mode macports-outdated-mode tabulated-list-mode "MacPorts outdated"
   "Major mode for handling a list of outdated MacPorts ports."
