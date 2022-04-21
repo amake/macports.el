@@ -30,11 +30,11 @@
 
 (defvar macports-outdated-mode-map
   (let ((map (make-sparse-keymap)))
-    (define-key map "u" #'macports-outdated-mark-upgrade)
-    (define-key map "U" #'macports-outdated-mark-upgrades)
-    (define-key map "x" #'macports-outdated-upgrade)
-    (define-key map "\177" #'macports-installed-backup-unmark)
-    (define-key map "?" #'macports)
+    (keymap-set map "u" #'macports-outdated-mark-upgrade)
+    (keymap-set map "U" #'macports-outdated-mark-upgrades)
+    (keymap-set map "x" #'macports-outdated-upgrade)
+    (keymap-set map "DEL" #'macports-installed-backup-unmark)
+    (keymap-set map "?" #'macports)
     map)
   "Keymap for `macports-outdated-mode'.")
 

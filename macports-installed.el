@@ -30,12 +30,12 @@
 
 (defvar macports-installed-mode-map
   (let ((map (make-sparse-keymap)))
-    (define-key map "u" #'macports-installed-mark-uninstall)
-    (define-key map "U" #'macports-installed-mark-inactive)
-    (define-key map "a" #'macports-installed-mark-toggle-activate)
-    (define-key map "x" #'macports-installed-exec)
-    (define-key map "\177" #'macports-installed-backup-unmark)
-    (define-key map "?" #'macports)
+    (keymap-set map "u" #'macports-installed-mark-uninstall)
+    (keymap-set map "U" #'macports-installed-mark-inactive)
+    (keymap-set map "a" #'macports-installed-mark-toggle-activate)
+    (keymap-set map "x" #'macports-installed-exec)
+    (keymap-set map "DEL" #'macports-installed-backup-unmark)
+    (keymap-set map "?" #'macports)
     map)
   "Keymap for `macports-installed-mode'.")
 
