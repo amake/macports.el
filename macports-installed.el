@@ -13,6 +13,8 @@
 
 ;;; Code:
 
+(require 'macports-core)
+
 ;;;###autoload
 (defun macports-installed ()
   "List installed ports."
@@ -33,6 +35,7 @@
     (define-key map "a" #'macports-installed-mark-toggle-activate)
     (define-key map "x" #'macports-installed-exec)
     (define-key map "\177" #'macports-installed-backup-unmark)
+    (define-key map "?" #'macports)
     map)
   "Keymap for `macports-installed-mode'.")
 

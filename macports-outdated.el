@@ -13,6 +13,8 @@
 
 ;;; Code:
 
+(require 'macports-core)
+
 ;;;###autoload
 (defun macports-outdated ()
   "List outdated ports."
@@ -31,6 +33,7 @@
     (define-key map "u" #'macports-outdated-mark-upgrade)
     (define-key map "U" #'macports-outdated-mark-upgrades)
     (define-key map "x" #'macports-outdated-upgrade)
+    (define-key map "?" #'macports)
     map)
   "Keymap for `macports-outdated-mode'.")
 
