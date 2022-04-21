@@ -14,7 +14,6 @@
 ;;; Code:
 
 (require 'transient)
-(require 'tablist)
 
 ;;;###autoload (autoload 'macports "macports" nil t)
 (transient-define-prefix macports ()
