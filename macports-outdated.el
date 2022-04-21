@@ -30,6 +30,7 @@
 
 (defvar macports-outdated-mode-map
   (let ((map (make-sparse-keymap)))
+    (keymap-set map "RET" #'macports-outdated-describe-port)
     (keymap-set map "u" #'macports-outdated-mark-upgrade)
     (keymap-set map "U" #'macports-outdated-mark-upgrades)
     (keymap-set map "x" #'macports-outdated-upgrade)
@@ -37,6 +38,11 @@
     (keymap-set map "?" #'macports)
     map)
   "Keymap for `macports-outdated-mode'.")
+
+(defun macports-outdated-describe-port ()
+  "Show details about the current port."
+  (interactive nil macports-outdated-mode)
+  (macports-describe-port (tabulated-list-get-id)))
 
 (defun macports-outdated-mark-upgrade (&optional _num)
   "Mark a port for upgrade and move to the next line."
