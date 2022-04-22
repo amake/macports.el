@@ -33,9 +33,9 @@
    ("d" "Debug" "-d")
    ("n" "Non-interactive" "-N")]
   ["Commands"
-   ("s" "Selfupdate" macports-selfupdate-exec)])
+   ("s" "Selfupdate" macports-core--selfupdate-exec)])
 
-(defun macports-selfupdate-exec (args)
+(defun macports-core---selfupdate-exec (args)
   "Run MacPorts selfupdate with ARGS."
   (interactive (list (transient-args transient-current-command)))
   (compilation-start (string-join `("sudo port -q" ,@args "selfupdate") " ") t))
@@ -47,9 +47,9 @@
    ("d" "Debug" "-d")
    ("n" "Non-interactive" "-N")]
   ["Commands"
-   ("r" "Reclaim" macports-reclaim-exec)])
+   ("r" "Reclaim" macports-core--reclaim-exec)])
 
-(defun macports-reclaim-exec (args)
+(defun macports-core--reclaim-exec (args)
   "Run MacPorts reclaim with ARGS."
   (interactive (list (transient-args transient-current-command)))
   (compilation-start (string-join `("sudo port -q" ,@args "reclaim") " ") t))
