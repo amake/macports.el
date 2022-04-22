@@ -132,7 +132,8 @@
           (length entries)
           (mapconcat
            (lambda (entry) (concat (elt entry 0) (elt entry 1)))
-           entries)))
+           entries
+           " ")))
 
 (defun macports-installed-list-to-exec (entries)
   "Format ENTRIES for prompting."
