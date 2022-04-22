@@ -17,6 +17,7 @@
 (require 'macports-core)
 (require 'macports-outdated)
 (require 'macports-installed)
+(require 'macports-select)
 
 (provide 'macports)
 ;;; macports.el ends here

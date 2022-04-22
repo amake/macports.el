@@ -23,7 +23,8 @@
    ("r" "Reclaim" macports-reclaim)]
   ["Lists"
    ("o" "Outdated" macports-outdated)
-   ("i" "Installed" macports-installed)])
+   ("i" "Installed" macports-installed)
+   ("S" "Select" macports-select)])
 
 ;;;###autoload (autoload 'macports "macports-selfupdate" nil t)
 (transient-define-prefix macports-selfupdate ()
