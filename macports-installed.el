@@ -25,7 +25,8 @@
 (defvar macports-installed-columns
   [("Port" 32 t)
    ("Version" 48 t)
-   ("Active" 8 t)]
+   ("Active" 8 t)
+   ("Leaf" 8 t)]
   "Columns to be shown in `macports-installed-mode'.")
 
 (defvar macports-installed-mode-map
@@ -33,6 +34,7 @@
     (keymap-set map "RET" #'macports-installed-describe-port)
     (keymap-set map "u" #'macports-installed-mark-uninstall)
     (keymap-set map "U" #'macports-installed-mark-inactive)
+    (keymap-set map "l" #'macports-installed-mark-leaves)
     (keymap-set map "a" #'macports-installed-mark-toggle-activate)
     (keymap-set map "x" #'macports-installed-exec)
     (keymap-set map "DEL" #'macports-installed-backup-unmark)
@@ -74,6 +76,20 @@
       (if (macports-installed-item-active-p)
           (forward-line)
         (macports-installed-mark-uninstall)))))
+
+(defun macports-installed-item-leaf-p ()
+  "Return non-nil if the current item is a leaf."
+  (not (string-empty-p (elt (tabulated-list-get-entry) 3))))
+
+(defun macports-installed-mark-leaves ()
+  "Mark all leaf ports for uninstall."
+  (interactive nil macports-installed-mode)
+  (save-excursion
+    (goto-char (point-min))
+    (while (not (eobp))
+      (if (macports-installed-item-leaf-p)
+          (macports-installed-mark-uninstall)
+        (forward-line)))))
 
 (defun macports-installed-backup-unmark ()
   "Back up one line and clear any marks on that port."
@@ -153,13 +169,33 @@
 
 (defun macports-installed-refresh ()
   "Refresh the list of installed ports."
-  (setq tabulated-list-entries
-        (mapcar #'macports-installed--parse-installed (macports-installed--installed-lines))))
+  (let ((installed (macports-installed--installed-items))
+        (leaves (macports-installed--leaf-items)))
+    (setq tabulated-list-entries
+          (mapcar
+           (lambda (e)
+             (let ((name (nth 0 e))
+                   (version (nth 1 e))
+                   (active (nth 2 e)))
+               (list
+                name
+                (vector
+                 name
+                 version
+                 (if active "Yes" "")
+                 (if (member name leaves) "Yes" "")))))
+           installed))))
 
-(defun macports-installed--installed-lines ()
+(defun macports-installed--installed-items ()
   "Return linewise output of `port installed'."
   (let ((output (string-trim (shell-command-to-string "port -q installed"))))
-    (mapcar #'string-trim (split-string output "\n"))))
+    (mapcar
+     (lambda (line) (split-string (string-trim line)))
+     (split-string output "\n"))))
+
+(defun macports-installed--leaf-items ()
+  "Return linewise output of `port echo leaves'."
+  (split-string (string-trim (shell-command-to-string "port -q echo leaves"))))p
 
 (defun macports-installed--parse-installed (line)
   "Parse a LINE output by `macports--installed-lines'."
