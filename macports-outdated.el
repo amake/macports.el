@@ -69,7 +69,9 @@
         (forward-line)))
     (if ports
         (when (y-or-n-p
-               (format "Ports to upgrade: %s.  Proceed? " (string-join ports " ")))
+               (format "Ports to upgrade: %d (%s).  Proceed? "
+                       (length ports)
+                       (string-join ports " ")))
           (compilation-start (string-join `("sudo port upgrade" ,@ports) " ") t))
       (user-error "No ports specified"))))
 
