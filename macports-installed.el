@@ -98,11 +98,11 @@
     (if (or uninstall deactivate activate)
         (when (macports-installed-prompt-transaction-p uninstall deactivate activate)
           (let ((uninstall-cmd (when uninstall
-                                 (concat "sudo port uninstall " (macports-installed-list-to-exec uninstall))))
+                                 (concat "sudo port -q uninstall " (macports-installed-list-to-exec uninstall))))
                 (deactivate-cmd (when deactivate
-                                  (concat "sudo port deactivate " (macports-installed-list-to-exec deactivate))))
+                                  (concat "sudo port -q deactivate " (macports-installed-list-to-exec deactivate))))
                 (activate-cmd (when activate
-                                (concat "sudo port activate " (macports-installed-list-to-exec activate)))))
+                                (concat "sudo port -q activate " (macports-installed-list-to-exec activate)))))
             (compilation-start
              (string-join (remq nil (list uninstall-cmd deactivate-cmd activate-cmd)) " && ")
              t)))
@@ -158,9 +158,8 @@
 
 (defun macports-installed--installed-lines ()
   "Return linewise output of `port installed'."
-  (let ((output (string-trim (shell-command-to-string "port installed"))))
-    (cond ((string-prefix-p "The following ports are currently installed:" output)
-           (cdr (mapcar #'string-trim (split-string output "\n")))))))
+  (let ((output (string-trim (shell-command-to-string "port -q installed"))))
+    (cdr (mapcar #'string-trim (split-string output "\n")))))
 
 (defun macports-installed--parse-installed (line)
   "Parse a LINE output by `macports--installed-lines'."

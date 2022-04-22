@@ -72,7 +72,7 @@
                (format "Ports to upgrade: %d (%s).  Proceed? "
                        (length ports)
                        (string-join ports " ")))
-          (compilation-start (string-join `("sudo port upgrade" ,@ports) " ") t))
+          (compilation-start (string-join `("sudo port -q upgrade" ,@ports) " ") t))
       (user-error "No ports specified"))))
 
 (defun macports-outdated-backup-unmark ()
@@ -96,7 +96,7 @@
 
 (defun macports-outdated--outdated-lines ()
   "Return linewise output of `port outdated'."
-  (let ((output (string-trim (shell-command-to-string "port outdated"))))
+  (let ((output (string-trim (shell-command-to-string "port -q outdated"))))
     (cond ((string-prefix-p "No installed ports are outdated." output) nil)
           ((string-prefix-p "The following installed ports are outdated:" output)
            (cdr (split-string output "\n"))))))

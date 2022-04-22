@@ -37,7 +37,7 @@
 (defun macports-selfupdate-exec (args)
   "Run MacPorts selfupdate with ARGS."
   (interactive (list (transient-args transient-current-command)))
-  (compilation-start (string-join `("sudo port" ,@args "selfupdate") " ") t))
+  (compilation-start (string-join `("sudo port -q" ,@args "selfupdate") " ") t))
 
 ;;;###autoload (autoload 'macports "macports-reclaim" nil t)
 (transient-define-prefix macports-reclaim ()
@@ -51,7 +51,7 @@
 (defun macports-reclaim-exec (args)
   "Run MacPorts reclaim with ARGS."
   (interactive (list (transient-args transient-current-command)))
-  (compilation-start (string-join `("sudo port" ,@args "reclaim") " ") t))
+  (compilation-start (string-join `("sudo port -q" ,@args "reclaim") " ") t))
 
 (provide 'macports-core)
 ;;; macports-core.el ends here

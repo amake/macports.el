@@ -19,7 +19,7 @@
   "Display detailed information about PORT."
   (with-help-window (help-buffer)
     (with-current-buffer standard-output
-      (shell-command (concat "port info " port) standard-output)
+      (shell-command (concat "port -q info " port) standard-output)
       (macports-describe--linkify))))
 
 (defun macports-describe--linkify ()
