@@ -97,9 +97,7 @@
 (defun macports-outdated--outdated-lines ()
   "Return linewise output of `port outdated'."
   (let ((output (string-trim (shell-command-to-string "port -q outdated"))))
-    (cond ((string-prefix-p "No installed ports are outdated." output) nil)
-          ((string-prefix-p "The following installed ports are outdated:" output)
-           (cdr (split-string output "\n"))))))
+    (split-string output "\n")))
 
 (defun macports-outdated--parse-outdated (line)
   "Parse a LINE output by `macports--outdated-lines'."
