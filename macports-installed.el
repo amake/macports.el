@@ -159,7 +159,7 @@
 (defun macports-installed--installed-lines ()
   "Return linewise output of `port installed'."
   (let ((output (string-trim (shell-command-to-string "port -q installed"))))
-    (cdr (mapcar #'string-trim (split-string output "\n")))))
+    (mapcar #'string-trim (split-string output "\n"))))
 
 (defun macports-installed--parse-installed (line)
   "Parse a LINE output by `macports--installed-lines'."
