@@ -35,7 +35,7 @@
   ["Commands"
    ("s" "Selfupdate" macports-core--selfupdate-exec)])
 
-(defun macports-core---selfupdate-exec (args)
+(defun macports-core--selfupdate-exec (args)
   "Run MacPorts selfupdate with ARGS."
   (interactive (list (transient-args transient-current-command)))
   (compilation-start (string-join `("sudo port -q" ,@args "selfupdate") " ") t))
