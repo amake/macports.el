@@ -13,7 +13,6 @@
 
 ;;; Code:
 
-(require 'transient)
 (require 'macports-core)
 (require 'macports-outdated)
 (require 'macports-installed)
