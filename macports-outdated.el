@@ -72,7 +72,9 @@
                (format "Ports to upgrade: %d (%s).  Proceed? "
                        (length ports)
                        (string-join ports " ")))
-          (compilation-start (macports-privileged-command `("-q" "upgrade" ,@ports)) t))
+          (macports-core--exec
+           (macports-privileged-command `("-q" "upgrade" ,@ports))
+           (macports-core--revert-buffer-func)))
       (user-error "No ports specified"))))
 
 (defun macports-outdated-backup-unmark ()

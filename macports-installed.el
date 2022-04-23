@@ -122,9 +122,9 @@
                 (activate-cmd (when activate
                                 (macports-privileged-command
                                  `("-q" "activate" ,@(macports-installed-list-to-args activate))))))
-            (compilation-start
+            (macports-core--exec
              (string-join (remq nil (list uninstall-cmd deactivate-cmd activate-cmd)) " && ")
-             t)))
+             (macports-core--revert-buffer-func))))
       (user-error "No ports specified"))))
 
 (defun macports-installed-prompt-transaction-p (uninstall deactivate activate)

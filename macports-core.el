@@ -14,6 +14,7 @@
 ;;; Code:
 
 (require 'transient)
+(require 'compile)
 
 (defgroup macports nil
   "MacPorts"
@@ -68,6 +69,28 @@
   "Run MacPorts reclaim with ARGS."
   (interactive (list (transient-args transient-current-command)))
   (compilation-start (macports-privileged-command `("-q" ,@args "reclaim")) t))
+
+(defun macports-core--exec (command &optional after)
+  "Execute COMMAND, and then AFTER if supplied."
+  (when after
+    (macports-core--post-compilation-setup after))
+  (compilation-start command t))
+
+(defun macports-core--post-compilation-setup (func)
+  "Arrange to execute FUNC when the compilation process exits."
+  (let (advice)
+    (setq advice (lambda (old-func &rest args)
+                   (apply old-func args)
+                   (funcall func)
+                   (advice-remove #'compilation-handle-exit advice)))
+    (advice-add #'compilation-handle-exit :around advice)))
+
+(defun macports-core--revert-buffer-func ()
+  "Return a function that reverts the current buffer at the time of execution."
+  (let ((buf (current-buffer)))
+    (lambda ()
+      (with-current-buffer buf
+        (revert-buffer)))))
 
 (provide 'macports-core)
 ;;; macports-core.el ends here

@@ -42,7 +42,9 @@
          (options (split-string (elt (tabulated-list-get-entry) 2)))
          (current (elt (tabulated-list-get-entry) 1))
          (selection (completing-read "Select option: " options nil t)))
-    (compilation-start (macports-privileged-command `("-q" "select" "--set" ,group ,selection)) t)))
+    (macports-core--exec
+     (macports-privileged-command `("-q" "select" "--set" ,group ,selection))
+     (macports-core--revert-buffer-func))))
 
 (define-derived-mode macports-select-mode tabulated-list-mode "MacPorts select"
   "Major mode for managing selected MacPorts ports."
