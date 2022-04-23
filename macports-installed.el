@@ -171,7 +171,9 @@
 (defun macports-installed-refresh ()
   "Refresh the list of installed ports."
   (let ((installed (macports-installed--installed-items))
-        (leaves (macports-installed--leaf-items)))
+        (leaves (make-hash-table :test #'equal)))
+    (mapc (lambda (e) (puthash e t leaves))
+          (macports-installed--leaf-items))
     (setq tabulated-list-entries
           (mapcar
            (lambda (e)
@@ -184,7 +186,7 @@
                  name
                  version
                  (if active "Yes" "")
-                 (if (member name leaves) "Yes" "")))))
+                 (if (gethash name leaves) "Yes" "")))))
            installed))))
 
 (defun macports-installed--installed-items ()
