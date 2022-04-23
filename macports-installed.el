@@ -26,6 +26,7 @@
   [("Port" 32 t)
    ("Version" 48 t)
    ("Active" 8 t)
+   ("Requested" 10 t)
    ("Leaf" 8 t)]
   "Columns to be shown in `macports-installed-mode'.")
 
@@ -36,6 +37,7 @@
     (keymap-set map "U" #'macports-installed-mark-inactive)
     (keymap-set map "l" #'macports-installed-mark-leaves)
     (keymap-set map "a" #'macports-installed-mark-toggle-activate)
+    (keymap-set map "r" #'macports-installed-mark-toggle-requested)
     (keymap-set map "x" #'macports-installed-exec)
     (keymap-set map "DEL" #'macports-installed-backup-unmark)
     (keymap-set map "?" #'macports)
@@ -79,7 +81,7 @@
 
 (defun macports-installed-item-leaf-p ()
   "Return non-nil if the current item is a leaf."
-  (not (string-empty-p (elt (tabulated-list-get-entry) 3))))
+  (not (string-empty-p (elt (tabulated-list-get-entry) 4))))
 
 (defun macports-installed-mark-leaves ()
   "Mark all leaf ports for uninstall."
@@ -91,6 +93,21 @@
           (macports-installed-mark-uninstall)
         (forward-line)))))
 
+(defun macports-installed-item-requested-p ()
+  "Return non-nil if the current item is requested."
+  (not (string-empty-p (elt (tabulated-list-get-entry) 3))))
+
+(defun macports-installed-mark-toggle-requested (&optional _num)
+  "Mark a port as requested/unrequested and move to the next line."
+  (interactive "p" macports-installed-mode)
+  (let ((requested (macports-installed-item-requested-p)))
+    (cond ((and requested (eq (char-after) ?r))
+           (tabulated-list-put-tag " " t))
+          ((and (not requested) (eq (char-after) ?R))
+           (tabulated-list-put-tag " " t))
+          (requested (tabulated-list-put-tag "r" t))
+          ((not requested) (tabulated-list-put-tag "R" t)))))
+
 (defun macports-installed-backup-unmark ()
   "Back up one line and clear any marks on that port."
   (interactive nil macports-installed-mode)
@@ -100,7 +117,7 @@
 (defun macports-installed-exec ()
   "Perform marked actions."
   (interactive nil macports-installed-mode)
-  (let (uninstall deactivate activate)
+  (let (uninstall deactivate activate requested unrequested)
     (save-excursion
       (goto-char (point-min))
       (while (not (eobp))
@@ -109,10 +126,14 @@
               ((eq (char-after) ?D)
                (push (tabulated-list-get-entry) deactivate))
               ((eq (char-after) ?A)
-               (push (tabulated-list-get-entry) activate)))
+               (push (tabulated-list-get-entry) activate))
+              ((eq (char-after) ?R)
+               (push (tabulated-list-get-entry) requested))
+              ((eq (char-after) ?r)
+               (push (tabulated-list-get-entry) unrequested)))
         (forward-line)))
-    (if (or uninstall deactivate activate)
-        (when (macports-installed-prompt-transaction-p uninstall deactivate activate)
+    (if (or uninstall deactivate activate requested unrequested)
+        (when (macports-installed-prompt-transaction-p uninstall deactivate activate requested unrequested)
           (let ((uninstall-cmd (when uninstall
                                  (macports-privileged-command
                                   `("-q" "uninstall" ,@(macports-installed-list-to-args uninstall)))))
@@ -121,14 +142,22 @@
                                    `("-q" "deactivate" ,@(macports-installed-list-to-args deactivate)))))
                 (activate-cmd (when activate
                                 (macports-privileged-command
-                                 `("-q" "activate" ,@(macports-installed-list-to-args activate))))))
+                                 `("-q" "activate" ,@(macports-installed-list-to-args activate)))))
+                (requested-cmd (when requested
+                                 (macports-privileged-command
+                                  `("-q" "setrequested" ,@(macports-installed-list-to-args requested)))))
+                (unrequested-cmd (when unrequested
+                                   (macports-privileged-command
+                                    `("-q" "unsetrequested" ,@(macports-installed-list-to-args unrequested))))))
             (macports-core--exec
-             (string-join (remq nil (list uninstall-cmd deactivate-cmd activate-cmd)) " && ")
+             (string-join
+              (remq nil (list uninstall-cmd deactivate-cmd activate-cmd requested-cmd unrequested-cmd))
+              " && ")
              (macports-core--revert-buffer-func))))
       (user-error "No ports specified"))))
 
-(defun macports-installed-prompt-transaction-p (uninstall deactivate activate)
-  "Prompt the user about UNINSTALL, DEACTIVATE, ACTIVATE."
+(defun macports-installed-prompt-transaction-p (uninstall deactivate activate requested unrequested)
+  "Prompt the user about UNINSTALL, DEACTIVATE, ACTIVATE, REQUESTED, UNREQUESTED."
   (y-or-n-p
    (concat
     (when uninstall
@@ -143,6 +172,14 @@
       (format
        "Ports to activate: %s.  "
        (macports-installed-list-to-prompt activate)))
+    (when requested
+      (format
+       "Ports to set as requested: %s.  "
+       (macports-installed-list-to-prompt requested)))
+    (when unrequested
+      (format
+       "Ports to set as unrequested: %s.  "
+       (macports-installed-list-to-prompt unrequested)))
     "Proceed? ")))
 
 (defun macports-installed-list-to-prompt (entries)
@@ -171,9 +208,12 @@
 (defun macports-installed-refresh ()
   "Refresh the list of installed ports."
   (let ((installed (macports-installed--installed-items))
-        (leaves (make-hash-table :test #'equal)))
+        (leaves (make-hash-table :test #'equal))
+        (requested (make-hash-table :test #'equal)))
     (mapc (lambda (e) (puthash e t leaves))
           (macports-installed--leaf-items))
+    (mapc (lambda (e) (puthash e t requested))
+          (macports-installed--requested-items))
     (setq tabulated-list-entries
           (mapcar
            (lambda (e)
@@ -186,6 +226,7 @@
                  name
                  version
                  (if active "Yes" "")
+                 (if (gethash name requested) "Yes" "")
                  (if (gethash name leaves) "Yes" "")))))
            installed))))
 
@@ -199,6 +240,10 @@
 (defun macports-installed--leaf-items ()
   "Return linewise output of `port echo leaves'."
   (split-string (string-trim (shell-command-to-string "port -q echo leaves"))))
+
+(defun macports-installed--requested-items ()
+  "Return linewise output of `port echo requested'."
+  (split-string (string-trim (shell-command-to-string "port -q echo requested"))))
 
 (defun macports-installed--parse-installed (line)
   "Parse a LINE output by `macports--installed-lines'."
