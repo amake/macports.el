@@ -114,11 +114,14 @@
     (if (or uninstall deactivate activate)
         (when (macports-installed-prompt-transaction-p uninstall deactivate activate)
           (let ((uninstall-cmd (when uninstall
-                                 (concat "sudo port -q uninstall " (macports-installed-list-to-exec uninstall))))
+                                 (macports-privileged-command
+                                  `("-q" "uninstall" ,@(macports-installed-list-to-args uninstall)))))
                 (deactivate-cmd (when deactivate
-                                  (concat "sudo port -q deactivate " (macports-installed-list-to-exec deactivate))))
+                                  (macports-privileged-command
+                                   `("-q" "deactivate" ,@(macports-installed-list-to-args deactivate)))))
                 (activate-cmd (when activate
-                                (concat "sudo port -q activate " (macports-installed-list-to-exec activate)))))
+                                (macports-privileged-command
+                                 `("-q" "activate" ,@(macports-installed-list-to-args activate))))))
             (compilation-start
              (string-join (remq nil (list uninstall-cmd deactivate-cmd activate-cmd)) " && ")
              t)))
@@ -151,13 +154,11 @@
            entries
            " ")))
 
-(defun macports-installed-list-to-exec (entries)
-  "Format ENTRIES for prompting."
-  (string-join
-   (apply #'nconc (mapcar
-                   (lambda (entry) `(,(elt entry 0) ,(elt entry 1)))
-                   entries))
-   " "))
+(defun macports-installed-list-to-args (entries)
+  "Format ENTRIES as command arguments."
+  (apply #'nconc (mapcar
+                  (lambda (entry) `(,(elt entry 0) ,(elt entry 1)))
+                  entries)))
 
 (define-derived-mode macports-installed-mode tabulated-list-mode "MacPorts installed"
   "Major mode for handling a list of installed MacPorts ports."

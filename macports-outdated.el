@@ -72,7 +72,7 @@
                (format "Ports to upgrade: %d (%s).  Proceed? "
                        (length ports)
                        (string-join ports " ")))
-          (compilation-start (string-join `("sudo port -q upgrade" ,@ports) " ") t))
+          (compilation-start (macports-privileged-command `("-q" "upgrade" ,@ports)) t))
       (user-error "No ports specified"))))
 
 (defun macports-outdated-backup-unmark ()

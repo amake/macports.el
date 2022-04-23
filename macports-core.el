@@ -15,6 +15,21 @@
 
 (require 'transient)
 
+(defgroup macports nil
+  "MacPorts"
+  :group 'convenience)
+
+(defcustom macports-use-sudo t
+  "If non-nil, use sudo for MacPorts operations as necessary."
+  :type 'boolean)
+
+(defun macports-privileged-command (args)
+  "Build a MacPorts invocation with ARGS list."
+  (concat
+   (if macports-use-sudo "sudo " "")
+   "port "
+   (string-join args " ")))
+
 ;;;###autoload (autoload 'macports "macports" nil t)
 (transient-define-prefix macports ()
   "Transient for MacPorts."
@@ -38,7 +53,7 @@
 (defun macports-core--selfupdate-exec (args)
   "Run MacPorts selfupdate with ARGS."
   (interactive (list (transient-args transient-current-command)))
-  (compilation-start (string-join `("sudo port -q" ,@args "selfupdate") " ") t))
+  (compilation-start (macports-privileged-command `("-q" ,@args "selfupdate")) t))
 
 ;;;###autoload (autoload 'macports "macports-reclaim" nil t)
 (transient-define-prefix macports-reclaim ()
@@ -52,7 +67,7 @@
 (defun macports-core--reclaim-exec (args)
   "Run MacPorts reclaim with ARGS."
   (interactive (list (transient-args transient-current-command)))
-  (compilation-start (string-join `("sudo port -q" ,@args "reclaim") " ") t))
+  (compilation-start (macports-privileged-command `("-q" ,@args "reclaim")) t))
 
 (provide 'macports-core)
 ;;; macports-core.el ends here
