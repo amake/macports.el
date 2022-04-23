@@ -53,7 +53,7 @@
   (tabulated-list-put-tag "U" t))
 
 (defun macports-installed-mark-toggle-activate (&optional _num)
-  "Mark a port for uninstall and move to the next line."
+  "Mark a port for activate/deactivate and move to the next line."
   (interactive "p" macports-installed-mode)
   (let ((active (macports-installed-item-active-p)))
     (cond ((and active (eq (char-after) ?D))
