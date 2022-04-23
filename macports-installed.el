@@ -196,7 +196,7 @@
 
 (defun macports-installed--leaf-items ()
   "Return linewise output of `port echo leaves'."
-  (split-string (string-trim (shell-command-to-string "port -q echo leaves"))))p
+  (split-string (string-trim (shell-command-to-string "port -q echo leaves"))))
 
 (defun macports-installed--parse-installed (line)
   "Parse a LINE output by `macports--installed-lines'."
