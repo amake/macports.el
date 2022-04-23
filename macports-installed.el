@@ -45,7 +45,7 @@
 (defun macports-installed-describe-port ()
   "Show details about the current port."
   (interactive nil macports-installed-mode)
-  (macports-describe-port (tabulated-list-get-id)))
+  (macports-describe-port (elt (tabulated-list-get-entry) 0)))
 
 (defun macports-installed-mark-uninstall (&optional _num)
   "Mark a port for uninstall and move to the next line."
@@ -179,7 +179,7 @@
                    (version (nth 1 e))
                    (active (nth 2 e)))
                (list
-                name
+                (concat name version)
                 (vector
                  name
                  version
