@@ -36,7 +36,8 @@
   "Transient for MacPorts."
   ["Commands"
    ("s" "Selfupdate" macports-selfupdate)
-   ("r" "Reclaim" macports-reclaim)]
+   ("r" "Reclaim" macports-reclaim)
+   ("I" "Install" macports-install)]
   ["Lists"
    ("o" "Outdated" macports-outdated)
    ("i" "Installed" macports-installed)
@@ -69,6 +70,15 @@
   "Run MacPorts reclaim with ARGS."
   (interactive (list (transient-args transient-current-command)))
   (compilation-start (macports-privileged-command `("-q" ,@args "reclaim")) t))
+
+;; TODO: Support choosing variants
+(defun macports-install ()
+  "Interactively choose a port to install."
+  (interactive)
+  (let ((port (completing-read
+               "Search: "
+               (split-string (shell-command-to-string "port -q echo name:")))))
+    (compilation-start (macports-privileged-command `("-q" "install" ,port)) t)))
 
 (defun macports-core--exec (command &optional after)
   "Execute COMMAND, and then AFTER if supplied."
