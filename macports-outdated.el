@@ -14,6 +14,7 @@
 ;;; Code:
 
 (require 'macports-core)
+(require 'macports-describe)
 
 ;;;###autoload
 (defun macports-outdated ()
