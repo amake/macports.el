@@ -234,17 +234,22 @@
 (defun macports-installed--installed-items ()
   "Return linewise output of `port installed'."
   (let ((output (string-trim (shell-command-to-string "port -q installed"))))
-    (mapcar
-     (lambda (line) (split-string (string-trim line)))
-     (split-string output "\n"))))
+    (unless (string-empty-p output)
+      (mapcar
+       (lambda (line) (split-string (string-trim line)))
+       (split-string output "\n")))))
 
 (defun macports-installed--leaf-items ()
   "Return linewise output of `port echo leaves'."
-  (split-string (string-trim (shell-command-to-string "port -q echo leaves"))))
+  (let ((output (string-trim (shell-command-to-string "port -q echo leaves"))))
+    (unless (string-empty-p output)
+      (split-string output))))
 
 (defun macports-installed--requested-items ()
   "Return linewise output of `port echo requested'."
-  (split-string (string-trim (shell-command-to-string "port -q echo requested"))))
+  (let ((output (string-trim (shell-command-to-string "port -q echo requested"))))
+    (unless (string-empty-p output)
+      (split-string output))))
 
 (defun macports-installed--parse-installed (line)
   "Parse a LINE output by `macports--installed-lines'."
