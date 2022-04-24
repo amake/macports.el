@@ -54,7 +54,6 @@
   (interactive)
   (let* ((group (tabulated-list-get-id))
          (options (split-string (elt (tabulated-list-get-entry) 2)))
-         (current (elt (tabulated-list-get-entry) 1))
          (selection (completing-read "Select option: " options nil t)))
     (macports-core--exec
      (macports-privileged-command `("-q" "select" "--set" ,group ,selection))
