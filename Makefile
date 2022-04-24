@@ -2,7 +2,6 @@ elpa_dir := elpa
 el_files := $(wildcard *.el)
 
 $(elpa_dir):
-	mkdir -p $(@)
 	emacs -Q -L $(elpa_dir) \
 		--eval '(setq package-user-dir "./$(elpa_dir)")' \
 		--eval "(unless (require 'transient nil t) \
