@@ -28,6 +28,8 @@
 ;;; Code:
 
 (require 'macports-core)
+(require 'subr-x)
+(require 'keymap)
 
 ;;;###autoload
 (defun macports-select ()

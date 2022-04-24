@@ -29,6 +29,7 @@
 
 (require 'transient)
 (require 'compile)
+(require 'subr-x)
 
 (defgroup macports nil
   "MacPorts"

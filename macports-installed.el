@@ -29,6 +29,8 @@
 
 (require 'macports-core)
 (require 'macports-describe)
+(require 'subr-x)
+(require 'keymap)
 
 ;;;###autoload
 (defun macports-installed ()
