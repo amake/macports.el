@@ -30,7 +30,6 @@
 (require 'macports-core)
 (require 'macports-describe)
 (require 'subr-x)
-(require 'keymap)
 
 ;;;###autoload
 (defun macports-installed ()
@@ -49,16 +48,16 @@
 
 (defvar macports-installed-mode-map
   (let ((map (make-sparse-keymap)))
-    (keymap-set map "RET" #'macports-installed-describe-port)
-    (keymap-set map "e" #'macports-installed-edit-port)
-    (keymap-set map "u" #'macports-installed-mark-uninstall)
-    (keymap-set map "U" #'macports-installed-mark-inactive)
-    (keymap-set map "l" #'macports-installed-mark-leaves)
-    (keymap-set map "a" #'macports-installed-mark-toggle-activate)
-    (keymap-set map "r" #'macports-installed-mark-toggle-requested)
-    (keymap-set map "x" #'macports-installed-exec)
-    (keymap-set map "DEL" #'macports-installed-backup-unmark)
-    (keymap-set map "?" #'macports)
+    (define-key map (kbd "RET") #'macports-installed-describe-port)
+    (define-key map (kbd "e") #'macports-installed-edit-port)
+    (define-key map (kbd "u") #'macports-installed-mark-uninstall)
+    (define-key map (kbd "U") #'macports-installed-mark-inactive)
+    (define-key map (kbd "l") #'macports-installed-mark-leaves)
+    (define-key map (kbd "a") #'macports-installed-mark-toggle-activate)
+    (define-key map (kbd "r") #'macports-installed-mark-toggle-requested)
+    (define-key map (kbd "x") #'macports-installed-exec)
+    (define-key map (kbd "DEL") #'macports-installed-backup-unmark)
+    (define-key map (kbd "?") #'macports)
     map)
   "Keymap for `macports-installed-mode'.")
 

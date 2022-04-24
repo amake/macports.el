@@ -29,7 +29,6 @@
 
 (require 'macports-core)
 (require 'subr-x)
-(require 'keymap)
 
 ;;;###autoload
 (defun macports-select ()
@@ -46,8 +45,8 @@
 
 (defvar macports-select-mode-map
   (let ((map (make-sparse-keymap)))
-    (keymap-set map "RET" #'macports-select-port)
-    (keymap-set map "?" #'macports)
+    (define-key map (kbd "RET") #'macports-select-port)
+    (define-key map (kbd "?") #'macports)
     map)
   "Keymap for `macports-select-mode'.")
 

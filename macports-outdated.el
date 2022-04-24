@@ -30,7 +30,6 @@
 (require 'macports-core)
 (require 'macports-describe)
 (require 'subr-x)
-(require 'keymap)
 
 ;;;###autoload
 (defun macports-outdated ()
@@ -47,13 +46,13 @@
 
 (defvar macports-outdated-mode-map
   (let ((map (make-sparse-keymap)))
-    (keymap-set map "RET" #'macports-outdated-describe-port)
-    (keymap-set map "e" #'macports-outdated-edit-port)
-    (keymap-set map "u" #'macports-outdated-mark-upgrade)
-    (keymap-set map "U" #'macports-outdated-mark-upgrades)
-    (keymap-set map "x" #'macports-outdated-upgrade)
-    (keymap-set map "DEL" #'macports-outdated-backup-unmark)
-    (keymap-set map "?" #'macports)
+    (define-key map (kbd "RET") #'macports-outdated-describe-port)
+    (define-key map (kbd "e") #'macports-outdated-edit-port)
+    (define-key map (kbd "u") #'macports-outdated-mark-upgrade)
+    (define-key map (kbd "U") #'macports-outdated-mark-upgrades)
+    (define-key map (kbd "x") #'macports-outdated-upgrade)
+    (define-key map (kbd "DEL") #'macports-outdated-backup-unmark)
+    (define-key map (kbd "?") #'macports)
     map)
   "Keymap for `macports-outdated-mode'.")
 
