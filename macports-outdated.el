@@ -50,7 +50,7 @@
     (keymap-set map "u" #'macports-outdated-mark-upgrade)
     (keymap-set map "U" #'macports-outdated-mark-upgrades)
     (keymap-set map "x" #'macports-outdated-upgrade)
-    (keymap-set map "DEL" #'macports-installed-backup-unmark)
+    (keymap-set map "DEL" #'macports-outdated-backup-unmark)
     (keymap-set map "?" #'macports)
     map)
   "Keymap for `macports-outdated-mode'.")
