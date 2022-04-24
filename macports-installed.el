@@ -34,6 +34,7 @@
 (defvar macports-installed-mode-map
   (let ((map (make-sparse-keymap)))
     (keymap-set map "RET" #'macports-installed-describe-port)
+    (keymap-set map "e" #'macports-installed-edit-port)
     (keymap-set map "u" #'macports-installed-mark-uninstall)
     (keymap-set map "U" #'macports-installed-mark-inactive)
     (keymap-set map "l" #'macports-installed-mark-leaves)
@@ -49,6 +50,11 @@
   "Show details about the current port."
   (interactive nil macports-installed-mode)
   (macports-describe-port (elt (tabulated-list-get-entry) 0)))
+
+(defun macports-installed-edit-port ()
+  "Open portfile for the current port."
+  (interactive nil macports-installed-mode)
+  (macports-edit-portfile (elt (tabulated-list-get-entry) 0)))
 
 (defun macports-installed-mark-uninstall (&optional _num)
   "Mark a port for uninstall and move to the next line."

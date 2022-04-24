@@ -102,5 +102,10 @@
       (with-current-buffer buf
         (revert-buffer)))))
 
+(defun macports-edit-portfile (port)
+  "Open the portfile for PORT in a new buffer."
+  (let ((portfile (string-trim (shell-command-to-string (concat "port -q file " port)))))
+    (find-file portfile)))
+
 (provide 'macports-core)
 ;;; macports-core.el ends here
