@@ -3,7 +3,7 @@ el_files := $(wildcard *.el)
 
 $(elpa_dir):
 	emacs -Q -L $(elpa_dir) \
-		--eval '(setq package-user-dir "./$(elpa_dir)")' \
+		--eval "(setq package-user-dir \"$$PWD/$(elpa_dir)\")" \
 		--eval "(unless (require 'transient nil t) \
 			(require 'package) (package-initialize) (package-refresh-contents) (package-install 'transient))" \
 		--batch
