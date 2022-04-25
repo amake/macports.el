@@ -46,5 +46,11 @@
         (delete-region (car bounds) (cdr bounds))
         (help-insert-xref-button url 'help-url url)))))
 
+(defun macports-describe-port-contents (port)
+  "Display contents of PORT in a new buffer."
+  (with-help-window (help-buffer)
+    (with-current-buffer standard-output
+      (shell-command (concat "port -q contents " port) standard-output))))
+
 (provide 'macports-describe)
 ;;; macports-describe.el ends here

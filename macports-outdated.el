@@ -47,6 +47,7 @@
 (defvar macports-outdated-mode-map
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "RET") #'macports-outdated-describe-port)
+    (define-key map (kbd "c") #'macports-outdated-port-contents)
     (define-key map (kbd "e") #'macports-outdated-edit-port)
     (define-key map (kbd "u") #'macports-outdated-mark-upgrade)
     (define-key map (kbd "U") #'macports-outdated-mark-upgrades)
@@ -60,6 +61,11 @@
   "Show details about the current port."
   (interactive)
   (macports-describe-port (tabulated-list-get-id)))
+
+(defun macports-outdated-port-contents ()
+  "Show contents of the current port."
+  (interactive)
+  (macports-describe-port-contents (tabulated-list-get-id)))
 
 (defun macports-outdated-edit-port ()
   "Open portfile for the current port."
