@@ -1,11 +1,14 @@
+emacs := emacs
+run_emacs = $(emacs) -Q -L . -L $(elpa_dir) \
+	--eval "(setq package-user-dir (expand-file-name \"$(elpa_dir)\"))" \
+	--eval "(progn (require 'package) (package-initialize))"
 elpa_dir := elpa
 el_files := $(wildcard *.el)
 
 $(elpa_dir):
-	emacs -Q -L $(elpa_dir) \
-		--eval "(setq package-user-dir \"$$PWD/$(elpa_dir)\")" \
+	$(run_emacs) \
 		--eval "(unless (require 'transient nil t) \
-			(require 'package) (package-initialize) (package-refresh-contents) (package-install 'transient))" \
+			(package-refresh-contents) (package-install 'transient))" \
 		--batch
 
 .PHONY: deps
@@ -14,7 +17,7 @@ deps: $(elpa_dir)
 .PHONY: test
 test: ## Run regular test (full dependencies)
 test: $(el_files) $(elpa_dir)
-	emacs -Q -L . -L $$PWD/$(elpa_dir) \
+	$(run_emacs) \
 		--eval '(setq byte-compile-error-on-warn t)' \
 		--batch -f batch-byte-compile $(el_files)
 
