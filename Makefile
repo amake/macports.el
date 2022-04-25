@@ -20,7 +20,7 @@ test: $(el_files) $(elpa_dir)
 
 .PHONY: clean
 clean: ## Clean files
-	rm *.elc
+	rm -f *.elc
 
 .PHONY: clobber
 clobber: ## Remove all generated files
