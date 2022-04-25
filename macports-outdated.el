@@ -58,22 +58,22 @@
 
 (defun macports-outdated-describe-port ()
   "Show details about the current port."
-  (interactive nil macports-outdated-mode)
+  (interactive)
   (macports-describe-port (tabulated-list-get-id)))
 
 (defun macports-outdated-edit-port ()
   "Open portfile for the current port."
-  (interactive nil macports-outdated-mode)
+  (interactive)
   (macports-edit-portfile (tabulated-list-get-id)))
 
 (defun macports-outdated-mark-upgrade (&optional _num)
   "Mark a port for upgrade and move to the next line."
-  (interactive "p" macports-outdated-mode)
+  (interactive "p")
   (tabulated-list-put-tag "U" t))
 
 (defun macports-outdated-mark-upgrades ()
   "Mark all ports for upgrade."
-  (interactive nil macports-outdated-mode)
+  (interactive)
   (save-excursion
     (goto-char (point-min))
     (while (not (eobp))
@@ -81,7 +81,7 @@
 
 (defun macports-outdated-upgrade ()
   "Perform marked upgrades."
-  (interactive nil macports-outdated-mode)
+  (interactive)
   (let (ports)
     (save-excursion
       (goto-char (point-min))
@@ -101,7 +101,7 @@
 
 (defun macports-outdated-backup-unmark ()
   "Back up one line and clear any marks on that port."
-  (interactive nil macports-outdated-mode)
+  (interactive)
   (forward-line -1)
   (tabulated-list-put-tag " "))
 

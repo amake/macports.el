@@ -63,22 +63,22 @@
 
 (defun macports-installed-describe-port ()
   "Show details about the current port."
-  (interactive nil macports-installed-mode)
+  (interactive)
   (macports-describe-port (elt (tabulated-list-get-entry) 0)))
 
 (defun macports-installed-edit-port ()
   "Open portfile for the current port."
-  (interactive nil macports-installed-mode)
+  (interactive)
   (macports-edit-portfile (elt (tabulated-list-get-entry) 0)))
 
 (defun macports-installed-mark-uninstall (&optional _num)
   "Mark a port for uninstall and move to the next line."
-  (interactive "p" macports-installed-mode)
+  (interactive "p")
   (tabulated-list-put-tag "U" t))
 
 (defun macports-installed-mark-toggle-activate (&optional _num)
   "Mark a port for activate/deactivate and move to the next line."
-  (interactive "p" macports-installed-mode)
+  (interactive "p")
   (let ((active (macports-installed-item-active-p)))
     (cond ((and active (eq (char-after) ?D))
            (tabulated-list-put-tag " " t))
@@ -93,7 +93,7 @@
 
 (defun macports-installed-mark-inactive ()
   "Mark all inactive ports for uninstall."
-  (interactive nil macports-installed-mode)
+  (interactive)
   (save-excursion
     (goto-char (point-min))
     (while (not (eobp))
@@ -107,7 +107,7 @@
 
 (defun macports-installed-mark-leaves ()
   "Mark all leaf ports for uninstall."
-  (interactive nil macports-installed-mode)
+  (interactive)
   (save-excursion
     (goto-char (point-min))
     (while (not (eobp))
@@ -121,7 +121,7 @@
 
 (defun macports-installed-mark-toggle-requested (&optional _num)
   "Mark a port as requested/unrequested and move to the next line."
-  (interactive "p" macports-installed-mode)
+  (interactive "p")
   (let ((requested (macports-installed-item-requested-p)))
     (cond ((and requested (eq (char-after) ?r))
            (tabulated-list-put-tag " " t))
@@ -132,13 +132,13 @@
 
 (defun macports-installed-backup-unmark ()
   "Back up one line and clear any marks on that port."
-  (interactive nil macports-installed-mode)
+  (interactive)
   (forward-line -1)
   (tabulated-list-put-tag " "))
 
 (defun macports-installed-exec ()
   "Perform marked actions."
-  (interactive nil macports-installed-mode)
+  (interactive)
   (let (uninstall deactivate activate requested unrequested)
     (save-excursion
       (goto-char (point-min))
