@@ -5,7 +5,7 @@
 ;; Author: Aaron Madlon-Kay
 ;; Version: 0.1.0
 ;; URL: https://github.com/amake/.emacs.d
-;; Package-Requires: ((emacs "25.1"))
+;; Package-Requires: ((emacs "25.1") (transient "0.1.0"))
 ;; Keywords: convenience
 
 ;; This file is not part of GNU Emacs.
