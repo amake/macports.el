@@ -14,7 +14,7 @@ deps: $(elpa_dir)
 .PHONY: test
 test: ## Run regular test (full dependencies)
 test: $(el_files) $(elpa_dir)
-	emacs -Q -L . -L $(elpa_dir) \
+	emacs -Q -L . -L $$PWD/$(elpa_dir) \
 		--eval '(setq byte-compile-error-on-warn t)' \
 		--batch -f batch-byte-compile $(el_files)
 
