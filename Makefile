@@ -15,8 +15,16 @@ $(elpa_dir):
 deps: $(elpa_dir)
 
 .PHONY: test
-test: ## Run regular test (full dependencies)
-test: $(el_files) $(elpa_dir)
+test: ## Compile and run unit tests
+test: test-compile test-unit
+
+.PHONY: test-unit
+test-unit:
+	$(run_emacs) --batch \
+		-l ert -l test/macports-test.el -f ert-run-tests-batch-and-exit
+
+.PHONY: test-compile
+test-compile: $(el_files) $(elpa_dir)
 	$(run_emacs) \
 		--eval '(setq byte-compile-error-on-warn t)' \
 		--batch -f batch-byte-compile $(el_files)
