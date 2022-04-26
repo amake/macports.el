@@ -278,10 +278,5 @@
     (unless (string-empty-p output)
       (split-string output))))
 
-(defun macports-installed--parse-installed (line)
-  "Parse a LINE output by `macports--installed-lines'."
-  (let ((fields (split-string line)))
-    (list (nth 0 fields) (vector (nth 0 fields) (nth 1 fields) (if (nth 2 fields) "Yes" "")))))
-
 (provide 'macports-installed)
 ;;; macports-installed.el ends here
