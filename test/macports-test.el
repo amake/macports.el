@@ -13,9 +13,9 @@
 
 (ert-deftest macports-outdated-refresh-test-empty ()
   (cl-letf (((symbol-function #'shell-command-to-string)
-             (lambda (_) "")))
+             (lambda (_) "\n")))
     (macports-outdated-refresh)
-    (should (equal '() tabulated-list-entries))))
+    (should (equal nil tabulated-list-entries))))
 
 (ert-deftest macports-installed-refresh-test ()
   (cl-letf (((symbol-function #'shell-command-to-string)
@@ -35,3 +35,9 @@
                      ("bazinga@20220426+blah"
                       ["bazinga" "@20220426+blah" "" "" "Yes"]))
                    tabulated-list-entries))))
+
+(ert-deftest macports-installed-refresh-test-empty ()
+  (cl-letf (((symbol-function #'shell-command-to-string)
+             (lambda (_) "\n")))
+    (macports-installed-refresh)
+    (should (equal nil tabulated-list-entries))))
