@@ -164,19 +164,19 @@
         (when (macports-installed-prompt-transaction-p uninstall deactivate activate requested unrequested)
           (let ((uninstall-cmd (when uninstall
                                  (macports-privileged-command
-                                  `("-q" "uninstall" ,@(macports-installed-list-to-args uninstall)))))
+                                  `("-N" "uninstall" ,@(macports-installed-list-to-args uninstall)))))
                 (deactivate-cmd (when deactivate
                                   (macports-privileged-command
-                                   `("-q" "deactivate" ,@(macports-installed-list-to-args deactivate)))))
+                                   `("-N" "deactivate" ,@(macports-installed-list-to-args deactivate)))))
                 (activate-cmd (when activate
                                 (macports-privileged-command
-                                 `("-q" "activate" ,@(macports-installed-list-to-args activate)))))
+                                 `("-N" "activate" ,@(macports-installed-list-to-args activate)))))
                 (requested-cmd (when requested
                                  (macports-privileged-command
-                                  `("-q" "setrequested" ,@(macports-installed-list-to-args requested)))))
+                                  `("-N" "setrequested" ,@(macports-installed-list-to-args requested)))))
                 (unrequested-cmd (when unrequested
                                    (macports-privileged-command
-                                    `("-q" "unsetrequested" ,@(macports-installed-list-to-args unrequested))))))
+                                    `("-N" "unsetrequested" ,@(macports-installed-list-to-args unrequested))))))
             (macports-core--exec
              (string-join
               (remq nil (list uninstall-cmd deactivate-cmd activate-cmd requested-cmd unrequested-cmd))

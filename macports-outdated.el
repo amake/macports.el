@@ -101,7 +101,7 @@
                        (length ports)
                        (string-join ports " ")))
           (macports-core--exec
-           (macports-privileged-command `("-q" "upgrade" ,@ports))
+           (macports-privileged-command `("-N" "upgrade" ,@ports))
            (macports-core--revert-buffer-func)))
       (user-error "No ports specified"))))
 
