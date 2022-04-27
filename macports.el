@@ -4,7 +4,7 @@
 
 ;; Author: Aaron Madlon-Kay
 ;; Version: 0.1.0
-;; URL: https://github.com/amake/.emacs.d
+;; URL: https://github.com/amake/macports.el
 ;; Package-Requires: ((emacs "25.1") (transient "0.1.0"))
 ;; Keywords: convenience
 
