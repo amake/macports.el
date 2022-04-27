@@ -1,7 +1,7 @@
 emacs := emacs
-run_emacs = $(emacs) -Q -L . -L $(elpa_dir) \
+run_emacs = $(emacs) -Q -L . -L $(elpa_dir) -l package \
 	--eval "(setq package-user-dir (expand-file-name \"$(elpa_dir)\"))" \
-	--eval "(progn (require 'package) (package-initialize))"
+	--eval "(package-initialize)"
 elpa_dir := elpa
 
 .PHONY: test
