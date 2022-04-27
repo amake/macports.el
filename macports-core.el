@@ -49,14 +49,14 @@
 ;;;###autoload (autoload 'macports "macports" nil t)
 (transient-define-prefix macports ()
   "Transient for MacPorts."
-  ["Commands"
-   ("s" "Selfupdate" macports-selfupdate)
-   ("r" "Reclaim" macports-reclaim)
-   ("I" "Install" macports-install)]
-  ["Lists"
-   ("o" "Outdated" macports-outdated)
-   ("i" "Installed" macports-installed)
-   ("S" "Select" macports-select)])
+  [["Commands"
+    ("s" "Selfupdate" macports-selfupdate)
+    ("r" "Reclaim" macports-reclaim)
+    ("I" "Install" macports-install)]
+   ["Ports"
+    ("o" "Outdated" macports-outdated)
+    ("i" "Installed" macports-installed)
+    ("S" "Select" macports-select)]])
 
 ;;;###autoload (autoload 'macports "macports-selfupdate" nil t)
 (transient-define-prefix macports-selfupdate ()
