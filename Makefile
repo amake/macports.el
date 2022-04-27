@@ -3,7 +3,10 @@ run_emacs = $(emacs) -Q -L . -L $(elpa_dir) \
 	--eval "(setq package-user-dir (expand-file-name \"$(elpa_dir)\"))" \
 	--eval "(progn (require 'package) (package-initialize))"
 elpa_dir := elpa
-el_files := $(wildcard *.el)
+
+.PHONY: test
+test: ## Compile and run unit tests
+test: test-compile test-unit
 
 $(elpa_dir):
 	$(run_emacs) \
@@ -14,20 +17,16 @@ $(elpa_dir):
 .PHONY: deps
 deps: $(elpa_dir)
 
-.PHONY: test
-test: ## Compile and run unit tests
-test: test-compile test-unit
-
 .PHONY: test-unit
 test-unit:
 	$(run_emacs) --batch \
 		-l ert -l test/macports-test.el -f ert-run-tests-batch-and-exit
 
 .PHONY: test-compile
-test-compile: $(el_files) $(elpa_dir)
+test-compile: deps
 	$(run_emacs) \
 		--eval '(setq byte-compile-error-on-warn t)' \
-		--batch -f batch-byte-compile $(el_files)
+		--batch -f batch-byte-compile *.el
 
 .PHONY: clean
 clean: ## Clean files
