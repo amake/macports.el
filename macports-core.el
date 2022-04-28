@@ -77,7 +77,7 @@
 (defun macports-core--selfupdate-exec (args)
   "Run MacPorts selfupdate with ARGS."
   (interactive (list (transient-args transient-current-command)))
-  (compilation-start (macports-privileged-command `("-q" ,@args "selfupdate")) t))
+  (compilation-start (macports-privileged-command `(,@args "selfupdate")) t))
 
 ;;;###autoload (autoload 'macports "macports-reclaim" nil t)
 (transient-define-prefix macports-reclaim ()
@@ -89,7 +89,7 @@
 (defun macports-core--reclaim-exec (args)
   "Run MacPorts reclaim with ARGS."
   (interactive (list (transient-args transient-current-command)))
-  (compilation-start (macports-privileged-command `("-q" ,@args "reclaim")) t))
+  (compilation-start (macports-privileged-command `(,@args "reclaim")) t))
 
 ;; TODO: Support choosing variants
 (defun macports-install ()
