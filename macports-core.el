@@ -58,12 +58,19 @@
     ("i" "Installed" macports-installed)
     ("S" "Select" macports-select)]])
 
+(eval-and-compile
+  (defconst macports-core--global-flags-infix
+   ["Arguments"
+    ("v" "Verbose" "-v")
+    ("d" "Debug" "-d")
+    ("q" "Quiet" "-q")
+    ("n" "Non-interactive" "-N")]
+   "Global flags for the `port` command."))
+
 ;;;###autoload (autoload 'macports "macports-selfupdate" nil t)
 (transient-define-prefix macports-selfupdate ()
-  "Transient for MacPorts."
-  ["Arguments"
-   ("d" "Debug" "-d")
-   ("n" "Non-interactive" "-N")]
+  "Transient for MacPorts selfupdate."
+  macports-core--global-flags-infix
   ["Commands"
    ("s" "Selfupdate" macports-core--selfupdate-exec)])
 
@@ -74,10 +81,8 @@
 
 ;;;###autoload (autoload 'macports "macports-reclaim" nil t)
 (transient-define-prefix macports-reclaim ()
-  "Transient for MacPorts."
-  ["Arguments"
-   ("d" "Debug" "-d")
-   ("n" "Non-interactive" "-N")]
+  "Transient for MacPorts reclaim."
+  macports-core--global-flags-infix
   ["Commands"
    ("r" "Reclaim" macports-core--reclaim-exec)])
 
