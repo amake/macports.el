@@ -1,3 +1,5 @@
+# Run an arbitrary Emacs version like
+#   make test emacs="docker run --rm -it -v $PWD:/work -w /work silex/emacs:26 emacs"
 emacs := emacs
 run_emacs = $(emacs) -Q -L . -L $(elpa_dir) -l package \
 	--eval "(setq package-user-dir (expand-file-name \"$(elpa_dir)\"))" \
