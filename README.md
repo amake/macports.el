@@ -1,3 +1,5 @@
+[![MELPA](https://melpa.org/packages/flutter-badge.svg)](https://melpa.org/#/macports)
+
 # macports.el
 
 An Emacs porcelain for [MacPorts](https://www.macports.org).
@@ -15,8 +17,13 @@ interface.
 
 # Installation
 
-I plan to put this on [MELPA](https://melpa.org/) but in the meantime... good
-luck?
+You can install from [MELPA](https://melpa.org/#/flutter) with `package.el`.
+
+First [get started with MELPA](https://melpa.org/#/getting-started), then run:
+
+```
+M-x package-install macports
+```
 
 # Usage
 
