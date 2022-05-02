@@ -98,7 +98,7 @@
   (let ((port (completing-read
                "Search: "
                (split-string (shell-command-to-string "port -q echo name:")))))
-    (compilation-start (macports-privileged-command `("-q" "install" ,port)) t)))
+    (compilation-start (macports-privileged-command `("-N" "install" ,port)) t)))
 
 (defun macports-core--exec (command &optional after)
   "Execute COMMAND, and then AFTER if supplied."
