@@ -4,6 +4,13 @@
 
 An Emacs porcelain for [MacPorts](https://www.macports.org).
 
+<!--
+    Recorded with asciinema and converted to SVG with svg-term-cli
+    https://asciinema.org/
+    https://github.com/marionebl/svg-term-cli
+-->
+![macports.el demo](./docs/macports.el.svg)
+
 # Features
 
 Interactively
