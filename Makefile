@@ -6,14 +6,16 @@ run_emacs = $(emacs) -Q -L . -L $(elpa_dir) -l package \
 	--eval "(package-initialize)"
 elpa_dir := elpa
 
+dependencies := transient
+
 .PHONY: test
 test: ## Compile and run unit tests
 test: test-compile test-unit
 
 $(elpa_dir):
 	$(run_emacs) \
-		--eval "(unless (require 'transient nil t) \
-			(package-refresh-contents) (package-install 'transient))" \
+		--eval "(unless (seq-every-p (lambda (e) (require e nil t)) '($(dependencies))) \
+			(package-refresh-contents) (mapc #'package-install '($(dependencies))))" \
 		--batch
 
 .PHONY: deps
@@ -25,7 +27,7 @@ test-unit:
 		-l ert -l test/macports-test.el -f ert-run-tests-batch-and-exit
 
 .PHONY: test-compile
-test-compile: deps
+test-compile: | $(elpa_dir)
 	$(run_emacs) \
 		--eval '(setq byte-compile-error-on-warn t)' \
 		--batch -f batch-byte-compile *.el
