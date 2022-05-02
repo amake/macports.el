@@ -28,6 +28,7 @@
 ;;; Code:
 
 (require 'macports-core)
+(require 'macports-parse)
 (require 'macports-describe)
 (require 'subr-x)
 
@@ -123,18 +124,18 @@
 (defun macports-outdated-refresh ()
   "Refresh the list of outdated ports."
   (setq tabulated-list-entries
-        (mapcar #'macports-outdated--parse-outdated (macports-outdated--outdated-lines))))
-
-(defun macports-outdated--outdated-lines ()
-  "Return linewise output of `port outdated'."
-  (let ((output (string-trim (shell-command-to-string "port -q outdated"))))
-    (unless (string-empty-p output)
-      (split-string output "\n"))))
-
-(defun macports-outdated--parse-outdated (line)
-  "Parse a LINE output by `macports--outdated-lines'."
-  (let ((fields (split-string line)))
-    (list (nth 0 fields) (vector (nth 0 fields) (nth 1 fields) (nth 3 fields)))))
+        (mapcar
+         (lambda (e)
+           (let ((name (nth 0 e))
+                 (curr-version (nth 1 e))
+                 (new-version (nth 3 e)))
+             (list
+              name
+              (vector
+               name
+               curr-version
+               new-version))))
+         (macports-parse--outdated-items))))
 
 (provide 'macports-outdated)
 ;;; macports-outdated.el ends here
