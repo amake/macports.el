@@ -35,7 +35,8 @@
   "List select ports."
   (interactive)
   (pop-to-buffer "*macports-select*")
-  (macports-select-mode))
+  (macports-select-mode)
+  (revert-buffer))
 
 (defvar macports-select-columns
   [("Group" 24 t)

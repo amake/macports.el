@@ -36,7 +36,8 @@
   "List installed ports."
   (interactive)
   (pop-to-buffer "*macports-installed*")
-  (macports-installed-mode))
+  (macports-installed-mode)
+  (revert-buffer))
 
 (defvar macports-installed-columns
   [("Port" 32 t)

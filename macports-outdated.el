@@ -36,7 +36,8 @@
   "List outdated ports."
   (interactive)
   (pop-to-buffer "*macports-outdated*")
-  (macports-outdated-mode))
+  (macports-outdated-mode)
+  (revert-buffer))
 
 (defvar macports-outdated-columns
   [("Port" 32 t)
