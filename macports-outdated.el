@@ -54,7 +54,6 @@
     (define-key map (kbd "U") #'macports-outdated-mark-upgrades)
     (define-key map (kbd "x") #'macports-outdated-upgrade)
     (define-key map (kbd "DEL") #'macports-outdated-backup-unmark)
-    (define-key map (kbd "?") #'macports)
     map)
   "Keymap for `macports-outdated-mode'.")
 
@@ -118,7 +117,8 @@
   (setq tabulated-list-padding 2)
   (setq tabulated-list-sort-key `("Port" . nil))
   (add-hook 'tabulated-list-revert-hook #'macports-outdated-refresh nil t)
-  (tabulated-list-init-header))
+  (tabulated-list-init-header)
+  (macports-dispatch-mode))
 
 (defun macports-outdated-refresh ()
   "Refresh the list of outdated ports."

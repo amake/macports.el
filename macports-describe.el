@@ -27,12 +27,14 @@
 
 ;;; Code:
 
+(require 'macports-core)
 (require 'thingatpt)
 
 (defun macports-describe-port (port)
   "Display detailed information about PORT."
   (with-help-window (help-buffer)
     (with-current-buffer standard-output
+      (macports-dispatch-mode)
       (shell-command (concat "port -q info " port) standard-output)
       (macports-describe--linkify))))
 
@@ -50,6 +52,7 @@
   "Display contents of PORT in a new buffer."
   (with-help-window (help-buffer)
     (with-current-buffer standard-output
+      (macports-dispatch-mode)
       (shell-command (concat "port -q contents " port) standard-output))))
 
 (provide 'macports-describe)

@@ -58,6 +58,16 @@
     ("i" "Installed" macports-installed)
     ("S" "Select" macports-select)]])
 
+(defvar macports-dispatch-mode-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "?") #'macports)
+    map)
+  "Keymap for `macports-installed-mode'.")
+
+(define-minor-mode macports-dispatch-mode
+  "A minor mode allowing easy access to MacPorts commands via `macports'."
+  :keymap macports-dispatch-mode-map)
+
 (eval-and-compile
   (defconst macports-core--global-flags-infix
    ["Arguments"
@@ -77,7 +87,7 @@
 (defun macports-core--selfupdate-exec (args)
   "Run MacPorts selfupdate with ARGS."
   (interactive (list (transient-args transient-current-command)))
-  (compilation-start (macports-privileged-command `(,@args "selfupdate")) t))
+  (macports-core--exec (macports-privileged-command `(,@args "selfupdate"))))
 
 ;;;###autoload (autoload 'macports "macports-reclaim" nil t)
 (transient-define-prefix macports-reclaim ()
@@ -89,7 +99,7 @@
 (defun macports-core--reclaim-exec (args)
   "Run MacPorts reclaim with ARGS."
   (interactive (list (transient-args transient-current-command)))
-  (compilation-start (macports-privileged-command `(,@args "reclaim")) t))
+  (macports-core--exec (macports-privileged-command `(,@args "reclaim"))))
 
 ;; TODO: Support choosing variants
 (defun macports-install ()
@@ -98,13 +108,15 @@
   (let ((port (completing-read
                "Search: "
                (split-string (shell-command-to-string "port -q echo name:")))))
-    (compilation-start (macports-privileged-command `("-N" "install" ,port)) t)))
+    (macports-core--exec (macports-privileged-command `("-N" "install" ,port)))))
 
 (defun macports-core--exec (command &optional after)
   "Execute COMMAND, and then AFTER if supplied."
   (when after
     (macports-core--post-compilation-setup after))
-  (compilation-start command t))
+  (let ((buf (compilation-start command t)))
+    (with-current-buffer buf
+      (macports-dispatch-mode))))
 
 (defun macports-core--post-compilation-setup (func)
   "Arrange to execute FUNC when the compilation process exits."

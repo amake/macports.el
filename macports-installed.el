@@ -59,7 +59,6 @@
     (define-key map (kbd "r") #'macports-installed-mark-toggle-requested)
     (define-key map (kbd "x") #'macports-installed-exec)
     (define-key map (kbd "DEL") #'macports-installed-backup-unmark)
-    (define-key map (kbd "?") #'macports)
     map)
   "Keymap for `macports-installed-mode'.")
 
@@ -232,7 +231,8 @@
   (setq tabulated-list-padding 2)
   (setq tabulated-list-sort-key `("Port" . nil))
   (add-hook 'tabulated-list-revert-hook #'macports-installed-refresh nil t)
-  (tabulated-list-init-header))
+  (tabulated-list-init-header)
+  (macports-dispatch-mode))
 
 (defun macports-installed-refresh ()
   "Refresh the list of installed ports."

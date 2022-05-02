@@ -47,7 +47,6 @@
 (defvar macports-select-mode-map
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "RET") #'macports-select-port)
-    (define-key map (kbd "?") #'macports)
     map)
   "Keymap for `macports-select-mode'.")
 
@@ -67,7 +66,8 @@
   (setq tabulated-list-padding 2)
   (setq tabulated-list-sort-key `("Group" . nil))
   (add-hook 'tabulated-list-revert-hook #'macports-select-refresh nil t)
-  (tabulated-list-init-header))
+  (tabulated-list-init-header)
+  (macports-dispatch-mode))
 
 (defun macports-select-refresh ()
   "Refresh the list of select ports."
