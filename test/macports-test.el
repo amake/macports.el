@@ -19,6 +19,14 @@
     (macports-outdated-refresh)
     (should (equal nil tabulated-list-entries))))
 
+(ert-deftest macports-outdated-refresh-test-custom-command ()
+  (cl-letf ((macports-command "foobar")
+            ((symbol-function #'shell-command-to-string)
+             (lambda (cmd)
+               (should (string-prefix-p "foobar " cmd))
+               "\n")))
+    (macports-outdated-refresh)))
+
 (ert-deftest macports-installed-refresh-test ()
   (cl-letf (((symbol-function #'shell-command-to-string)
              (lambda (cmd) (cond ((equal cmd "port -q installed")
@@ -43,6 +51,14 @@
              (lambda (_) "\n")))
     (macports-installed-refresh)
     (should (equal nil tabulated-list-entries))))
+
+(ert-deftest macports-installed-refresh-test-custom-command ()
+  (cl-letf ((macports-command "foobar")
+            ((symbol-function #'shell-command-to-string)
+             (lambda (cmd)
+               (should (string-prefix-p "foobar " cmd))
+               "\n")))
+    (macports-installed-refresh)))
 
 (ert-deftest macports-status-strings-test-default ()
   (cl-letf (((symbol-function #'macports-core--async-shell-command-to-string)
@@ -77,6 +93,17 @@
     (sleep-for 0 100)
     (should (equal '(:outdated "Outdated (0)" :installed "Installed (0 total, 0 leaves, 0 inactive)")
                    macports-status-strings))))
+
+(ert-deftest macports-status-strings-test-custom-command ()
+  (cl-letf ((macports-command "foobar")
+            ((symbol-function #'macports-core--async-shell-command-to-string)
+             (lambda (cmd callback)
+               (should (string-prefix-p "foobar " cmd))
+               (funcall callback "\n")))
+            ((symbol-function #'transient--redisplay)
+             (lambda ())))
+    (run-hooks 'macports-open-hook)
+    (sleep-for 0 100)))
 
 (ert-deftest macports-status-strings-test-disabled ()
   (cl-letf (((symbol-function #'transient--redisplay)
