@@ -5,7 +5,7 @@
 ;; Author: Aaron Madlon-Kay
 ;; Version: 0.1.0
 ;; URL: https://github.com/amake/macports.el
-;; Package-Requires: ((emacs "25.1"))
+;; Package-Requires: ((emacs "25.1") (transient "0.1.0"))
 ;; Keywords: convenience
 
 ;; This file is not part of GNU Emacs.
@@ -30,6 +30,7 @@
 (require 'macports-core)
 (require 'macports-describe)
 (require 'subr-x)
+(require 'transient)
 
 ;;;###autoload
 (defun macports-installed ()
@@ -38,6 +39,49 @@
   (pop-to-buffer "*macports-installed*")
   (macports-installed-mode)
   (revert-buffer))
+
+(defun macports-installed--update-status-async ()
+  "Generate the label for Installed in `macports'."
+  (plist-put macports-status-strings :installed "Installed")
+  (when macports-show-status
+    (let* ((installed "-")
+           (leaves "-")
+           (inactive "-")
+           (count-fn
+            (lambda (output)
+              (let ((trimmed (string-trim  output)))
+                (if (string-empty-p trimmed)
+                    0
+                  (length (split-string trimmed "\n"))))))
+           (update-fn
+            (lambda ()
+              (plist-put
+               macports-status-strings
+               :installed
+               (format
+                "Installed (%s total, %s %s, %s inactive)"
+                installed
+                leaves
+                (if (eq leaves 1) "leaf" "leaves")
+                inactive))
+              (transient--redisplay))))
+      (macports-core--async-shell-command-to-string
+       "port -q installed"
+       (lambda (output)
+         (setq installed (funcall count-fn output))
+         (funcall update-fn)))
+      (macports-core--async-shell-command-to-string
+       "port -q echo leaves"
+       (lambda (output)
+         (setq leaves (funcall count-fn output))
+         (funcall update-fn)))
+      (macports-core--async-shell-command-to-string
+       "port -q echo inactive"
+       (lambda (output)
+         (setq inactive (funcall count-fn output))
+         (funcall update-fn))))))
+
+(add-hook 'macports-open-hook #'macports-installed--update-status-async)
 
 (defvar macports-installed-columns
   [("Port" 32 t)

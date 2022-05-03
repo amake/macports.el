@@ -40,6 +40,16 @@
   :group 'macports
   :type 'boolean)
 
+(defvar macports-open-hook nil
+  "Called when `macports' transient is opened.")
+
+(defvar macports-status-strings '(:outdated "" :installed "")
+  "Plist of statuses for `macports' transient.")
+
+(defcustom macports-show-status t
+  "Whether to display port counts in the main transient buffer."
+  :group 'macports
+  :type 'boolean)
 
 ;;;###autoload (autoload 'macports "macports" nil t)
 (transient-define-prefix macports ()
@@ -49,9 +59,12 @@
     ("r" "Reclaim" macports-reclaim)
     ("I" "Install" macports-install)]
    ["Ports"
-    ("o" "Outdated" macports-outdated)
-    ("i" "Installed" macports-installed)
-    ("S" "Select" macports-select)]])
+    ("o" (lambda () (plist-get macports-status-strings :outdated)) macports-outdated)
+    ("i" (lambda () (plist-get macports-status-strings :installed)) macports-installed)
+    ("S" "Select" macports-select)]]
+  (interactive)
+  (run-hooks 'macports-open-hook)
+  (transient-setup 'macports))
 
 (defvar macports-dispatch-mode-map
   (let ((map (make-sparse-keymap)))
@@ -140,6 +153,27 @@
    (if macports-use-sudo "sudo " "")
    "port "
    (string-join args " ")))
+
+(defun macports-core--async-shell-command-to-string (command callback)
+  "Execute shell command COMMAND asynchronously in the background.
+
+Return the temporary output buffer which command is writing to during execution.
+
+When the command is finished, call CALLBACK with the resulting output as a
+string.
+
+Inspired by https://lists.gnu.org/archive/html/help-gnu-emacs/2008-06/msg00032.html"
+  (let ((buf (generate-new-buffer " *temp*" t)))
+    (set-process-sentinel
+     (start-process "Shell" buf shell-file-name shell-command-switch command)
+     (lambda (process _signal)
+       (when (memq (process-status process) '(exit signal))
+         (with-current-buffer buf
+           (let ((output
+                  (buffer-substring-no-properties (point-min) (point-max))))
+             (funcall callback output)))
+         (kill-buffer buf))))
+    buf))
 
 (provide 'macports-core)
 ;;; macports-core.el ends here

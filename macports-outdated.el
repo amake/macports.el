@@ -5,7 +5,7 @@
 ;; Author: Aaron Madlon-Kay
 ;; Version: 0.1.0
 ;; URL: https://github.com/amake/macports.el
-;; Package-Requires: ((emacs "25.1"))
+;; Package-Requires: ((emacs "25.1") (transient "0.1.0"))
 ;; Keywords: convenience
 
 ;; This file is not part of GNU Emacs.
@@ -29,6 +29,7 @@
 
 (require 'macports-core)
 (require 'macports-describe)
+(require 'transient)
 (require 'subr-x)
 
 ;;;###autoload
@@ -38,6 +39,25 @@
   (pop-to-buffer "*macports-outdated*")
   (macports-outdated-mode)
   (revert-buffer))
+
+(defun macports-outdated--update-status-async ()
+  "Generate the label for Outdated in `macports'."
+  (plist-put macports-status-strings :outdated "Outdated")
+  (when macports-show-status
+    (macports-core--async-shell-command-to-string
+     "port -q outdated"
+     (lambda (output)
+       (let* ((trimmed (string-trim output))
+              (count (if (string-empty-p trimmed)
+                         0
+                       (length (split-string trimmed "\n")))))
+         (plist-put
+          macports-status-strings
+          :outdated
+          (format "Outdated (%d)" count)))
+       (transient--redisplay)))))
+
+(add-hook 'macports-open-hook #'macports-outdated--update-status-async)
 
 (defvar macports-outdated-columns
   [("Port" 32 t)
