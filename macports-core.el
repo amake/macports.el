@@ -70,12 +70,12 @@
 
 (eval-and-compile
   (defconst macports-core--global-flags-infix
-   ["Arguments"
-    ("v" "Verbose" "-v")
-    ("d" "Debug" "-d")
-    ("q" "Quiet" "-q")
-    ("n" "Non-interactive" "-N")]
-   "Global flags for the `port` command."))
+    ["Arguments"
+     ("v" "Verbose" "-v")
+     ("d" "Debug" "-d")
+     ("q" "Quiet" "-q")
+     ("n" "Non-interactive" "-N")]
+    "Global flags for the `port` command."))
 
 ;;;###autoload (autoload 'macports "macports-selfupdate" nil t)
 (transient-define-prefix macports-selfupdate ()
