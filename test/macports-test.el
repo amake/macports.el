@@ -60,6 +60,31 @@
                "\n")))
     (macports-installed-refresh)))
 
+(ert-deftest macports-select-refresh-test ()
+  (cl-letf (((symbol-function #'shell-command-to-string)
+             (lambda (_) (concat "autofoo                 autofoo-1      autofoo-1 autofoo-2  none\n"
+                            "foo                     foo1           foo1 foo2 foo3 none\n"))))
+    (macports-select-refresh)
+    (should (equal '(("autofoo"
+                      ["autofoo" "autofoo-1" "autofoo-1 autofoo-2 none"])
+                     ("foo"
+                      ["foo" "foo1" "foo1 foo2 foo3 none"]))
+                   tabulated-list-entries))))
+
+(ert-deftest macports-select-refresh-test-empty ()
+  (cl-letf (((symbol-function #'shell-command-to-string)
+             (lambda (_) "\n")))
+    (macports-select-refresh)
+    (should (equal nil tabulated-list-entries))))
+
+(ert-deftest macports-select-refresh-test-custom-command ()
+  (cl-letf ((macports-command "foobar")
+            ((symbol-function #'shell-command-to-string)
+             (lambda (cmd)
+               (should (string-prefix-p "foobar " cmd))
+               "\n")))
+    (macports-select-refresh)))
+
 (ert-deftest macports-status-strings-test-default ()
   (cl-letf (((symbol-function #'macports-core--async-shell-command-to-string)
              (lambda (cmd callback)
