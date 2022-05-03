@@ -37,6 +37,7 @@
 
 (defcustom macports-use-sudo t
   "If non-nil, use sudo for MacPorts operations as necessary."
+  :group 'macports
   :type 'boolean)
 
 
