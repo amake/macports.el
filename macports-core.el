@@ -39,12 +39,6 @@
   "If non-nil, use sudo for MacPorts operations as necessary."
   :type 'boolean)
 
-(defun macports-privileged-command (args)
-  "Build a MacPorts invocation with ARGS list."
-  (concat
-   (if macports-use-sudo "sudo " "")
-   "port "
-   (string-join args " ")))
 
 ;;;###autoload (autoload 'macports "macports" nil t)
 (transient-define-prefix macports ()
@@ -87,7 +81,7 @@
 (defun macports-core--selfupdate-exec (args)
   "Run MacPorts selfupdate with ARGS."
   (interactive (list (transient-args transient-current-command)))
-  (macports-core--exec (macports-privileged-command `(,@args "selfupdate"))))
+  (macports-core--exec (macports-core--privileged-command `(,@args "selfupdate"))))
 
 ;;;###autoload (autoload 'macports "macports-reclaim" nil t)
 (transient-define-prefix macports-reclaim ()
@@ -99,7 +93,7 @@
 (defun macports-core--reclaim-exec (args)
   "Run MacPorts reclaim with ARGS."
   (interactive (list (transient-args transient-current-command)))
-  (macports-core--exec (macports-privileged-command `(,@args "reclaim"))))
+  (macports-core--exec (macports-core--privileged-command `(,@args "reclaim"))))
 
 ;; TODO: Support choosing variants
 (defun macports-install ()
@@ -108,7 +102,7 @@
   (let ((port (completing-read
                "Search: "
                (split-string (shell-command-to-string "port -q echo name:")))))
-    (macports-core--exec (macports-privileged-command `("-N" "install" ,port)))))
+    (macports-core--exec (macports-core--privileged-command `("-N" "install" ,port)))))
 
 (defun macports-core--exec (command &optional after)
   "Execute COMMAND, and then AFTER if supplied."
@@ -138,6 +132,13 @@
   "Open the portfile for PORT in a new buffer."
   (let ((portfile (string-trim (shell-command-to-string (concat "port -q file " port)))))
     (find-file portfile)))
+
+(defun macports-core--privileged-command (args)
+  "Build a MacPorts invocation with ARGS list."
+  (concat
+   (if macports-use-sudo "sudo " "")
+   "port "
+   (string-join args " ")))
 
 (provide 'macports-core)
 ;;; macports-core.el ends here

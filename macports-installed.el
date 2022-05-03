@@ -164,19 +164,19 @@
     (if (or uninstall deactivate activate requested unrequested)
         (when (macports-installed-prompt-transaction-p uninstall deactivate activate requested unrequested)
           (let ((uninstall-cmd (when uninstall
-                                 (macports-privileged-command
+                                 (macports-core--privileged-command
                                   `("-N" "uninstall" ,@(macports-installed-list-to-args uninstall)))))
                 (deactivate-cmd (when deactivate
-                                  (macports-privileged-command
+                                  (macports-core--privileged-command
                                    `("-N" "deactivate" ,@(macports-installed-list-to-args deactivate)))))
                 (activate-cmd (when activate
-                                (macports-privileged-command
+                                (macports-core--privileged-command
                                  `("-N" "activate" ,@(macports-installed-list-to-args activate)))))
                 (requested-cmd (when requested
-                                 (macports-privileged-command
+                                 (macports-core--privileged-command
                                   `("-N" "setrequested" ,@(macports-installed-list-to-args requested)))))
                 (unrequested-cmd (when unrequested
-                                   (macports-privileged-command
+                                   (macports-core--privileged-command
                                     `("-N" "unsetrequested" ,@(macports-installed-list-to-args unrequested))))))
             (macports-core--exec
              (string-join
