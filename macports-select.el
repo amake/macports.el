@@ -76,7 +76,8 @@
 
 (defun macports-select--select-lines ()
   "Return linewise output of `port select'."
-  (let ((output (string-trim (shell-command-to-string "port -q select --summary"))))
+  (let* ((cmd (concat macports-command " -q select --summary"))
+         (output (string-trim (shell-command-to-string cmd))))
     (unless (string-empty-p output)
       (split-string output "\n"))))
 

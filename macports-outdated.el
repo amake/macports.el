@@ -45,7 +45,7 @@
   (plist-put macports-status-strings :outdated "Outdated")
   (when macports-show-status
     (macports-core--async-shell-command-to-string
-     "port -q outdated"
+     (concat macports-command " -q outdated")
      (lambda (output)
        (let* ((trimmed (string-trim output))
               (count (if (string-empty-p trimmed)
@@ -158,7 +158,8 @@
 
 (defun macports-outdated--outdated-items ()
   "Return linewise output of `port outdated'."
-  (let ((output (string-trim (shell-command-to-string "port -q outdated"))))
+  (let* ((cmd (concat macports-command " -q outdated"))
+         (output (string-trim (shell-command-to-string cmd))))
     (unless (string-empty-p output)
       (mapcar
        #'split-string

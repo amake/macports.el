@@ -35,6 +35,11 @@
   "MacPorts"
   :group 'convenience)
 
+(defcustom macports-command "port"
+  "The MacPorts port binary."
+  :group 'macports
+  :type 'string)
+
 (defcustom macports-use-sudo t
   "If non-nil, use sudo for MacPorts operations as necessary."
   :group 'macports
@@ -113,9 +118,10 @@
 (defun macports-install ()
   "Interactively choose a port to install."
   (interactive)
-  (let ((port (completing-read
-               "Search: "
-               (split-string (shell-command-to-string "port -q echo name:")))))
+  (let* ((cmd (concat macports-command " -q echo name:"))
+         (port (completing-read
+                "Search: "
+               (split-string (shell-command-to-string cmd)))))
     (macports-core--exec (macports-core--privileged-command `("-N" "install" ,port)))))
 
 (defun macports-core--exec (command &optional after)
@@ -144,14 +150,16 @@
 
 (defun macports-edit-portfile (port)
   "Open the portfile for PORT in a new buffer."
-  (let ((portfile (string-trim (shell-command-to-string (concat "port -q file " port)))))
+  (let* ((cmd (concat macports-command " -q file " port))
+         (portfile (string-trim (shell-command-to-string cmd))))
     (find-file portfile)))
 
 (defun macports-core--privileged-command (args)
   "Build a MacPorts invocation with ARGS list."
   (concat
    (if macports-use-sudo "sudo " "")
-   "port "
+   macports-command
+   " "
    (string-join args " ")))
 
 (defun macports-core--async-shell-command-to-string (command callback)

@@ -66,17 +66,17 @@
                 inactive))
               (transient--redisplay))))
       (macports-core--async-shell-command-to-string
-       "port -q installed"
+       (concat macports-command " -q installed")
        (lambda (output)
          (setq installed (funcall count-fn output))
          (funcall update-fn)))
       (macports-core--async-shell-command-to-string
-       "port -q echo leaves"
+       (concat macports-command " -q echo leaves")
        (lambda (output)
          (setq leaves (funcall count-fn output))
          (funcall update-fn)))
       (macports-core--async-shell-command-to-string
-       "port -q echo inactive"
+       (concat macports-command " -q echo inactive")
        (lambda (output)
          (setq inactive (funcall count-fn output))
          (funcall update-fn))))))
@@ -305,7 +305,8 @@
 
 (defun macports-installed--installed-items ()
   "Return linewise output of `port installed'."
-  (let ((output (string-trim (shell-command-to-string "port -q installed"))))
+  (let* ((cmd (concat macports-command " -q installed"))
+         (output (string-trim (shell-command-to-string cmd))))
     (unless (string-empty-p output)
       (mapcar
        (lambda (line) (split-string (string-trim line)))
@@ -313,13 +314,15 @@
 
 (defun macports-installed--leaf-items ()
   "Return linewise output of `port echo leaves'."
-  (let ((output (string-trim (shell-command-to-string "port -q echo leaves"))))
+  (let* ((cmd (concat macports-command " -q echo leaves"))
+         (output (string-trim (shell-command-to-string cmd))))
     (unless (string-empty-p output)
       (split-string output))))
 
 (defun macports-installed--requested-items ()
   "Return linewise output of `port echo requested'."
-  (let ((output (string-trim (shell-command-to-string "port -q echo requested"))))
+  (let* ((cmd (concat macports-command " -q echo requested"))
+         (output (string-trim (shell-command-to-string cmd))))
     (unless (string-empty-p output)
       (split-string output))))
 

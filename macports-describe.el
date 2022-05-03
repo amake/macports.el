@@ -35,7 +35,7 @@
   (with-help-window (help-buffer)
     (with-current-buffer standard-output
       (macports-dispatch-mode)
-      (shell-command (concat "port -q info " port) standard-output)
+      (shell-command (concat macports-command " -q info " port) standard-output)
       (macports-describe--linkify))))
 
 (defun macports-describe--linkify ()
@@ -53,7 +53,7 @@
   (with-help-window (help-buffer)
     (with-current-buffer standard-output
       (macports-dispatch-mode)
-      (shell-command (concat "port -q contents " port) standard-output))))
+      (shell-command (concat macports-command " -q contents " port) standard-output))))
 
 (provide 'macports-describe)
 ;;; macports-describe.el ends here
