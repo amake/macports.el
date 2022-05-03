@@ -163,7 +163,7 @@ When the command is finished, call CALLBACK with the resulting output as a
 string.
 
 Inspired by https://lists.gnu.org/archive/html/help-gnu-emacs/2008-06/msg00032.html"
-  (let ((buf (generate-new-buffer " *temp*" t)))
+  (let ((buf (macports-core--gen-temp-buffer)))
     (set-process-sentinel
      (start-process "Shell" buf shell-file-name shell-command-switch command)
      (lambda (process _signal)
@@ -174,6 +174,14 @@ Inspired by https://lists.gnu.org/archive/html/help-gnu-emacs/2008-06/msg00032.h
              (funcall callback output)))
          (kill-buffer buf))))
     buf))
+
+(defun macports-core--gen-temp-buffer ()
+  "Get a temp buffer. Adapter for pre-Emacs 28 compatibility."
+  (let ((args '(" *temp*")))
+    (when (and (functionp 'func-arity)
+               (> (cdr (func-arity #'generate-new-buffer)) 1))
+      (push t args))
+    (apply #'generate-new-buffer args)))
 
 (provide 'macports-core)
 ;;; macports-core.el ends here
