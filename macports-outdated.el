@@ -28,7 +28,6 @@
 ;;; Code:
 
 (require 'macports-core)
-(require 'macports-parse)
 (require 'macports-describe)
 (require 'subr-x)
 
@@ -135,7 +134,15 @@
                name
                curr-version
                new-version))))
-         (macports-parse--outdated-items))))
+         (macports-outdated--outdated-items))))
+
+(defun macports-outdated--outdated-items ()
+  "Return linewise output of `port outdated'."
+  (let ((output (string-trim (shell-command-to-string "port -q outdated"))))
+    (unless (string-empty-p output)
+      (mapcar
+       #'split-string
+       (split-string output "\n")))))
 
 (provide 'macports-outdated)
 ;;; macports-outdated.el ends here

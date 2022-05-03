@@ -28,7 +28,6 @@
 ;;; Code:
 
 (require 'macports-core)
-(require 'macports-parse)
 (require 'macports-describe)
 (require 'subr-x)
 
@@ -237,13 +236,13 @@
 
 (defun macports-installed-refresh ()
   "Refresh the list of installed ports."
-  (let ((installed (macports-parse--installed-items))
+  (let ((installed (macports-installed--installed-items))
         (leaves (make-hash-table :test #'equal))
         (requested (make-hash-table :test #'equal)))
     (mapc (lambda (e) (puthash e t leaves))
-          (macports-parse--leaf-items))
+          (macports-installed--leaf-items))
     (mapc (lambda (e) (puthash e t requested))
-          (macports-parse--requested-items))
+          (macports-installed--requested-items))
     (setq tabulated-list-entries
           (mapcar
            (lambda (e)
@@ -259,6 +258,26 @@
                  (if (gethash name requested) "Yes" "")
                  (if (gethash name leaves) "Yes" "")))))
            installed))))
+
+(defun macports-installed--installed-items ()
+  "Return linewise output of `port installed'."
+  (let ((output (string-trim (shell-command-to-string "port -q installed"))))
+    (unless (string-empty-p output)
+      (mapcar
+       (lambda (line) (split-string (string-trim line)))
+       (split-string output "\n")))))
+
+(defun macports-installed--leaf-items ()
+  "Return linewise output of `port echo leaves'."
+  (let ((output (string-trim (shell-command-to-string "port -q echo leaves"))))
+    (unless (string-empty-p output)
+      (split-string output))))
+
+(defun macports-installed--requested-items ()
+  "Return linewise output of `port echo requested'."
+  (let ((output (string-trim (shell-command-to-string "port -q echo requested"))))
+    (unless (string-empty-p output)
+      (split-string output))))
 
 (provide 'macports-installed)
 ;;; macports-installed.el ends here
