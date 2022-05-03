@@ -180,7 +180,7 @@ Inspired by https://lists.gnu.org/archive/html/help-gnu-emacs/2008-06/msg00032.h
   (let ((args '(" *temp*")))
     (when (and (functionp 'func-arity)
                (> (cdr (func-arity #'generate-new-buffer)) 1))
-      (push t args))
+      (setq args `(,@args t)))
     (apply #'generate-new-buffer args)))
 
 (provide 'macports-core)
