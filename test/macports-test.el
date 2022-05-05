@@ -149,7 +149,7 @@
             ((symbol-function #'macports-core--exec)
              (lambda (cmd &rest _)
                (should (equal "sudo port -N install bazz" cmd)))))
-           (macports-install)))
+    (macports-install)))
 
 (ert-deftest macports-install-test-custom-command ()
   (cl-letf ((macports-command "foobar")
@@ -160,4 +160,4 @@
             ((symbol-function #'macports-core--exec)
              (lambda (cmd &rest _)
                (should (string-prefix-p "sudo foobar " cmd)))))
-           (macports-install)))
+    (macports-install)))
