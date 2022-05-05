@@ -173,13 +173,12 @@
                 t))
              ((symbol-function #'macports-core--exec)
               (lambda (cmd &optional _)
-                (should (string-suffix-p " outdated" cmd))))
-             (buf (macports-outdated)))
-    (with-current-buffer buf
-      (let ((msg (macports-outdated-mark-upgrades)))
-        (should (equal "Outdated ports marked for upgrade: 2"
-                       msg)))
-      (macports-outdated-upgrade))))
+                (should (string-suffix-p " outdated" cmd)))))
+    (macports-outdated)
+    (let ((msg (macports-outdated-mark-upgrades)))
+      (should (equal "Outdated ports marked for upgrade: 2"
+                     msg)))
+    (macports-outdated-upgrade)))
 
 (ert-deftest macports-outdated-upgrade-test-some ()
   (cl-letf* (((symbol-function #'shell-command-to-string)
@@ -192,12 +191,11 @@
                 t))
              ((symbol-function #'macports-core--exec)
               (lambda (cmd &optional _)
-                (should (string-suffix-p " bizzbazz" cmd))))
-             (buf (macports-outdated)))
-    (with-current-buffer buf
-      (goto-char (point-min))
-      (macports-outdated-mark-upgrade)
-      (macports-outdated-upgrade))))
+                (should (string-suffix-p " bizzbazz" cmd)))))
+    (macports-outdated)
+    (goto-char (point-min))
+    (macports-outdated-mark-upgrade)
+    (macports-outdated-upgrade)))
 
 (ert-deftest macports-outdated-upgrade-test-custom-command ()
   (cl-letf* ((macports-command "fooport")
@@ -208,8 +206,7 @@
               (lambda (_) t))
              ((symbol-function #'macports-core--exec)
               (lambda (cmd &optional _)
-                (should (string-prefix-p "sudo fooport " cmd))))
-             (buf (macports-outdated)))
-    (with-current-buffer buf
-      (macports-outdated-mark-upgrade)
-      (macports-outdated-upgrade))))
+                (should (string-prefix-p "sudo fooport " cmd)))))
+    (macports-outdated)
+    (macports-outdated-mark-upgrade)
+    (macports-outdated-upgrade)))

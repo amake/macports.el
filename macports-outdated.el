@@ -36,10 +36,9 @@
 (defun macports-outdated ()
   "List outdated ports."
   (interactive)
-  (let ((buf (pop-to-buffer "*macports-outdated*")))
-    (macports-outdated-mode)
-    (revert-buffer)
-    buf))
+  (pop-to-buffer "*macports-outdated*")
+  (macports-outdated-mode)
+  (revert-buffer))
 
 (defun macports-outdated--update-status-async ()
   "Generate the label for Outdated in `macports'."
