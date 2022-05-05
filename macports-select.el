@@ -34,9 +34,10 @@
 (defun macports-select ()
   "List select ports."
   (interactive)
-  (pop-to-buffer "*macports-select*")
-  (macports-select-mode)
-  (revert-buffer))
+  (let ((buf (pop-to-buffer "*macports-select*")))
+    (macports-select-mode)
+    (revert-buffer)
+    buf))
 
 (defvar macports-select-columns
   [("Group" 24 t)
