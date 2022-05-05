@@ -146,10 +146,13 @@
   (interactive)
   (save-excursion
     (goto-char (point-min))
-    (while (not (eobp))
-      (if (macports-installed-item-active-p)
-          (forward-line)
-        (macports-installed-mark-uninstall)))))
+    (let ((count 0))
+      (while (not (eobp))
+        (if (macports-installed-item-active-p)
+            (forward-line)
+          (macports-installed-mark-uninstall)
+          (setq count (1+ count))))
+      (message "Inactive ports marked for uninstall: %d" count))))
 
 (defun macports-installed-item-leaf-p ()
   "Return non-nil if the current item is a leaf."
@@ -160,10 +163,13 @@
   (interactive)
   (save-excursion
     (goto-char (point-min))
-    (while (not (eobp))
-      (if (macports-installed-item-leaf-p)
+    (let ((count 0))
+      (while (not (eobp))
+        (if (not (macports-installed-item-leaf-p))
+            (forward-line)
           (macports-installed-mark-uninstall)
-        (forward-line)))))
+          (setq count (1+ count))))
+      (message "Leaf ports marked for uninstall: %d" count))))
 
 (defun macports-installed-item-requested-p ()
   "Return non-nil if the current item is requested."

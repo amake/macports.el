@@ -102,8 +102,11 @@
   (interactive)
   (save-excursion
     (goto-char (point-min))
-    (while (not (eobp))
-      (macports-outdated-mark-upgrade))))
+    (let ((count 0))
+      (while (not (eobp))
+        (macports-outdated-mark-upgrade)
+        (setq count (1+ count)))
+      (message "Outdated ports marked for upgrade: %d" count))))
 
 (defun macports-outdated-upgrade ()
   "Perform marked upgrades."
