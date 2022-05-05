@@ -124,9 +124,12 @@
                (format "Ports to upgrade: %d (%s).  Proceed? "
                        (length ports)
                        (string-join ports " ")))
-          (macports-core--exec
-           (macports-core--privileged-command `("-N" "upgrade" ,@ports))
-           (macports-core--revert-buffer-func)))
+          (let ((target (if (eq (length ports) (length tabulated-list-entries))
+                            '("outdated")
+                          ports)))
+            (macports-core--exec
+             (macports-core--privileged-command `("-N" "upgrade" ,@target))
+             (macports-core--revert-buffer-func))))
       (user-error "No ports specified"))))
 
 (defun macports-outdated-backup-unmark ()

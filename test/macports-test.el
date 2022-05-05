@@ -161,3 +161,55 @@
              (lambda (cmd &rest _)
                (should (string-prefix-p "sudo foobar " cmd)))))
     (macports-install)))
+
+(ert-deftest macports-outdated-upgrade-test-all ()
+  (cl-letf* (((symbol-function #'shell-command-to-string)
+              (lambda (_) (concat "foobar                               1.0_0 < 2.0_0\n"
+                             "bizzbazz                             0.1_0 < 0.1_1\n")))
+             ((symbol-function #'y-or-n-p)
+              (lambda (prompt)
+                (should (equal "Ports to upgrade: 2 (foobar bizzbazz).  Proceed? "
+                               prompt))
+                t))
+             ((symbol-function #'macports-core--exec)
+              (lambda (cmd &optional _)
+                (should (string-suffix-p " outdated" cmd))))
+             (buf (macports-outdated)))
+    (with-current-buffer buf
+      (let ((msg (macports-outdated-mark-upgrades)))
+        (should (equal "Outdated ports marked for upgrade: 2"
+                       msg)))
+      (macports-outdated-upgrade))))
+
+(ert-deftest macports-outdated-upgrade-test-some ()
+  (cl-letf* (((symbol-function #'shell-command-to-string)
+              (lambda (_) (concat "foobar                               1.0_0 < 2.0_0\n"
+                             "bizzbazz                             0.1_0 < 0.1_1\n")))
+             ((symbol-function #'y-or-n-p)
+              (lambda (prompt)
+                (should (equal "Ports to upgrade: 1 (bizzbazz).  Proceed? "
+                               prompt))
+                t))
+             ((symbol-function #'macports-core--exec)
+              (lambda (cmd &optional _)
+                (should (string-suffix-p " bizzbazz" cmd))))
+             (buf (macports-outdated)))
+    (with-current-buffer buf
+      (goto-char (point-min))
+      (macports-outdated-mark-upgrade)
+      (macports-outdated-upgrade))))
+
+(ert-deftest macports-outdated-upgrade-test-custom-command ()
+  (cl-letf* ((macports-command "fooport")
+             ((symbol-function #'shell-command-to-string)
+              (lambda (_) (concat "foobar                               1.0_0 < 2.0_0\n"
+                             "bizzbazz                             0.1_0 < 0.1_1\n")))
+             ((symbol-function #'y-or-n-p)
+              (lambda (_) t))
+             ((symbol-function #'macports-core--exec)
+              (lambda (cmd &optional _)
+                (should (string-prefix-p "sudo fooport " cmd))))
+             (buf (macports-outdated)))
+    (with-current-buffer buf
+      (macports-outdated-mark-upgrade)
+      (macports-outdated-upgrade))))
