@@ -30,13 +30,20 @@
 (require 'macports-core)
 (require 'subr-x)
 
+(defvar-local macports-select--init-flag nil
+  "Flag for avoiding multiple init.
+
+See `macports-installed--init-flag' for details.")
+
 ;;;###autoload
 (defun macports-select ()
   "List select ports."
   (interactive)
   (pop-to-buffer "*macports-select*")
-  (macports-select-mode)
-  (revert-buffer))
+  (let (macports-select--init-flag)
+    (macports-select-mode)
+    (unless macports-select--init-flag
+      (revert-buffer))))
 
 (defvar macports-select-columns
   [("Group" 24 t)
@@ -72,7 +79,9 @@
 (defun macports-select-refresh ()
   "Refresh the list of select ports."
   (setq tabulated-list-entries
-        (mapcar #'macports-select--parse-select (macports-select--select-lines))))
+        (mapcar #'macports-select--parse-select (macports-select--select-lines))
+        macports-select--init-flag
+        t))
 
 (defun macports-select--select-lines ()
   "Return linewise output of `port select'."

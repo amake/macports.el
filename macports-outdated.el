@@ -32,13 +32,20 @@
 (require 'transient)
 (require 'subr-x)
 
+(defvar-local macports-outdated--init-flag nil
+  "Flag for avoiding multiple init.
+
+See `macports-installed--init-flag' for details.")
+
 ;;;###autoload
 (defun macports-outdated ()
   "List outdated ports."
   (interactive)
   (pop-to-buffer "*macports-outdated*")
-  (macports-outdated-mode)
-  (revert-buffer))
+  (let (macports-outdated--init-flag)
+    (macports-outdated-mode)
+    (unless macports-outdated--init-flag
+      (revert-buffer))))
 
 (defun macports-outdated--update-status-async ()
   "Generate the label for Outdated in `macports'."
@@ -160,7 +167,9 @@
                name
                curr-version
                new-version))))
-         (macports-outdated--outdated-items))))
+         (macports-outdated--outdated-items))
+        macports-outdated--init-flag
+        t))
 
 (defun macports-outdated--outdated-items ()
   "Return linewise output of `port outdated'."

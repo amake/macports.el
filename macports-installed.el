@@ -32,13 +32,30 @@
 (require 'subr-x)
 (require 'transient)
 
+(defvar-local macports-installed--init-flag nil
+  "Flag for avoiding multiple init.
+
+`tabulated-list-mode' adds `tabulated-list-revert' to
+`display-line-numbers-mode-hook'. The result is that when
+`global-display-line-numbers-mode' is enabled, merely enabling
+`macports-installed-mode' causes `macports-installed-refresh' to be executed.
+However when `global-display-line-numbers-mode' is not enabled, we must manually
+init by calling `revert-buffer'.
+
+We don't want to call `macports-installed-refresh' twice because it causes
+noticeable lag. So this flag is used in `macports-installed' and
+`macports-installed-refresh' to ensure that the latter is only called once per
+invocation of the former.")
+
 ;;;###autoload
 (defun macports-installed ()
   "List installed ports."
   (interactive)
   (pop-to-buffer "*macports-installed*")
-  (macports-installed-mode)
-  (revert-buffer))
+  (let (macports-installed--init-flag)
+    (macports-installed-mode)
+    (unless macports-installed--init-flag
+      (revert-buffer))))
 
 (defun macports-installed--update-status-async ()
   "Generate the label for Installed in `macports'."
@@ -307,7 +324,9 @@
                  (if active "Yes" "")
                  (if (gethash name requested) "Yes" "")
                  (if (gethash name leaves) "Yes" "")))))
-           installed))))
+           installed)
+          macports-installed--init-flag
+          t)))
 
 (defun macports-installed--installed-items ()
   "Return linewise output of `port installed'."
