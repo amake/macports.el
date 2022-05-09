@@ -1,4 +1,4 @@
-[![MELPA](https://melpa.org/packages/flutter-badge.svg)](https://melpa.org/#/macports)
+[![MELPA](https://melpa.org/packages/macports-badge.svg)](https://melpa.org/#/macports)
 
 # macports.el
 
