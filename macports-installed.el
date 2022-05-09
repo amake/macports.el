@@ -1,4 +1,4 @@
-;;; macports-installed.el --- A porcelain for MacPorts -*- lexical-binding: t; -*-
+;;; macports-installed.el --- A porcelain for MacPorts  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2022 Aaron Madlon-Kay
 

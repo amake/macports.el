@@ -1,4 +1,4 @@
-;;; macports-describe.el --- A porcelain for MacPorts -*- lexical-binding: t; -*-
+;;; macports-describe.el --- A porcelain for MacPorts  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2022 Aaron Madlon-Kay
 
