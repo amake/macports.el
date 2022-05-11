@@ -193,11 +193,6 @@
   (cl-letf* (((symbol-function #'shell-command-to-string)
               (lambda (_) (concat "foobar                               1.0_0 < 2.0_0\n"
                              "bizzbazz                             0.1_0 < 0.1_1\n")))
-             ((symbol-function #'y-or-n-p)
-              (lambda (prompt)
-                (should (equal "Ports to upgrade: 2 (foobar bizzbazz).  Proceed? "
-                               prompt))
-                t))
              ((symbol-function #'macports-upgrade)
               (lambda (ports)
                 (should (null ports)))))
@@ -211,11 +206,6 @@
   (cl-letf* (((symbol-function #'shell-command-to-string)
               (lambda (_) (concat "foobar                               1.0_0 < 2.0_0\n"
                              "bizzbazz                             0.1_0 < 0.1_1\n")))
-             ((symbol-function #'y-or-n-p)
-              (lambda (prompt)
-                (should (equal "Ports to upgrade: 1 (bizzbazz).  Proceed? "
-                               prompt))
-                t))
              ((symbol-function #'macports-upgrade)
               (lambda (ports)
                 (should (equal '("bizzbazz") ports)))))

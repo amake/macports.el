@@ -127,17 +127,13 @@ See `macports-installed--init-flag' for details.")
                (push (tabulated-list-get-id) ports)))
         (forward-line)))
     (if ports
-        (when (y-or-n-p
-               (format "Ports to upgrade: %d (%s).  Proceed? "
-                       (length ports)
-                       (string-join ports " ")))
-          (let ((target (if (eq (length ports) (length tabulated-list-entries))
-                            nil
-                          ports)))
-            (with-no-warnings
-              ;; Transients are interactive-only but we really want to call this
-              ;; interactively here
-              (macports-upgrade target))))
+        (let ((target (if (eq (length ports) (length tabulated-list-entries))
+                          nil
+                        ports)))
+          (with-no-warnings
+            ;; Transients are interactive-only but we really want to call this
+            ;; interactively here
+            (macports-upgrade target)))
       (user-error "No ports specified"))))
 
 (defun macports-outdated-backup-unmark ()
