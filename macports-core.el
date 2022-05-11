@@ -57,7 +57,7 @@
   :group 'macports
   :type 'boolean)
 
-;;;###autoload (autoload 'macports "macports" nil t)
+;;;###autoload (autoload 'macports "macports-core" nil t)
 (transient-define-prefix macports ()
   "Transient for MacPorts."
   [["Commands"
@@ -92,7 +92,7 @@
      ("n" "Non-interactive" "-N")]
     "Global flags for the `port` command."))
 
-;;;###autoload (autoload 'macports "macports-selfupdate" nil t)
+;;;###autoload (autoload 'macports "macports-core" nil t)
 (transient-define-prefix macports-selfupdate ()
   "Transient for MacPorts selfupdate."
   macports-core--global-flags-infix
@@ -104,7 +104,7 @@
   (interactive (list (transient-args transient-current-command)))
   (macports-core--exec (macports-core--privileged-command `(,@args "selfupdate"))))
 
-;;;###autoload (autoload 'macports "macports-reclaim" nil t)
+;;;###autoload (autoload 'macports "macports-core" nil t)
 (transient-define-prefix macports-reclaim ()
   "Transient for MacPorts reclaim."
   macports-core--global-flags-infix
