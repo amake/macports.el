@@ -132,11 +132,12 @@ See `macports-installed--init-flag' for details.")
                        (length ports)
                        (string-join ports " ")))
           (let ((target (if (eq (length ports) (length tabulated-list-entries))
-                            '("outdated")
+                            nil
                           ports)))
-            (macports-core--exec
-             (macports-core--privileged-command `("-N" "upgrade" ,@target))
-             (macports-core--revert-buffer-func))))
+            (with-no-warnings
+              ;; Transients are interactive-only but we really want to call this
+              ;; interactively here
+              (macports-upgrade target))))
       (user-error "No ports specified"))))
 
 (defun macports-outdated-backup-unmark ()
