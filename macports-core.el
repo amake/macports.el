@@ -62,6 +62,7 @@
   "Transient for MacPorts."
   [["Commands"
     ("s" "Selfupdate" macports-selfupdate)
+    ("u" "Upgrade outdated" macports-upgrade)
     ("r" "Reclaim" macports-reclaim)
     ("I" "Install" macports-install)]
    ["Ports"
@@ -124,6 +125,29 @@
                 "Search: "
                (split-string (shell-command-to-string cmd)))))
     (macports-core--exec (macports-core--privileged-command `("-N" "install" ,port)))))
+
+;;;###autoload (autoload 'macports "macports-core" nil t)
+(transient-define-prefix macports-upgrade (&optional ports)
+  "Transient for MacPorts upgrade."
+  macports-core--global-flags-infix
+  ["Commands"
+   ("u"
+    (lambda () (concat
+               "Upgrade "
+               (let ((ports (oref transient--prefix scope)))
+                 (if ports (string-join ports ", ") "outdated"))))
+    macports-core--upgrade-exec)]
+  (interactive)
+  (transient-setup 'macports-upgrade nil nil :scope ports))
+
+(defun macports-core--upgrade-exec (ports args)
+  "Run MacPorts upgrade with PORTS and ARGS."
+  (interactive (list
+                (or (oref transient-current-prefix scope) '("outdated"))
+                (transient-args transient-current-command)))
+  (macports-core--exec
+             (macports-core--privileged-command `(,@args "upgrade" ,@ports))
+             (macports-core--revert-buffer-func)))
 
 (defun macports-core--exec (command &optional after)
   "Execute COMMAND, and then AFTER if supplied."
