@@ -157,7 +157,7 @@ invocation of the former.")
 
 (defun macports-installed-item-active-p ()
   "Return non-nil if the current item is activated."
-  (not (string-empty-p (elt (tabulated-list-get-entry) 2))))
+  (not (string-blank-p (elt (tabulated-list-get-entry) 2))))
 
 (defun macports-installed-mark-inactive ()
   "Mark all inactive ports for uninstall."
@@ -174,7 +174,7 @@ invocation of the former.")
 
 (defun macports-installed-item-leaf-p ()
   "Return non-nil if the current item is a leaf."
-  (not (string-empty-p (elt (tabulated-list-get-entry) 4))))
+  (not (string-blank-p (elt (tabulated-list-get-entry) 4))))
 
 (defun macports-installed-mark-leaves ()
   "Mark all leaf ports for uninstall."
@@ -191,7 +191,7 @@ invocation of the former.")
 
 (defun macports-installed-item-requested-p ()
   "Return non-nil if the current item is requested."
-  (not (string-empty-p (elt (tabulated-list-get-entry) 3))))
+  (not (string-blank-p (elt (tabulated-list-get-entry) 3))))
 
 (defun macports-installed-mark-toggle-requested (&optional _num)
   "Mark a port as requested/unrequested and move to the next line."
