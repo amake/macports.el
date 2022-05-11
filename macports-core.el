@@ -161,9 +161,11 @@
   "Arrange to execute FUNC when the compilation process exits."
   (let (advice)
     (setq advice (lambda (old-func &rest args)
-                   (apply old-func args)
-                   (funcall func)
-                   (advice-remove #'compilation-handle-exit advice)))
+                   (unwind-protect
+                       (progn
+                         (apply old-func args)
+                         (funcall func))
+                     (advice-remove #'compilation-handle-exit advice))))
     (advice-add #'compilation-handle-exit :around advice)))
 
 (defun macports-core--revert-buffer-func ()
