@@ -170,8 +170,9 @@
   "Return a function that reverts the current buffer at the time of execution."
   (let ((buf (current-buffer)))
     (lambda ()
-      (with-current-buffer buf
-        (revert-buffer)))))
+      (when (buffer-live-p buf)
+        (with-current-buffer buf
+          (revert-buffer))))))
 
 (defun macports-edit-portfile (port)
   "Open the portfile for PORT in a new buffer."
