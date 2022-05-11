@@ -5,7 +5,7 @@
 ;; Author: Aaron Madlon-Kay
 ;; Version: 0.1.0
 ;; URL: https://github.com/amake/macports.el
-;; Package-Requires: ((emacs "25.1"))
+;; Package-Requires: ((emacs "25.1") (transient "0.1.0"))
 ;; Keywords: convenience
 
 ;; This file is not part of GNU Emacs.
@@ -28,6 +28,7 @@
 ;;; Code:
 
 (require 'macports)
+(require 'transient)
 
 (ert-deftest macports-outdated-refresh-test ()
   (cl-letf (((symbol-function #'shell-command-to-string)
@@ -137,7 +138,7 @@
 
 (ert-deftest macports-status-strings-test-empty ()
   (cl-letf (((symbol-function #'macports-core--async-shell-command-to-string)
-             (lambda (cmd callback)
+             (lambda (_ callback)
                (funcall callback "\n")))
             ((symbol-function #'transient--redisplay)
              (lambda ())))
@@ -183,7 +184,7 @@
             ((symbol-function #'shell-command-to-string)
              (lambda (_) "bizz\nbazz\n"))
             ((symbol-function #'completing-read)
-             (lambda (_ collection) "bazz"))
+             (lambda (_ _) "bazz"))
             ((symbol-function #'macports-core--exec)
              (lambda (cmd &rest _)
                (should (string-prefix-p "sudo foobar " cmd)))))
