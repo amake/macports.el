@@ -106,5 +106,85 @@
     (forward-line)
     (should (eq (char-after) ?r))))
 
+(ert-deftest macports-installed-mark-inactive-test ()
+  (cl-letf (((symbol-function #'shell-command-to-string)
+             (lambda (cmd) (cond ((equal cmd "port -q installed")
+                             (concat "  foobar @1.0_0 (active)\n"
+                                     "  bizzbazz @0.1_0\n"
+                                     "  bazinga @20220426+blah\n"))
+                            ((equal cmd "port -q echo leaves")
+                             "bazinga\n")
+                            ((equal cmd "port -q echo requested")
+                             "bizzbazz\n")
+                            (t (should nil))))))
+    (macports-installed)
+    (macports-installed-mark-inactive)
+    (goto-char (point-min))
+    (should (eq (char-after) ?U))
+    (forward-line)
+    (should (eq (char-after) ?U))
+    (forward-line)
+    (should (eq (char-after) ?\s))))
+
+(ert-deftest macports-installed-mark-leaves-test ()
+  (cl-letf (((symbol-function #'shell-command-to-string)
+             (lambda (cmd) (cond ((equal cmd "port -q installed")
+                             (concat "  foobar @1.0_0 (active)\n"
+                                     "  bizzbazz @0.1_0\n"
+                                     "  bazinga @20220426+blah\n"))
+                            ((equal cmd "port -q echo leaves")
+                             (concat "bizzbazz\n"
+                                     "bazinga\n"))
+                            ((equal cmd "port -q echo requested")
+                             "\n")
+                            (t (should nil))))))
+    (macports-installed)
+    (macports-installed-mark-leaves)
+    (goto-char (point-min))
+    (should (eq (char-after) ?U))
+    (forward-line)
+    (should (eq (char-after) ?U))
+    (forward-line)
+    (should (eq (char-after) ?\s))))
+
+(ert-deftest macports-installed-exec-test ()
+  (cl-letf (((symbol-function #'shell-command-to-string)
+             (lambda (cmd) (cond ((equal cmd "port -q installed")
+                             (concat "  foobar @1.0_0 (active)\n"
+                                     "  bizzbazz @0.1_0\n"
+                                     "  bazinga @20220426+blah\n"
+                                     "  hogefuga @123_4\n"
+                                     "  piyo @2.0.1\n"))
+                            ((equal cmd "port -q echo leaves")
+                             "\n")
+                            ((equal cmd "port -q echo requested")
+                             "bazinga\n")
+                            (t (should nil)))))
+            ((symbol-function #'y-or-n-p)
+             (lambda (prompt)
+               (should (equal (concat "Ports to uninstall: 1 (piyo@2.0.1).  "
+                                      "Ports to deactivate: 1 (foobar@1.0_0).  "
+                                      "Ports to activate: 1 (hogefuga@123_4).  "
+                                      "Ports to set as requested: 1 (bizzbazz@0.1_0).  "
+                                      "Ports to set as unrequested: 1 (bazinga@20220426+blah).  "
+                                      "Proceed? ")
+                              prompt))
+               t))
+            ((symbol-function #'macports-core--exec)
+             (lambda (cmd _)
+               (should (equal (concat "sudo port -N uninstall piyo @2.0.1 && "
+                                      "sudo port -N deactivate foobar @1.0_0 && "
+                                      "sudo port -N activate hogefuga @123_4 && "
+                                      "sudo port -N setrequested bizzbazz @0.1_0 && "
+                                      "sudo port -N unsetrequested bazinga @20220426+blah")
+                              cmd)))))
+    (macports-installed)
+    (macports-installed-mark-toggle-requested)
+    (macports-installed-mark-toggle-requested)
+    (macports-installed-mark-toggle-activate)
+    (macports-installed-mark-toggle-activate)
+    (macports-installed-mark-uninstall)
+    (macports-installed-exec)))
+
 (provide 'macports-installed-tests)
 ;;; macports-installed-tests.el ends here
