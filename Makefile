@@ -24,7 +24,7 @@ deps: $(elpa_dir)
 .PHONY: test-unit
 test-unit:
 	$(run_emacs) --batch \
-		-l ert -l test/macports-tests.el -f ert-run-tests-batch-and-exit
+		-l ert $(foreach _,$(wildcard test/*.el),-l $(_)) -f ert-run-tests-batch-and-exit
 
 .PHONY: test-compile
 test-compile: | $(elpa_dir)
