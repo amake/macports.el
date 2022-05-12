@@ -61,12 +61,18 @@ See `macports-installed--init-flag' for details.")
 (defun macports-select-port ()
   "Interactively set selection for the selected group."
   (interactive)
+  (macports-select--ensure-macports-select-mode)
   (let* ((group (tabulated-list-get-id))
          (options (split-string (elt (tabulated-list-get-entry) 2)))
          (selection (completing-read "Select option: " options nil t)))
     (macports-core--exec
      (macports-core--privileged-command `("-N" "select" "--set" ,group ,selection))
      (macports-core--revert-buffer-func))))
+
+(defun macports-select--ensure-macports-select-mode ()
+  "Signal a user-error if major mode is not `macports-select-mode'."
+  (unless (derived-mode-p 'macports-select-mode)
+    (user-error "The current buffer is not a MacPorts Select list")))
 
 (define-derived-mode macports-select-mode tabulated-list-mode "MacPorts select"
   "Major mode for managing selected MacPorts ports."

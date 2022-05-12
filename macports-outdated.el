@@ -88,26 +88,31 @@ See `macports-installed--init-flag' for details.")
 (defun macports-outdated-describe-port ()
   "Show details about the current port."
   (interactive)
+  (macports-outdated--ensure-macports-outdated-mode)
   (macports-describe-port (tabulated-list-get-id)))
 
 (defun macports-outdated-port-contents ()
   "Show contents of the current port."
   (interactive)
+  (macports-outdated--ensure-macports-outdated-mode)
   (macports-describe-port-contents (tabulated-list-get-id)))
 
 (defun macports-outdated-edit-port ()
   "Open portfile for the current port."
   (interactive)
+  (macports-outdated--ensure-macports-outdated-mode)
   (macports-edit-portfile (tabulated-list-get-id)))
 
 (defun macports-outdated-mark-upgrade (&optional _num)
   "Mark a port for upgrade and move to the next line."
   (interactive "p")
+  (macports-outdated--ensure-macports-outdated-mode)
   (tabulated-list-put-tag "U" t))
 
 (defun macports-outdated-mark-upgrades ()
   "Mark all ports for upgrade."
   (interactive)
+  (macports-outdated--ensure-macports-outdated-mode)
   (save-excursion
     (goto-char (point-min))
     (let ((count 0))
@@ -119,6 +124,7 @@ See `macports-installed--init-flag' for details.")
 (defun macports-outdated-upgrade ()
   "Perform marked upgrades."
   (interactive)
+  (macports-outdated--ensure-macports-outdated-mode)
   (let (ports)
     (save-excursion
       (goto-char (point-min))
@@ -139,8 +145,14 @@ See `macports-installed--init-flag' for details.")
 (defun macports-outdated-backup-unmark ()
   "Back up one line and clear any marks on that port."
   (interactive)
+  (macports-outdated--ensure-macports-outdated-mode)
   (forward-line -1)
   (tabulated-list-put-tag " "))
+
+(defun macports-outdated--ensure-macports-outdated-mode ()
+  "Signal a user-error if major mode is not `macports-outdated-mode'."
+  (unless (derived-mode-p 'macports-outdated-mode)
+    (user-error "The current buffer is not a MacPorts Outdated list")))
 
 (define-derived-mode macports-outdated-mode tabulated-list-mode "MacPorts outdated"
   "Major mode for handling a list of outdated MacPorts ports."

@@ -127,26 +127,31 @@ invocation of the former.")
 (defun macports-installed-describe-port ()
   "Show details about the current port."
   (interactive)
+  (macports-installed--ensure-macports-installed-mode)
   (macports-describe-port (elt (tabulated-list-get-entry) 0)))
 
 (defun macports-installed-port-contents ()
   "Show contents of the current port."
   (interactive)
+  (macports-installed--ensure-macports-installed-mode)
   (macports-describe-port-contents (elt (tabulated-list-get-entry) 0)))
 
 (defun macports-installed-edit-port ()
   "Open portfile for the current port."
   (interactive)
+  (macports-installed--ensure-macports-installed-mode)
   (macports-edit-portfile (elt (tabulated-list-get-entry) 0)))
 
 (defun macports-installed-mark-uninstall (&optional _num)
   "Mark a port for uninstall and move to the next line."
   (interactive "p")
+  (macports-installed--ensure-macports-installed-mode)
   (tabulated-list-put-tag "U" t))
 
 (defun macports-installed-mark-toggle-activate (&optional _num)
   "Mark a port for activate/deactivate and move to the next line."
   (interactive "p")
+  (macports-installed--ensure-macports-installed-mode)
   (let ((active (macports-installed-item-active-p)))
     (cond ((and active (eq (char-after) ?D))
            (tabulated-list-put-tag " " t))
@@ -157,11 +162,13 @@ invocation of the former.")
 
 (defun macports-installed-item-active-p ()
   "Return non-nil if the current item is activated."
+  (macports-installed--ensure-macports-installed-mode)
   (not (string-blank-p (elt (tabulated-list-get-entry) 2))))
 
 (defun macports-installed-mark-inactive ()
   "Mark all inactive ports for uninstall."
   (interactive)
+  (macports-installed--ensure-macports-installed-mode)
   (save-excursion
     (goto-char (point-min))
     (let ((count 0))
@@ -174,11 +181,13 @@ invocation of the former.")
 
 (defun macports-installed-item-leaf-p ()
   "Return non-nil if the current item is a leaf."
+  (macports-installed--ensure-macports-installed-mode)
   (not (string-blank-p (elt (tabulated-list-get-entry) 4))))
 
 (defun macports-installed-mark-leaves ()
   "Mark all leaf ports for uninstall."
   (interactive)
+  (macports-installed--ensure-macports-installed-mode)
   (save-excursion
     (goto-char (point-min))
     (let ((count 0))
@@ -191,11 +200,13 @@ invocation of the former.")
 
 (defun macports-installed-item-requested-p ()
   "Return non-nil if the current item is requested."
+  (macports-installed--ensure-macports-installed-mode)
   (not (string-blank-p (elt (tabulated-list-get-entry) 3))))
 
 (defun macports-installed-mark-toggle-requested (&optional _num)
   "Mark a port as requested/unrequested and move to the next line."
   (interactive "p")
+  (macports-installed--ensure-macports-installed-mode)
   (let ((requested (macports-installed-item-requested-p)))
     (cond ((and requested (eq (char-after) ?r))
            (tabulated-list-put-tag " " t))
@@ -207,12 +218,19 @@ invocation of the former.")
 (defun macports-installed-backup-unmark ()
   "Back up one line and clear any marks on that port."
   (interactive)
+  (macports-installed--ensure-macports-installed-mode)
   (forward-line -1)
   (tabulated-list-put-tag " "))
+
+(defun macports-installed--ensure-macports-installed-mode ()
+  "Signal a user-error if major mode is not `macports-installed-mode'."
+  (unless (derived-mode-p 'macports-installed-mode)
+    (user-error "The current buffer is not a MacPorts Installed list")))
 
 (defun macports-installed-exec ()
   "Perform marked actions."
   (interactive)
+  (macports-installed--ensure-macports-installed-mode)
   (let (uninstall deactivate activate requested unrequested)
     (save-excursion
       (goto-char (point-min))
