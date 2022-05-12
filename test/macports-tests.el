@@ -30,31 +30,6 @@
 (require 'macports)
 (require 'transient)
 
-(ert-deftest macports-outdated-refresh-test ()
-  (cl-letf (((symbol-function #'shell-command-to-string)
-             (lambda (_) (concat "foobar                               1.0_0 < 2.0_0\n"
-                            "bizzbazz                             0.1_0 < 0.1_1\n"))))
-    (macports-outdated-refresh)
-    (should (equal '(("foobar"
-                      ["foobar" "1.0_0" "2.0_0"])
-                     ("bizzbazz"
-                      ["bizzbazz" "0.1_0" "0.1_1"]))
-                   tabulated-list-entries))))
-
-(ert-deftest macports-outdated-refresh-test-empty ()
-  (cl-letf (((symbol-function #'shell-command-to-string)
-             (lambda (_) "\n")))
-    (macports-outdated-refresh)
-    (should (equal nil tabulated-list-entries))))
-
-(ert-deftest macports-outdated-refresh-test-custom-command ()
-  (cl-letf ((macports-command "foobar")
-            ((symbol-function #'shell-command-to-string)
-             (lambda (cmd)
-               (should (string-prefix-p "foobar " cmd))
-               "\n")))
-    (macports-outdated-refresh)))
-
 (ert-deftest macports-select-refresh-test ()
   (cl-letf (((symbol-function #'shell-command-to-string)
              (lambda (_) (concat "autofoo                 autofoo-1      autofoo-1 autofoo-2  none\n"
@@ -156,31 +131,6 @@
              (lambda (cmd &rest _)
                (should (string-prefix-p "sudo foobar " cmd)))))
     (macports-install)))
-
-(ert-deftest macports-outdated-upgrade-test-all ()
-  (cl-letf* (((symbol-function #'shell-command-to-string)
-              (lambda (_) (concat "foobar                               1.0_0 < 2.0_0\n"
-                             "bizzbazz                             0.1_0 < 0.1_1\n")))
-             ((symbol-function #'macports-upgrade)
-              (lambda (ports)
-                (should (null ports)))))
-    (macports-outdated)
-    (let ((msg (macports-outdated-mark-upgrades)))
-      (should (equal "Outdated ports marked for upgrade: 2"
-                     msg)))
-    (macports-outdated-upgrade)))
-
-(ert-deftest macports-outdated-upgrade-test-some ()
-  (cl-letf* (((symbol-function #'shell-command-to-string)
-              (lambda (_) (concat "foobar                               1.0_0 < 2.0_0\n"
-                             "bizzbazz                             0.1_0 < 0.1_1\n")))
-             ((symbol-function #'macports-upgrade)
-              (lambda (ports)
-                (should (equal '("bizzbazz") ports)))))
-    (macports-outdated)
-    (goto-char (point-min))
-    (macports-outdated-mark-upgrade)
-    (macports-outdated-upgrade)))
 
 (provide 'macports-tests)
 ;;; macports-tests.el ends here
