@@ -32,30 +32,30 @@
 (require 'macports)
 (require 'transient)
 
-(ert-deftest macports-outdated-refresh-test ()
+(ert-deftest macports-outdated-test ()
   (cl-letf (((symbol-function #'shell-command-to-string)
              (lambda (_) (concat "foobar                               1.0_0 < 2.0_0\n"
                             "bizzbazz                             0.1_0 < 0.1_1\n"))))
-    (macports-outdated-refresh)
-    (should (equal '(("foobar"
-                      ["foobar" "1.0_0" "2.0_0"])
-                     ("bizzbazz"
-                      ["bizzbazz" "0.1_0" "0.1_1"]))
+    (macports-outdated)
+    (should (equal '(("bizzbazz"
+                      ["bizzbazz" "0.1_0" "0.1_1"])
+                     ("foobar"
+                      ["foobar" "1.0_0" "2.0_0"]))
                    tabulated-list-entries))))
 
-(ert-deftest macports-outdated-refresh-test-empty ()
+(ert-deftest macports-outdated-test-empty ()
   (cl-letf (((symbol-function #'shell-command-to-string)
              (lambda (_) "\n")))
-    (macports-outdated-refresh)
+    (macports-outdated)
     (should (equal nil tabulated-list-entries))))
 
-(ert-deftest macports-outdated-refresh-test-custom-command ()
+(ert-deftest macports-outdated-test-custom-command ()
   (cl-letf ((macports-command "foobar")
             ((symbol-function #'shell-command-to-string)
              (lambda (cmd)
                (should (string-prefix-p "foobar " cmd))
                "\n")))
-    (macports-outdated-refresh)))
+    (macports-outdated)))
 
 (ert-deftest macports-outdated-upgrade-test-all ()
   (cl-letf* (((symbol-function #'shell-command-to-string)

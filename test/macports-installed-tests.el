@@ -31,7 +31,7 @@
 (require 'macports)
 (require 'transient)
 
-(ert-deftest macports-installed-refresh-test ()
+(ert-deftest macports-installed-test ()
   (cl-letf (((symbol-function #'shell-command-to-string)
              (lambda (cmd) (cond ((equal cmd "port -q installed")
                              (concat "  foobar @1.0_0 (active)\n"
@@ -41,19 +41,19 @@
                              "bazinga\n")
                             ((equal cmd "port -q echo requested")
                              "bizzbazz\n")))))
-    (macports-installed-refresh)
-    (should (equal '(("foobar@1.0_0"
-                      ["foobar" "@1.0_0" "Yes" "" ""])
+    (macports-installed)
+    (should (equal '(("bazinga@20220426+blah"
+                      ["bazinga" "@20220426+blah" "" "" "Yes"])
                      ("bizzbazz@0.1_0"
                       ["bizzbazz" "@0.1_0" "" "Yes" ""])
-                     ("bazinga@20220426+blah"
-                      ["bazinga" "@20220426+blah" "" "" "Yes"]))
+                     ("foobar@1.0_0"
+                      ["foobar" "@1.0_0" "Yes" "" ""]))
                    tabulated-list-entries))))
 
-(ert-deftest macports-installed-refresh-test-empty ()
+(ert-deftest macports-installed-test-empty ()
   (cl-letf (((symbol-function #'shell-command-to-string)
              (lambda (_) "\n")))
-    (macports-installed-refresh)
+    (macports-installed)
     (should (equal nil tabulated-list-entries))))
 
 (ert-deftest macports-installed-refresh-test-custom-command ()
@@ -62,7 +62,7 @@
              (lambda (cmd)
                (should (string-prefix-p "foobar " cmd))
                "\n")))
-    (macports-installed-refresh)))
+    (macports-installed)))
 
 (ert-deftest macports-installed-mark-toggle-activate-test ()
   (cl-letf (((symbol-function #'shell-command-to-string)

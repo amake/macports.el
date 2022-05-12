@@ -322,6 +322,7 @@ invocation of the former.")
 
 (defun macports-installed-refresh ()
   "Refresh the list of installed ports."
+  (macports-installed--ensure-macports-installed-mode)
   (let ((installed (macports-installed--installed-items))
         (leaves (make-hash-table :test #'equal))
         (requested (make-hash-table :test #'equal)))

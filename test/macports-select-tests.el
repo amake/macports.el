@@ -32,21 +32,21 @@
 (require 'macports)
 (require 'transient)
 
-(ert-deftest macports-select-refresh-test ()
+(ert-deftest macports-select-test ()
   (cl-letf (((symbol-function #'shell-command-to-string)
              (lambda (_) (concat "autofoo                 autofoo-1      autofoo-1 autofoo-2  none\n"
                             "foo                     foo1           foo1 foo2 foo3 none\n"))))
-    (macports-select-refresh)
+    (macports-select)
     (should (equal '(("autofoo"
                       ["autofoo" "autofoo-1" "autofoo-1 autofoo-2 none"])
                      ("foo"
                       ["foo" "foo1" "foo1 foo2 foo3 none"]))
                    tabulated-list-entries))))
 
-(ert-deftest macports-select-refresh-test-empty ()
+(ert-deftest macports-select-test-empty ()
   (cl-letf (((symbol-function #'shell-command-to-string)
              (lambda (_) "\n")))
-    (macports-select-refresh)
+    (macports-select)
     (should (equal nil tabulated-list-entries))))
 
 (ert-deftest macports-select-refresh-test-custom-command ()
@@ -55,7 +55,7 @@
              (lambda (cmd)
                (should (string-prefix-p "foobar " cmd))
                "\n")))
-    (macports-select-refresh)))
+    (macports-select)))
 
 (provide 'macports-select-tests)
 ;;; macports-select-tests.el ends here

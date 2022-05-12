@@ -85,6 +85,7 @@ See `macports-installed--init-flag' for details.")
 
 (defun macports-select-refresh ()
   "Refresh the list of select ports."
+  (macports-select--ensure-macports-select-mode)
   (setq tabulated-list-entries
         (mapcar #'macports-select--parse-select (macports-select--select-lines))
         macports-select--init-flag

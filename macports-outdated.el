@@ -165,6 +165,7 @@ See `macports-installed--init-flag' for details.")
 
 (defun macports-outdated-refresh ()
   "Refresh the list of outdated ports."
+  (macports-outdated--ensure-macports-outdated-mode)
   (setq tabulated-list-entries
         (mapcar
          (lambda (e)
