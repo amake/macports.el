@@ -247,22 +247,22 @@ invocation of the former.")
                (push (tabulated-list-get-entry) unrequested)))
         (forward-line)))
     (if (or uninstall deactivate activate requested unrequested)
-        (when (macports-installed-prompt-transaction-p uninstall deactivate activate requested unrequested)
+        (when (macports-installed--prompt-transaction-p uninstall deactivate activate requested unrequested)
           (let ((uninstall-cmd (when uninstall
                                  (macports-core--privileged-command
-                                  `("-N" "uninstall" ,@(macports-installed-list-to-args uninstall)))))
+                                  `("-N" "uninstall" ,@(macports-installed--list-to-args uninstall)))))
                 (deactivate-cmd (when deactivate
                                   (macports-core--privileged-command
-                                   `("-N" "deactivate" ,@(macports-installed-list-to-args deactivate)))))
+                                   `("-N" "deactivate" ,@(macports-installed--list-to-args deactivate)))))
                 (activate-cmd (when activate
                                 (macports-core--privileged-command
-                                 `("-N" "activate" ,@(macports-installed-list-to-args activate)))))
+                                 `("-N" "activate" ,@(macports-installed--list-to-args activate)))))
                 (requested-cmd (when requested
                                  (macports-core--privileged-command
-                                  `("-N" "setrequested" ,@(macports-installed-list-to-args requested)))))
+                                  `("-N" "setrequested" ,@(macports-installed--list-to-args requested)))))
                 (unrequested-cmd (when unrequested
                                    (macports-core--privileged-command
-                                    `("-N" "unsetrequested" ,@(macports-installed-list-to-args unrequested))))))
+                                    `("-N" "unsetrequested" ,@(macports-installed--list-to-args unrequested))))))
             (macports-core--exec
              (string-join
               (remq nil (list uninstall-cmd deactivate-cmd activate-cmd requested-cmd unrequested-cmd))
@@ -270,33 +270,33 @@ invocation of the former.")
              (macports-core--revert-buffer-func))))
       (user-error "No ports specified"))))
 
-(defun macports-installed-prompt-transaction-p (uninstall deactivate activate requested unrequested)
+(defun macports-installed--prompt-transaction-p (uninstall deactivate activate requested unrequested)
   "Prompt the user about UNINSTALL, DEACTIVATE, ACTIVATE, REQUESTED, UNREQUESTED."
   (y-or-n-p
    (concat
     (when uninstall
       (format
        "Ports to uninstall: %s.  "
-       (macports-installed-list-to-prompt uninstall)))
+       (macports-installed--list-to-prompt uninstall)))
     (when deactivate
       (format
        "Ports to deactivate: %s.  "
-       (macports-installed-list-to-prompt deactivate)))
+       (macports-installed--list-to-prompt deactivate)))
     (when activate
       (format
        "Ports to activate: %s.  "
-       (macports-installed-list-to-prompt activate)))
+       (macports-installed--list-to-prompt activate)))
     (when requested
       (format
        "Ports to set as requested: %s.  "
-       (macports-installed-list-to-prompt requested)))
+       (macports-installed--list-to-prompt requested)))
     (when unrequested
       (format
        "Ports to set as unrequested: %s.  "
-       (macports-installed-list-to-prompt unrequested)))
+       (macports-installed--list-to-prompt unrequested)))
     "Proceed? ")))
 
-(defun macports-installed-list-to-prompt (entries)
+(defun macports-installed--list-to-prompt (entries)
   "Format ENTRIES for prompting."
   (format "%d (%s)"
           (length entries)
@@ -305,7 +305,7 @@ invocation of the former.")
            entries
            " ")))
 
-(defun macports-installed-list-to-args (entries)
+(defun macports-installed--list-to-args (entries)
   "Format ENTRIES as command arguments."
   (apply #'nconc (mapcar
                   (lambda (entry) `(,(elt entry 0) ,(elt entry 1)))
