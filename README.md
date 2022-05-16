@@ -40,15 +40,19 @@ M-x package-install macports
 The following variables can be customized in the usual ways (including `M-x
 customize`):
 
-- `macports-command`: the MacPorts binary (default: `port`).
+- `macports-command` (default: `"port"`)
+
+     The MacPorts binary.
   [exec-path-from-shell](https://github.com/purcell/exec-path-from-shell) is a
   great way to make sure Emacs can find your `port` binary, but alternatively
   you can modify this variable.
-- `macports-show-status`: whether to show port counts in the main `macports`
-  transient (default: `t`)
-- `macports-use-sudo`: whether to use `sudo` when invoking `macports-command`
-  (default: `t`). Set this to `nil` if you have custom MacPorts installation
-  owned by your user.
+- `macports-show-status` (default: `t`)
+
+    Whether to show port counts in the main `macports` transient.
+- `macports-use-sudo`: (default: `t`)
+
+    Whether to use `sudo` when invoking `macports-command`. Set this to `nil` if
+  you have custom MacPorts installation owned by your user.
 
 # Usage
 
