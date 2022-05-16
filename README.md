@@ -52,7 +52,7 @@ customize`):
 - `macports-use-sudo`: (default: `t`)
 
     Whether to use `sudo` when invoking `macports-command`. Set this to `nil` if
-  you have custom MacPorts installation owned by your user.
+  you have a custom MacPorts installation owned by your user.
 
 # Usage
 
