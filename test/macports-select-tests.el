@@ -35,7 +35,7 @@
 (ert-deftest macports-select-test ()
   (cl-letf (((symbol-function #'shell-command-to-string)
              (lambda (_) (concat "autofoo                 autofoo-1      autofoo-1 autofoo-2  none\n"
-                            "foo                     foo1           foo1 foo2 foo3 none\n"))))
+                                 "foo                     foo1           foo1 foo2 foo3 none\n"))))
     (macports-select)
     (should (equal '(("autofoo"
                       ["autofoo" "autofoo-1" "autofoo-1 autofoo-2 none"])
@@ -60,7 +60,7 @@
 (ert-deftest macports-select-port-test ()
   (cl-letf (((symbol-function #'shell-command-to-string)
              (lambda (_) (concat "autofoo                 autofoo-1      autofoo-1 autofoo-2  none\n"
-                            "foo                     foo1           foo1 foo2 foo3 none\n")))
+                                 "foo                     foo1           foo1 foo2 foo3 none\n")))
             ((symbol-function #'completing-read)
              (lambda (_ options &rest _)
                (should (equal '("autofoo-1" "autofoo-2" "none")

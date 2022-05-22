@@ -35,7 +35,7 @@
 (ert-deftest macports-outdated-test ()
   (cl-letf (((symbol-function #'shell-command-to-string)
              (lambda (_) (concat "foobar                               1.0_0 < 2.0_0\n"
-                            "bizzbazz                             0.1_0 < 0.1_1\n"))))
+                                 "bizzbazz                             0.1_0 < 0.1_1\n"))))
     (macports-outdated)
     (should (equal '(("bizzbazz"
                       ["bizzbazz" "0.1_0" "0.1_1"])
@@ -60,7 +60,7 @@
 (ert-deftest macports-outdated-upgrade-test-all ()
   (cl-letf* (((symbol-function #'shell-command-to-string)
               (lambda (_) (concat "foobar                               1.0_0 < 2.0_0\n"
-                             "bizzbazz                             0.1_0 < 0.1_1\n")))
+                                  "bizzbazz                             0.1_0 < 0.1_1\n")))
              ((symbol-function #'macports-upgrade)
               (lambda (ports)
                 (should (null ports)))))
@@ -73,7 +73,7 @@
 (ert-deftest macports-outdated-upgrade-test-some ()
   (cl-letf* (((symbol-function #'shell-command-to-string)
               (lambda (_) (concat "foobar                               1.0_0 < 2.0_0\n"
-                             "bizzbazz                             0.1_0 < 0.1_1\n")))
+                                  "bizzbazz                             0.1_0 < 0.1_1\n")))
              ((symbol-function #'macports-upgrade)
               (lambda (ports)
                 (should (equal '("bizzbazz") ports)))))

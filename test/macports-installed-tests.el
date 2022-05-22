@@ -34,13 +34,13 @@
 (ert-deftest macports-installed-test ()
   (cl-letf (((symbol-function #'shell-command-to-string)
              (lambda (cmd) (cond ((equal cmd "port -q installed")
-                             (concat "  foobar @1.0_0 (active)\n"
-                                     "  bizzbazz @0.1_0\n"
-                                     "  bazinga @20220426+blah\n"))
-                            ((equal cmd "port -q echo leaves")
-                             "bazinga\n")
-                            ((equal cmd "port -q echo requested")
-                             "bizzbazz\n")))))
+                                  (concat "  foobar @1.0_0 (active)\n"
+                                          "  bizzbazz @0.1_0\n"
+                                          "  bazinga @20220426+blah\n"))
+                                 ((equal cmd "port -q echo leaves")
+                                  "bazinga\n")
+                                 ((equal cmd "port -q echo requested")
+                                  "bizzbazz\n")))))
     (macports-installed)
     (should (equal '(("bazinga@20220426+blah"
                       ["bazinga" "@20220426+blah" "" "" "Yes"])
@@ -67,13 +67,13 @@
 (ert-deftest macports-installed-mark-toggle-activate-test ()
   (cl-letf (((symbol-function #'shell-command-to-string)
              (lambda (cmd) (cond ((equal cmd "port -q installed")
-                             (concat "  foobar @1.0_0 (active)\n"
-                                     "  bizzbazz @0.1_0\n"))
-                            ((equal cmd "port -q echo leaves")
-                             "\n")
-                            ((equal cmd "port -q echo requested")
-                             "\n")
-                            (t (should nil))))))
+                                  (concat "  foobar @1.0_0 (active)\n"
+                                          "  bizzbazz @0.1_0\n"))
+                                 ((equal cmd "port -q echo leaves")
+                                  "\n")
+                                 ((equal cmd "port -q echo requested")
+                                  "\n")
+                                 (t (should nil))))))
     (macports-installed)
     (goto-char (point-min))
     (should (not (macports-installed-item-active-p)))
@@ -88,13 +88,13 @@
 (ert-deftest macports-installed-mark-toggle-requested-test ()
   (cl-letf (((symbol-function #'shell-command-to-string)
              (lambda (cmd) (cond ((equal cmd "port -q installed")
-                             (concat "  foobar @1.0_0 (active)\n"
-                                     "  bizzbazz @0.1_0\n"))
-                            ((equal cmd "port -q echo leaves")
-                             "\n")
-                            ((equal cmd "port -q echo requested")
-                             "foobar\n")
-                            (t (should nil))))))
+                                  (concat "  foobar @1.0_0 (active)\n"
+                                          "  bizzbazz @0.1_0\n"))
+                                 ((equal cmd "port -q echo leaves")
+                                  "\n")
+                                 ((equal cmd "port -q echo requested")
+                                  "foobar\n")
+                                 (t (should nil))))))
     (macports-installed)
     (goto-char (point-min))
     (should (not (macports-installed-item-requested-p)))
@@ -109,14 +109,14 @@
 (ert-deftest macports-installed-mark-inactive-test ()
   (cl-letf (((symbol-function #'shell-command-to-string)
              (lambda (cmd) (cond ((equal cmd "port -q installed")
-                             (concat "  foobar @1.0_0 (active)\n"
-                                     "  bizzbazz @0.1_0\n"
-                                     "  bazinga @20220426+blah\n"))
-                            ((equal cmd "port -q echo leaves")
-                             "bazinga\n")
-                            ((equal cmd "port -q echo requested")
-                             "bizzbazz\n")
-                            (t (should nil))))))
+                                  (concat "  foobar @1.0_0 (active)\n"
+                                          "  bizzbazz @0.1_0\n"
+                                          "  bazinga @20220426+blah\n"))
+                                 ((equal cmd "port -q echo leaves")
+                                  "bazinga\n")
+                                 ((equal cmd "port -q echo requested")
+                                  "bizzbazz\n")
+                                 (t (should nil))))))
     (macports-installed)
     (macports-installed-mark-inactive)
     (goto-char (point-min))
@@ -129,15 +129,15 @@
 (ert-deftest macports-installed-mark-leaves-test ()
   (cl-letf (((symbol-function #'shell-command-to-string)
              (lambda (cmd) (cond ((equal cmd "port -q installed")
-                             (concat "  foobar @1.0_0 (active)\n"
-                                     "  bizzbazz @0.1_0\n"
-                                     "  bazinga @20220426+blah\n"))
-                            ((equal cmd "port -q echo leaves")
-                             (concat "bizzbazz\n"
-                                     "bazinga\n"))
-                            ((equal cmd "port -q echo requested")
-                             "\n")
-                            (t (should nil))))))
+                                  (concat "  foobar @1.0_0 (active)\n"
+                                          "  bizzbazz @0.1_0\n"
+                                          "  bazinga @20220426+blah\n"))
+                                 ((equal cmd "port -q echo leaves")
+                                  (concat "bizzbazz\n"
+                                          "bazinga\n"))
+                                 ((equal cmd "port -q echo requested")
+                                  "\n")
+                                 (t (should nil))))))
     (macports-installed)
     (macports-installed-mark-leaves)
     (goto-char (point-min))
@@ -150,16 +150,16 @@
 (ert-deftest macports-installed-exec-test ()
   (cl-letf (((symbol-function #'shell-command-to-string)
              (lambda (cmd) (cond ((equal cmd "port -q installed")
-                             (concat "  foobar @1.0_0 (active)\n"
-                                     "  bizzbazz @0.1_0\n"
-                                     "  bazinga @20220426+blah\n"
-                                     "  hogefuga @123_4\n"
-                                     "  piyo @2.0.1\n"))
-                            ((equal cmd "port -q echo leaves")
-                             "\n")
-                            ((equal cmd "port -q echo requested")
-                             "bazinga\n")
-                            (t (should nil)))))
+                                  (concat "  foobar @1.0_0 (active)\n"
+                                          "  bizzbazz @0.1_0\n"
+                                          "  bazinga @20220426+blah\n"
+                                          "  hogefuga @123_4\n"
+                                          "  piyo @2.0.1\n"))
+                                 ((equal cmd "port -q echo leaves")
+                                  "\n")
+                                 ((equal cmd "port -q echo requested")
+                                  "bazinga\n")
+                                 (t (should nil)))))
             ((symbol-function #'y-or-n-p)
              (lambda (prompt)
                (should (equal (concat "Ports to uninstall: 1 (piyo@2.0.1).  "
