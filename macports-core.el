@@ -123,7 +123,7 @@
   (let* ((cmd (concat macports-command " -q echo name:"))
          (port (completing-read
                 "Search: "
-               (split-string (shell-command-to-string cmd)))))
+                (split-string (shell-command-to-string cmd)))))
     (macports-core--exec (macports-core--privileged-command `("-N" "install" ,port)))))
 
 ;;;###autoload (autoload 'macports "macports-core" nil t)
@@ -132,10 +132,10 @@
   macports-core--global-flags-infix
   ["Commands"
    ("u"
-    (lambda () (concat
-               "Upgrade "
-               (let ((ports (oref transient--prefix scope)))
-                 (if ports (string-join ports ", ") "outdated"))))
+    (lambda ()
+      (concat "Upgrade "
+              (let ((ports (oref transient--prefix scope)))
+                (if ports (string-join ports ", ") "outdated"))))
     macports-core--upgrade-exec)]
   (interactive)
   (transient-setup 'macports-upgrade nil nil :scope ports))
@@ -146,8 +146,8 @@
                 (or (oref transient-current-prefix scope) '("outdated"))
                 (transient-args transient-current-command)))
   (macports-core--exec
-             (macports-core--privileged-command `(,@args "upgrade" ,@ports))
-             (macports-core--revert-buffer-func)))
+   (macports-core--privileged-command `(,@args "upgrade" ,@ports))
+   (macports-core--revert-buffer-func)))
 
 (defun macports-core--exec (command &optional after)
   "Execute COMMAND, and then AFTER if supplied."
