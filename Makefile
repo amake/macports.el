@@ -32,6 +32,19 @@ test-compile: | $(elpa_dir)
 		--eval '(setq byte-compile-error-on-warn t)' \
 		--batch -f batch-byte-compile *.el
 
+.PHONY: prettify
+prettify: ## Auto-format code
+prettify: | $(elpa_dir)
+	find . -name '*.el' -print0 | xargs -P 0 -0 -I {} \
+		$(run_emacs) \
+		$(foreach _,$(dependencies),-l $(_)) \
+		--eval '(setq-default indent-tabs-mode nil tab-width 4 require-final-newline t)' \
+		{} \
+		--eval '(indent-region (point-min) (point-max))' \
+		--eval '(whitespace-cleanup)' \
+		--eval '(save-buffer)' \
+		--batch > /dev/null
+
 .PHONY: clean
 clean: ## Clean files
 	rm -f *.elc
