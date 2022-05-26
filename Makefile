@@ -34,8 +34,9 @@ test-compile: | $(elpa_dir)
 
 .PHONY: prettify
 prettify: ## Auto-format code
+prettify: el_files := find . -name '*.el' -print0
 prettify: | $(elpa_dir)
-	find . -name '*.el' -print0 | xargs -P 0 -0 -I {} \
+	$(el_files) | xargs -P 0 -0 -I {} \
 		$(run_emacs) \
 		$(foreach _,$(dependencies),-l $(_)) \
 		--eval '(setq-default indent-tabs-mode nil tab-width 4 require-final-newline t)' \
@@ -44,6 +45,23 @@ prettify: | $(elpa_dir)
 		--eval '(whitespace-cleanup)' \
 		--eval '(save-buffer)' \
 		--batch > /dev/null
+
+.PHONY: prettify-staged
+prettify-staged: staged_el_files := git diff -z --cached --name-only --diff-filter=ACMR | grep -z '\.el'
+prettify-staged:
+	modified_el=$$($(staged_el_files) | xargs -0); \
+	for file in $$modified_el; do \
+		git show ":$$file" >"$$file.tmp.el"; \
+	done; \
+	$(MAKE) prettify el_files="($(staged_el_files); find . -name '*.tmp.el' -print0)"; \
+	for file in $$modified_el; do \
+		hash=$$(git hash-object -w "$$file.tmp.el"); \
+		git update-index --add --cacheinfo 100644 "$$hash" "$$file"; \
+	done; \
+	find . -name '*.tmp.el' -delete; \
+	if [ -n "$$modified_el" ] && [ -z "$$(git diff --cached --name-only)" ]; then \
+		echo "No files left after formatting" 1>&2; exit 1; \
+	fi
 
 .PHONY: clean
 clean: ## Clean files
