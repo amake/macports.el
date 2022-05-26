@@ -25,7 +25,7 @@ deps: $(elpa_dir)
 test-unit:
 	$(run_emacs) \
 		-l ert \
-		$(foreach _,$(wildcard test/*.el),-l $(_)) \
+		$(addprefix -l ,$(wildcard test/*.el)) \
 		-f ert-run-tests-batch-and-exit
 
 .PHONY: test-compile
@@ -39,7 +39,7 @@ prettify: ## Auto-format code
 prettify: | $(elpa_dir)
 	find . -name '*.el' -print0 | xargs -P 0 -0 -I {} \
 		$(run_emacs) \
-		$(foreach _,$(dependencies),-l $(_)) \
+		$(addprefix -l ,$(dependencies)) \
 		{} \
 		--eval '(setq indent-tabs-mode nil tab-width 4 require-final-newline t)' \
 		--eval '(indent-region (point-min) (point-max))' \
