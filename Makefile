@@ -1,10 +1,10 @@
 # Run an arbitrary Emacs version like
 #   make test emacs="docker run --rm -it -v $PWD:/work -w /work silex/emacs:26 emacs"
 emacs := emacs
-run_emacs = $(emacs) -Q -L . -L $(elpa_dir) -l package \
-	--eval "(setq package-user-dir (expand-file-name \"$(elpa_dir)\"))" \
-	--eval "(package-initialize)"
 elpa_dir := elpa
+run_emacs = $(emacs) -Q --batch -L . -L $(elpa_dir) -l package \
+	--eval '(setq package-user-dir (expand-file-name "$(elpa_dir)"))' \
+	--eval '(package-initialize)'
 
 dependencies := transient
 
@@ -14,23 +14,25 @@ test: test-compile test-unit
 
 $(elpa_dir):
 	$(run_emacs) \
+		--eval '(make-directory "$(@)")' \
 		--eval "(unless (seq-every-p (lambda (e) (require e nil t)) '($(dependencies))) \
-			(package-refresh-contents) (mapc #'package-install '($(dependencies))))" \
-		--batch
+			(package-refresh-contents) (mapc #'package-install '($(dependencies))))"
 
 .PHONY: deps
 deps: $(elpa_dir)
 
 .PHONY: test-unit
 test-unit:
-	$(run_emacs) --batch \
-		-l ert $(foreach _,$(wildcard test/*.el),-l $(_)) -f ert-run-tests-batch-and-exit
+	$(run_emacs) \
+		-l ert \
+		$(foreach _,$(wildcard test/*.el),-l $(_)) \
+		-f ert-run-tests-batch-and-exit
 
 .PHONY: test-compile
 test-compile: | $(elpa_dir)
 	$(run_emacs) \
 		--eval '(setq byte-compile-error-on-warn t)' \
-		--batch -f batch-byte-compile *.el
+		-f batch-byte-compile *.el
 
 .PHONY: prettify
 prettify: ## Auto-format code
@@ -38,12 +40,12 @@ prettify: | $(elpa_dir)
 	find . -name '*.el' -print0 | xargs -P 0 -0 -I {} \
 		$(run_emacs) \
 		$(foreach _,$(dependencies),-l $(_)) \
-		--eval '(setq-default indent-tabs-mode nil tab-width 4 require-final-newline t)' \
 		{} \
+		--eval '(setq indent-tabs-mode nil tab-width 4 require-final-newline t)' \
 		--eval '(indent-region (point-min) (point-max))' \
 		--eval '(whitespace-cleanup)' \
 		--eval '(save-buffer)' \
-		--batch > /dev/null
+		> /dev/null
 
 .PHONY: clean
 clean: ## Clean files
