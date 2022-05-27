@@ -49,7 +49,7 @@
             ((symbol-function #'transient--redisplay)
              (lambda ())))
     (run-hooks 'macports-open-hook)
-    (sleep-for 0 100)
+    (sleep-for 0 10)
     (should (equal '(:outdated "Outdated (2)" :installed "Installed (3 total, 1 leaf, 2 inactive)")
                    macports-status-strings))))
 
@@ -60,7 +60,7 @@
             ((symbol-function #'transient--redisplay)
              (lambda ())))
     (run-hooks 'macports-open-hook)
-    (sleep-for 0 100)
+    (sleep-for 0 10)
     (should (equal '(:outdated "Outdated (0)" :installed "Installed (0 total, 0 leaves, 0 inactive)")
                    macports-status-strings))))
 
@@ -73,14 +73,14 @@
             ((symbol-function #'transient--redisplay)
              (lambda ())))
     (run-hooks 'macports-open-hook)
-    (sleep-for 0 100)))
+    (sleep-for 0 10)))
 
 (ert-deftest macports-status-strings-test-disabled ()
   (cl-letf (((symbol-function #'transient--redisplay)
              (lambda ())))
     (let ((macports-show-status nil))
       (run-hooks 'macports-open-hook)
-      (sleep-for 0 100)
+      (sleep-for 0 10)
       (should (equal '(:outdated "Outdated" :installed "Installed")
                      macports-status-strings)))))
 
