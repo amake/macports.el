@@ -31,13 +31,56 @@
 (require 'macports-core)
 (require 'thingatpt)
 
+(defface macports-describe-heading
+  '((t (:weight bold)))
+  "Face used for headings in MacPorts Describe buffers."
+  :group 'macports)
+
+(defface macports-describe-loading
+  '((t (:slant italic)))
+  "Face used for loading text in MacPorts Describe buffers."
+  :group 'macports)
+
 (defun macports-describe-port (port)
   "Display detailed information about PORT."
   (with-help-window (help-buffer)
     (with-current-buffer standard-output
       (macports-dispatch-mode)
       (shell-command (concat macports-command " -q info " port) standard-output)
-      (macports-describe--linkify))))
+      (macports-describe--linkify)
+      (goto-char (point-max))
+      (macports-describe--heading "Dependents")
+      (macports-describe--async-insert (concat macports-command " -q rdependents " port) "None\n")
+      (macports-describe--heading "Deps")
+      (macports-describe--async-insert (concat macports-command " -q rdeps " port) "None\n"))))
+
+(defun macports-describe--heading (text)
+  "Insert a heading with content TEXT."
+  (insert (format "\n%s\n" (propertize text 'face 'macports-describe-heading))))
+
+(defun macports-describe--async-insert (command empty-msg)
+  "Insert output of COMMAND with temporary loading message.
+
+If result is blank, show EMPTY-MSG instead."
+  (let ((s-marker (point-marker))
+        e-marker
+        (buf (current-buffer)))
+    (insert (propertize "Loading..." 'face 'macports-describe-loading))
+    (setq e-marker (point-marker))
+    (macports-core--async-shell-command-to-string
+     command
+     (lambda (result)
+       (with-current-buffer buf
+         (let* ((inhibit-read-only t)
+                (cleaned (replace-regexp-in-string "\r" "" result))
+                (to-insert (if (string-blank-p cleaned)
+                               empty-msg
+                             cleaned)))
+           (delete-region (marker-position s-marker) (marker-position e-marker))
+           (goto-char (marker-position s-marker))
+           (insert to-insert)
+           (set-marker s-marker nil)
+           (set-marker e-marker nil)))))))
 
 (defun macports-describe--linkify ()
   "Linkify URLs in current buffer."
