@@ -43,6 +43,7 @@
 
 (defun macports-describe-port (port)
   "Display detailed information about PORT."
+  (interactive (list (macports-core--prompt-port)))
   (with-help-window (help-buffer)
     (with-current-buffer standard-output
       (macports-dispatch-mode)
