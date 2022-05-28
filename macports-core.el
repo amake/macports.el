@@ -117,14 +117,19 @@
   (macports-core--exec (macports-core--privileged-command `(,@args "reclaim"))))
 
 ;; TODO: Support choosing variants
-(defun macports-install ()
-  "Interactively choose a port to install."
-  (interactive)
-  (let* ((cmd (concat macports-command " -q echo name:"))
-         (port (completing-read
-                "Search: "
-                (split-string (shell-command-to-string cmd)))))
-    (macports-core--exec (macports-core--privileged-command `("-N" "install" ,port)))))
+(defun macports-install (port)
+  "Install PORT. If not supplied, choose interactively."
+  (interactive (list (macports-core--prompt-port)))
+  (macports-core--exec (macports-core--privileged-command `("-N" "install" ,port))))
+
+(defun macports-core--prompt-port ()
+  "Prompt user to choose a port from a list of all available ports.
+
+This is quite slow!"
+  (let* ((cmd (concat macports-command " -q echo name:")))
+    (completing-read
+     "Search: "
+     (split-string (shell-command-to-string cmd)))))
 
 ;;;###autoload (autoload 'macports "macports-core" nil t)
 (transient-define-prefix macports-upgrade (&optional ports)
