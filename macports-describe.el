@@ -50,6 +50,7 @@
       (shell-command (concat macports-command " -q info " port) standard-output)
       (macports-describe--linkify-urls)
       (macports-describe--linkify-emails)
+      (macports-describe--linkify-github)
       (macports-describe--style-headings)
       (goto-char (point-max))
       (macports-describe--heading "Dependents")
@@ -104,6 +105,16 @@ If result is blank, show EMPTY-MSG instead."
             (bounds (bounds-of-thing-at-point 'email)))
         (delete-region (car bounds) (cdr bounds))
         (help-insert-xref-button email 'help-url (concat "mailto:" email))))))
+
+(defun macports-describe--linkify-github ()
+  "Linkify email addresses in current buffer."
+  (save-excursion
+    (goto-char (point-min))
+    (while (re-search-forward "GitHub:[[:blank:]]*[^[:blank:]]" nil t)
+      (let ((username (thing-at-point 'symbol))
+            (bounds (bounds-of-thing-at-point 'symbol)))
+        (delete-region (car bounds) (cdr bounds))
+        (help-insert-xref-button username 'help-url (concat "https://github.com/" username))))))
 
 (defun macports-describe--style-headings ()
   "Apply heading style to current buffer content."
