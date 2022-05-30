@@ -48,7 +48,8 @@
     (with-current-buffer standard-output
       (macports-dispatch-mode)
       (shell-command (concat macports-command " -q info " port) standard-output)
-      (macports-describe--linkify)
+      (macports-describe--linkify-urls)
+      (macports-describe--linkify-emails)
       (macports-describe--style-headings)
       (goto-char (point-max))
       (macports-describe--heading "Dependents")
@@ -84,7 +85,7 @@ If result is blank, show EMPTY-MSG instead."
            (set-marker s-marker nil)
            (set-marker e-marker nil)))))))
 
-(defun macports-describe--linkify ()
+(defun macports-describe--linkify-urls ()
   "Linkify URLs in current buffer."
   (save-excursion
     (goto-char (point-min))
@@ -93,6 +94,16 @@ If result is blank, show EMPTY-MSG instead."
             (bounds (bounds-of-thing-at-point 'url)))
         (delete-region (car bounds) (cdr bounds))
         (help-insert-xref-button url 'help-url url)))))
+
+(defun macports-describe--linkify-emails ()
+  "Linkify email addresses in current buffer."
+  (save-excursion
+    (goto-char (point-min))
+    (while (re-search-forward "[^[:blank:]]+@[^[:blank:]]" nil t)
+      (let ((email (thing-at-point 'email))
+            (bounds (bounds-of-thing-at-point 'email)))
+        (delete-region (car bounds) (cdr bounds))
+        (help-insert-xref-button email 'help-url (concat "mailto:" email))))))
 
 (defun macports-describe--style-headings ()
   "Apply heading style to current buffer content."
