@@ -107,7 +107,7 @@ If result is blank, show EMPTY-MSG instead."
         (help-insert-xref-button email 'help-url (concat "mailto:" email))))))
 
 (defun macports-describe--linkify-github ()
-  "Linkify email addresses in current buffer."
+  "Linkify GitHub usernames in current buffer."
   (save-excursion
     (goto-char (point-min))
     (while (re-search-forward "GitHub:[[:blank:]]*[^[:blank:]]" nil t)
