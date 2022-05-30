@@ -49,6 +49,7 @@
       (macports-dispatch-mode)
       (shell-command (concat macports-command " -q info " port) standard-output)
       (macports-describe--linkify)
+      (macports-describe--style-headings)
       (goto-char (point-max))
       (macports-describe--heading "Dependents")
       (macports-describe--async-insert (concat macports-command " -q rdependents " port) "None\n")
@@ -92,6 +93,13 @@ If result is blank, show EMPTY-MSG instead."
             (bounds (bounds-of-thing-at-point 'url)))
         (delete-region (car bounds) (cdr bounds))
         (help-insert-xref-button url 'help-url url)))))
+
+(defun macports-describe--style-headings ()
+  "Apply heading style to current buffer content."
+  (save-excursion
+    (goto-char (point-min))
+    (while (re-search-forward "^[^[:blank:]][^:\n]+:" nil t)
+      (add-text-properties (match-beginning 0) (match-end 0) '(face macports-describe-heading)))))
 
 (defun macports-describe-port-contents (port)
   "Display contents of PORT in a new buffer."
