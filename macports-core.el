@@ -84,8 +84,8 @@
   :keymap macports-dispatch-mode-map)
 
 (eval-and-compile
-  (defconst macports-core--global-flags-infix
-    ["Arguments"
+  (defconst macports-core--output-flags-infix
+    ["Output"
      ("v" "Verbose" "-v")
      ("d" "Debug" "-d")
      ("q" "Quiet" "-q")
@@ -95,7 +95,7 @@
 ;;;###autoload (autoload 'macports "macports-core" nil t)
 (transient-define-prefix macports-selfupdate ()
   "Transient for MacPorts selfupdate."
-  macports-core--global-flags-infix
+  macports-core--output-flags-infix
   ["Commands"
    ("s" "Selfupdate" macports-core--selfupdate-exec)])
 
@@ -107,7 +107,7 @@
 ;;;###autoload (autoload 'macports "macports-core" nil t)
 (transient-define-prefix macports-reclaim ()
   "Transient for MacPorts reclaim."
-  macports-core--global-flags-infix
+  macports-core--output-flags-infix
   ["Commands"
    ("r" "Reclaim" macports-core--reclaim-exec)])
 
@@ -134,7 +134,7 @@ This is quite slow!"
 ;;;###autoload (autoload 'macports "macports-core" nil t)
 (transient-define-prefix macports-upgrade (&optional ports)
   "Transient for MacPorts upgrade."
-  macports-core--global-flags-infix
+  macports-core--output-flags-infix
   ["Commands"
    ("u"
     (lambda ()
