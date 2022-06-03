@@ -92,6 +92,13 @@
      ("n" "Non-interactive" "-N")]
     "Global flags for the `port` command."))
 
+(eval-and-compile
+  (defconst macports-core--sources-flags-infix
+    ["Sources"
+     ("s" "Source-only mode" "-s")
+     ("b" "Binary-only mode" "-b")]
+    "Source-related flags for the `port` command."))
+
 ;;;###autoload (autoload 'macports "macports-core" nil t)
 (transient-define-prefix macports-selfupdate ()
   "Transient for MacPorts selfupdate."
@@ -135,6 +142,7 @@ This is quite slow!"
 (transient-define-prefix macports-upgrade (&optional ports)
   "Transient for MacPorts upgrade."
   macports-core--output-flags-infix
+  macports-core--sources-flags-infix
   ["Commands"
    ("u"
     (lambda ()
