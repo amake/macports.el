@@ -88,14 +88,14 @@
   (cl-letf (((symbol-function #'macports-core--exec)
              (lambda (cmd &rest _)
                (should (equal "sudo port -N install foo" cmd)))))
-    (macports-install "foo")))
+    (macports-core--install-exec '("foo") '("-N"))))
 
 (ert-deftest macports-install-test-custom-command ()
   (cl-letf ((macports-command "foobar")
             ((symbol-function #'macports-core--exec)
              (lambda (cmd &rest _)
                (should (string-prefix-p "sudo foobar " cmd)))))
-    (macports-install "foo")))
+    (macports-core--install-exec '("foo") '("-N"))))
 
 (provide 'macports-tests)
 ;;; macports-tests.el ends here
