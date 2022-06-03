@@ -124,10 +124,25 @@
   (macports-core--exec (macports-core--privileged-command `(,@args "reclaim"))))
 
 ;; TODO: Support choosing variants
-(defun macports-install (port)
-  "Install PORT. If not supplied, choose interactively."
+(transient-define-prefix macports-install (port)
+  "Transient for Macports install.
+
+If PORT not supplied, choose interactively."
+  macports-core--output-flags-infix
+  macports-core--sources-flags-infix
+  ["Commands"
+   ("i"
+    (lambda () (concat "Install " (car (oref transient--prefix scope))))
+    macports-core--install-exec)]
   (interactive (list (macports-core--prompt-port)))
-  (macports-core--exec (macports-core--privileged-command `("-N" "install" ,port))))
+  (transient-setup 'macports-install nil nil :scope `(,port)))
+
+(defun macports-core--install-exec (ports args)
+  "Run MacPorts install with PORTS and ARGS."
+  (interactive (list
+                (oref transient-current-prefix scope)
+                (transient-args transient-current-command)))
+  (macports-core--exec (macports-core--privileged-command `(,@args "install" ,@ports))))
 
 (defun macports-core--prompt-port ()
   "Prompt user to choose a port from a list of all available ports.
