@@ -62,12 +62,14 @@ See `macports-installed--init-flag' for details.")
   "Interactively set selection for the selected group."
   (interactive)
   (macports-select--ensure-macports-select-mode)
-  (let* ((group (tabulated-list-get-id))
-         (options (split-string (elt (tabulated-list-get-entry) 2)))
-         (selection (completing-read "Select option: " options nil t)))
-    (macports-core--exec
-     (macports-core--privileged-command `("-N" "select" "--set" ,group ,selection))
-     (macports-core--revert-buffer-func))))
+  (let ((group (tabulated-list-get-id)))
+    (if group
+        (let* ((options (split-string (elt (tabulated-list-get-entry) 2)))
+               (selection (completing-read "Select option: " options nil t)))
+          (macports-core--exec
+           (macports-core--privileged-command `("-N" "select" "--set" ,group ,selection))
+           (macports-core--revert-buffer-func)))
+      (user-error "No group selected"))))
 
 (defun macports-select--ensure-macports-select-mode ()
   "Signal a user-error if major mode is not `macports-select-mode'."

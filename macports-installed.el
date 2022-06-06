@@ -129,19 +129,28 @@ invocation of the former.")
   "Show details about the current port."
   (interactive)
   (macports-installed--ensure-macports-installed-mode)
-  (macports-describe-port (elt (tabulated-list-get-entry) 0)))
+  (let ((port (elt (tabulated-list-get-entry) 0)))
+    (if port
+        (macports-describe-port port)
+      (user-error "No port selected"))))
 
 (defun macports-installed-port-contents ()
   "Show contents of the current port."
   (interactive)
   (macports-installed--ensure-macports-installed-mode)
-  (macports-describe-port-contents (elt (tabulated-list-get-entry) 0)))
+  (let ((port  (elt (tabulated-list-get-entry) 0)))
+    (if port
+        (macports-describe-port-contents port)
+      (user-error "No port selected"))))
 
 (defun macports-installed-edit-port ()
   "Open portfile for the current port."
   (interactive)
   (macports-installed--ensure-macports-installed-mode)
-  (macports-edit-portfile (elt (tabulated-list-get-entry) 0)))
+  (let ((port (elt (tabulated-list-get-entry) 0)))
+    (if port
+        (macports-edit-portfile port)
+      (user-error "No port selected"))))
 
 (defun macports-installed-mark-uninstall (&optional _num)
   "Mark a port for uninstall and move to the next line."

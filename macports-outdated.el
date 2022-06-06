@@ -90,19 +90,28 @@ See `macports-installed--init-flag' for details.")
   "Show details about the current port."
   (interactive)
   (macports-outdated--ensure-macports-outdated-mode)
-  (macports-describe-port (tabulated-list-get-id)))
+  (let ((id (tabulated-list-get-id)))
+    (if id
+        (macports-describe-port id)
+      (user-error "No port selected"))))
 
 (defun macports-outdated-port-contents ()
   "Show contents of the current port."
   (interactive)
   (macports-outdated--ensure-macports-outdated-mode)
-  (macports-describe-port-contents (tabulated-list-get-id)))
+  (let ((id (tabulated-list-get-id)))
+    (if id
+        (macports-describe-port-contents id)
+      (user-error "No port selected"))))
 
 (defun macports-outdated-edit-port ()
   "Open portfile for the current port."
   (interactive)
   (macports-outdated--ensure-macports-outdated-mode)
-  (macports-edit-portfile (tabulated-list-get-id)))
+  (let ((id (tabulated-list-get-id)))
+    (if id
+        (macports-edit-portfile id)
+      (user-error "No port selected"))))
 
 (defun macports-outdated-mark-upgrade (&optional _num)
   "Mark a port for upgrade and move to the next line."
