@@ -90,28 +90,19 @@ See `macports-installed--init-flag' for details.")
   "Show details about the current port."
   (interactive)
   (macports-outdated--ensure-macports-outdated-mode)
-  (let ((id (tabulated-list-get-id)))
-    (if id
-        (macports-describe-port id)
-      (user-error "No port selected"))))
+  (macports-describe-port (macports-outdated--get-id)))
 
 (defun macports-outdated-port-contents ()
   "Show contents of the current port."
   (interactive)
   (macports-outdated--ensure-macports-outdated-mode)
-  (let ((id (tabulated-list-get-id)))
-    (if id
-        (macports-describe-port-contents id)
-      (user-error "No port selected"))))
+  (macports-describe-port-contents (macports-outdated--get-id)))
 
 (defun macports-outdated-edit-port ()
   "Open portfile for the current port."
   (interactive)
   (macports-outdated--ensure-macports-outdated-mode)
-  (let ((id (tabulated-list-get-id)))
-    (if id
-        (macports-edit-portfile id)
-      (user-error "No port selected"))))
+  (macports-edit-portfile (macports-outdated--get-id)))
 
 (defun macports-outdated-mark-upgrade (&optional _num)
   "Mark a port for upgrade and move to the next line."
@@ -163,6 +154,11 @@ See `macports-installed--init-flag' for details.")
   "Signal a user-error if major mode is not `macports-outdated-mode'."
   (unless (derived-mode-p 'macports-outdated-mode)
     (user-error "The current buffer is not a MacPorts Outdated list")))
+
+(defun macports-outdated--get-id ()
+  "Wrapper for `tabulated-list-get-id'."
+  (or (tabulated-list-get-id)
+      (user-error "No port selected")))
 
 (define-derived-mode macports-outdated-mode tabulated-list-mode "MacPorts outdated"
   "Major mode for handling a list of outdated MacPorts ports."

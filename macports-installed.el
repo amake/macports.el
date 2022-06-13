@@ -129,28 +129,19 @@ invocation of the former.")
   "Show details about the current port."
   (interactive)
   (macports-installed--ensure-macports-installed-mode)
-  (let ((port (elt (tabulated-list-get-entry) 0)))
-    (if port
-        (macports-describe-port port)
-      (user-error "No port selected"))))
+  (macports-describe-port (macports-installed--get-port)))
 
 (defun macports-installed-port-contents ()
   "Show contents of the current port."
   (interactive)
   (macports-installed--ensure-macports-installed-mode)
-  (let ((port  (elt (tabulated-list-get-entry) 0)))
-    (if port
-        (macports-describe-port-contents port)
-      (user-error "No port selected"))))
+  (macports-describe-port-contents (macports-installed--get-port)))
 
 (defun macports-installed-edit-port ()
   "Open portfile for the current port."
   (interactive)
   (macports-installed--ensure-macports-installed-mode)
-  (let ((port (elt (tabulated-list-get-entry) 0)))
-    (if port
-        (macports-edit-portfile port)
-      (user-error "No port selected"))))
+  (macports-edit-portfile (macports-installed--get-port)))
 
 (defun macports-installed-mark-uninstall (&optional _num)
   "Mark a port for uninstall and move to the next line."
@@ -236,6 +227,11 @@ invocation of the former.")
   "Signal a user-error if major mode is not `macports-installed-mode'."
   (unless (derived-mode-p 'macports-installed-mode)
     (user-error "The current buffer is not a MacPorts Installed list")))
+
+(defun macports-installed--get-port ()
+  "Get currently selected port."
+  (or (elt (tabulated-list-get-entry) 0)
+      (user-error "No port selected")))
 
 (defun macports-installed-exec ()
   "Perform marked actions."
