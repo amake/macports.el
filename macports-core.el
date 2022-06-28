@@ -210,6 +210,12 @@ This is quite slow!"
          (portfile (string-trim (shell-command-to-string cmd))))
     (find-file portfile)))
 
+(defun macports-port-log (port)
+  "Open the log for PORT in a new buffer."
+  (let* ((cmd (concat macports-command " -q logfile " port))
+         (logfile (string-trim (shell-command-to-string cmd))))
+    (find-file-read-only logfile)))
+
 (defun macports-core--privileged-command (args)
   "Build a MacPorts invocation with ARGS list."
   (concat
