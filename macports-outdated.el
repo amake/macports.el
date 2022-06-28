@@ -63,7 +63,8 @@ See `macports-installed--init-flag' for details.")
           macports-status-strings
           :outdated
           (format "Outdated (%d)" count)))
-       (transient--redisplay)))))
+       (when transient--showp
+         (transient--redisplay))))))
 
 (add-hook 'macports-open-hook #'macports-outdated--update-status-async)
 

@@ -82,7 +82,8 @@ invocation of the former.")
                 leaves
                 (if (eq leaves 1) "leaf" "leaves")
                 inactive))
-              (transient--redisplay))))
+              (when transient--showp
+                (transient--redisplay)))))
       (macports-core--async-shell-command-to-string
        (concat macports-command " -q installed")
        (lambda (output)
