@@ -124,6 +124,7 @@
   (macports-core--exec (macports-core--privileged-command `(,@args "reclaim"))))
 
 ;; TODO: Support choosing variants
+;;;###autoload (autoload 'macports "macports-core" nil t)
 (transient-define-prefix macports-install (port)
   "Transient for MacPorts install.
 
