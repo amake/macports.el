@@ -145,6 +145,45 @@ If PORT not supplied, choose interactively."
                 (transient-args transient-current-command)))
   (macports-core--exec (macports-core--privileged-command `(,@args "install" ,@ports))))
 
+(eval-and-compile
+  (defconst macports-core--clean-flags-infix
+    ["Clean"
+     ("A" "All" "--all")
+     ("w" "Work" "--work")
+     ("D" "Dist" "--dist")
+     ("a" "Archive" "--archive")
+     ("l" "Logs" "--logs")]
+    "Flags for the `port clean` subcommand."))
+
+;;;###autoload (autoload 'macports "macports-core" nil t)
+(transient-define-prefix macports-clean (port)
+  "Transient for MacPorts clean.
+
+If PORT not supplied, choose interactively."
+  :incompatible '(("--all" "--work")
+                  ("--all" "--dist")
+                  ("--all" "--archive")
+                  ("--all" "--logs"))
+  macports-core--output-flags-infix
+  macports-core--clean-flags-infix
+  ["Commands"
+   ("c"
+    (lambda () (concat "Clean " (car (oref transient--prefix scope))))
+    macports-core--clean-exec)]
+  (interactive (list (macports-core--prompt-port)))
+  (transient-setup 'macports-clean nil nil :scope `(,port)))
+
+(defun macports-core--clean-exec (ports args)
+  "Run MacPorts clean with PORTS and ARGS."
+  (interactive (list
+                (oref transient-current-prefix scope)
+                (transient-args transient-current-command)))
+  (let* ((all-clean-args (mapcar #'caddr (substring macports-core--clean-flags-infix 1)))
+         (clean-args (seq-filter (lambda (e) (member e args)) all-clean-args))
+         (other-args (seq-filter (lambda (e) (not (member e clean-args))) args)))
+    (macports-core--exec
+     (macports-core--privileged-command `(,@other-args "clean" ,@clean-args ,@ports)))))
+
 (defun macports-core--prompt-port ()
   "Prompt user to choose a port from a list of all available ports.
 
