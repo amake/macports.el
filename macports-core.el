@@ -125,7 +125,7 @@
 
 ;; TODO: Support choosing variants
 (transient-define-prefix macports-install (port)
-  "Transient for Macports install.
+  "Transient for MacPorts install.
 
 If PORT not supplied, choose interactively."
   macports-core--output-flags-infix
