@@ -178,7 +178,7 @@ If PORT not supplied, choose interactively."
   (interactive (list
                 (oref transient-current-prefix scope)
                 (transient-args transient-current-command)))
-  (let* ((all-clean-args (mapcar #'caddr (substring macports-core--clean-flags-infix 1)))
+  (let* ((all-clean-args (mapcar #'cl-caddr (substring macports-core--clean-flags-infix 1)))
          (clean-args (seq-filter (lambda (e) (member e args)) all-clean-args))
          (other-args (seq-filter (lambda (e) (not (member e clean-args))) args)))
     (macports-core--exec
