@@ -117,6 +117,7 @@ invocation of the former.")
     (define-key map (kbd "e") #'macports-installed-edit-port)
     (define-key map (kbd "f") #'macports-installed-edit-port)
     (define-key map (kbd "L") #'macports-installed-port-log)
+    (define-key map (kbd "C") #'macports-installed-port-clean)
     (define-key map (kbd "u") #'macports-installed-mark-uninstall)
     (define-key map (kbd "U") #'macports-installed-mark-inactive)
     (define-key map (kbd "l") #'macports-installed-mark-leaves)
@@ -150,6 +151,15 @@ invocation of the former.")
   (interactive)
   (macports-installed--ensure-macports-installed-mode)
   (macports-port-log (macports-installed--get-port)))
+
+(defun macports-installed-port-clean ()
+  "Clean the current port."
+  (interactive)
+  (macports-installed--ensure-macports-installed-mode)
+  ;; Transients are interactive-only but we really want to call this
+  ;; interactively here
+  (with-no-warnings
+    (macports-clean (macports-installed--get-port))))
 
 (defun macports-installed-mark-uninstall (&optional _num)
   "Mark a port for uninstall and move to the next line."

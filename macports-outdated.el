@@ -81,6 +81,7 @@ See `macports-installed--init-flag' for details.")
     (define-key map (kbd "e") #'macports-outdated-edit-port)
     (define-key map (kbd "f") #'macports-outdated-edit-port)
     (define-key map (kbd "L") #'macports-outdated-port-log)
+    (define-key map (kbd "C") #'macports-outdated-port-clean)
     (define-key map (kbd "u") #'macports-outdated-mark-upgrade)
     (define-key map (kbd "U") #'macports-outdated-mark-upgrades)
     (define-key map (kbd "x") #'macports-outdated-upgrade)
@@ -111,6 +112,15 @@ See `macports-installed--init-flag' for details.")
   (interactive)
   (macports-outdated--ensure-macports-outdated-mode)
   (macports-port-log (macports-outdated--get-id)))
+
+(defun macports-outdated-port-clean ()
+  "Clean the current port."
+  (interactive)
+  (macports-outdated--ensure-macports-outdated-mode)
+  ;; Transients are interactive-only but we really want to call this
+  ;; interactively here
+  (with-no-warnings
+    (macports-clean (macports-outdated--get-id))))
 
 (defun macports-outdated-mark-upgrade (&optional _num)
   "Mark a port for upgrade and move to the next line."
