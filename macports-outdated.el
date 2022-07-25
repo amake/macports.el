@@ -42,11 +42,12 @@ See `macports-installed--init-flag' for details.")
 (defun macports-outdated ()
   "List outdated ports."
   (interactive)
-  (pop-to-buffer "*macports-outdated*")
-  (let (macports-outdated--init-flag)
-    (macports-outdated-mode)
-    (unless macports-outdated--init-flag
-      (revert-buffer))))
+  (let ((buf (pop-to-buffer "*macports-outdated*")))
+    (with-current-buffer buf
+      (let (macports-outdated--init-flag)
+        (macports-outdated-mode)
+        (unless macports-outdated--init-flag
+          (revert-buffer))))))
 
 (defun macports-outdated--update-status-async ()
   "Generate the label for Outdated in `macports'."

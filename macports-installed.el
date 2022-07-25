@@ -52,11 +52,12 @@ invocation of the former.")
 (defun macports-installed ()
   "List installed ports."
   (interactive)
-  (pop-to-buffer "*macports-installed*")
-  (let (macports-installed--init-flag)
-    (macports-installed-mode)
-    (unless macports-installed--init-flag
-      (revert-buffer))))
+  (let ((buf (pop-to-buffer "*macports-installed*")))
+    (with-current-buffer buf
+      (let (macports-installed--init-flag)
+        (macports-installed-mode)
+        (unless macports-installed--init-flag
+          (revert-buffer))))))
 
 (defun macports-installed--update-status-async ()
   "Generate the label for Installed in `macports'."
