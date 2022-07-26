@@ -40,11 +40,12 @@ See `macports-installed--init-flag' for details.")
 (defun macports-select ()
   "List select ports."
   (interactive)
-  (pop-to-buffer "*macports-select*")
-  (let (macports-select--init-flag)
-    (macports-select-mode)
-    (unless macports-select--init-flag
-      (revert-buffer))))
+  (let ((buf (pop-to-buffer "*macports-select*")))
+    (with-current-buffer buf
+      (let (macports-select--init-flag)
+        (macports-select-mode)
+        (unless macports-select--init-flag
+          (revert-buffer))))))
 
 (defvar macports-select-columns
   [("Group" 24 t)
