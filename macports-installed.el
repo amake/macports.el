@@ -157,10 +157,7 @@ invocation of the former.")
   "Clean the current port."
   (interactive)
   (macports-installed--ensure-macports-installed-mode)
-  ;; Transients are interactive-only but we really want to call this
-  ;; interactively here
-  (with-no-warnings
-    (macports-clean (macports-installed--get-port))))
+  (funcall-interactively #'macports-clean (macports-installed--get-port)))
 
 (defun macports-installed-mark-uninstall (&optional _num)
   "Mark a port for uninstall and move to the next line."

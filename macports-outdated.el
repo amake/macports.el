@@ -118,10 +118,7 @@ See `macports-installed--init-flag' for details.")
   "Clean the current port."
   (interactive)
   (macports-outdated--ensure-macports-outdated-mode)
-  ;; Transients are interactive-only but we really want to call this
-  ;; interactively here
-  (with-no-warnings
-    (macports-clean (macports-outdated--get-id))))
+  (funcall-interactively #'macports-clean (macports-outdated--get-id)))
 
 (defun macports-outdated-mark-upgrade (&optional _num)
   "Mark a port for upgrade and move to the next line."
@@ -156,10 +153,7 @@ See `macports-installed--init-flag' for details.")
         (let ((target (if (eq (length ports) (length tabulated-list-entries))
                           nil
                         ports)))
-          (with-no-warnings
-            ;; Transients are interactive-only but we really want to call this
-            ;; interactively here
-            (macports-upgrade target)))
+          (funcall-interactively #'macports-upgrade target))
       (user-error "No ports specified"))))
 
 (defun macports-outdated-backup-unmark ()
