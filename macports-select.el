@@ -43,7 +43,9 @@ See `macports-installed--init-flag' for details.")
   (let ((buf (pop-to-buffer "*macports-select*")))
     (with-current-buffer buf
       (let (macports-select--init-flag)
-        (macports-select-mode)
+        ;; See `macports-outdated' for why this conditional
+        (unless (derived-mode-p #'macports-select-mode)
+          (macports-select-mode))
         (unless macports-select--init-flag
           (revert-buffer))))))
 

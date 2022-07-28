@@ -45,7 +45,12 @@ See `macports-installed--init-flag' for details.")
   (let ((buf (pop-to-buffer "*macports-outdated*")))
     (with-current-buffer buf
       (let (macports-outdated--init-flag)
-        (macports-outdated-mode)
+        ;; Unconditionally setting the major mode should be fine, but somehow it
+        ;; causes the `macports-outdated--init-flag' to be set to t without
+        ;; calling `macports-outdated-refresh' *if* the buffer has been reverted
+        ;; with `macports-core--revert-buffer-func'.
+        (unless (eq major-mode #'macports-outdated-mode)
+          (macports-outdated-mode))
         (unless macports-outdated--init-flag
           (revert-buffer))))))
 

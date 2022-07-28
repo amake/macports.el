@@ -55,7 +55,9 @@ invocation of the former.")
   (let ((buf (pop-to-buffer "*macports-installed*")))
     (with-current-buffer buf
       (let (macports-installed--init-flag)
-        (macports-installed-mode)
+        ;; See `macports-outdated' for why this conditional
+        (unless (derived-mode-p #'macports-installed-mode)
+          (macports-installed-mode))
         (unless macports-installed--init-flag
           (revert-buffer))))))
 
