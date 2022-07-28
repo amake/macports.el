@@ -241,7 +241,7 @@ invocation of the former.")
 
 (defun macports-installed--ensure-macports-installed-mode ()
   "Signal a user-error if major mode is not `macports-installed-mode'."
-  (unless (derived-mode-p 'macports-installed-mode)
+  (unless (derived-mode-p #'macports-installed-mode)
     (user-error "The current buffer is not a MacPorts Installed list")))
 
 (defun macports-installed--get-port ()

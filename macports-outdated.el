@@ -165,7 +165,7 @@ See `macports-installed--init-flag' for details.")
 
 (defun macports-outdated--ensure-macports-outdated-mode ()
   "Signal a user-error if major mode is not `macports-outdated-mode'."
-  (unless (derived-mode-p 'macports-outdated-mode)
+  (unless (derived-mode-p #'macports-outdated-mode)
     (user-error "The current buffer is not a MacPorts Outdated list")))
 
 (defun macports-outdated--get-id ()

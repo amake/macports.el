@@ -74,7 +74,7 @@ See `macports-installed--init-flag' for details.")
 
 (defun macports-select--ensure-macports-select-mode ()
   "Signal a user-error if major mode is not `macports-select-mode'."
-  (unless (derived-mode-p 'macports-select-mode)
+  (unless (derived-mode-p #'macports-select-mode)
     (user-error "The current buffer is not a MacPorts Select list")))
 
 (define-derived-mode macports-select-mode tabulated-list-mode "MacPorts select"
