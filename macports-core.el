@@ -242,7 +242,8 @@ This is quite slow!"
     (lambda ()
       (when (buffer-live-p buf)
         (with-current-buffer buf
-          (revert-buffer))))))
+          (when (string-prefix-p "macports-" (symbol-name major-mode))
+            (revert-buffer)))))))
 
 (defun macports-edit-portfile (port)
   "Open the portfile for PORT in a new buffer."
