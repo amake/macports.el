@@ -53,9 +53,9 @@
       (macports-describe--linkify-github)
       (macports-describe--style-headings)
       (goto-char (point-max))
-      (macports-describe--heading "Dependents")
+      (macports-describe--heading "Dependents:")
       (macports-describe--async-insert (concat macports-command " -q rdependents " port) "None\n")
-      (macports-describe--heading "Deps")
+      (macports-describe--heading "Deps:")
       (macports-describe--async-insert (concat macports-command " -q rdeps " port) "None\n"))))
 
 (defun macports-describe--heading (text)
