@@ -99,6 +99,12 @@
      ("b" "Binary-only mode" "-b")]
     "Source-related flags for the `port` command."))
 
+(eval-and-compile
+  (defconst macports-core--exit-status-flags-infix
+    ["Exit status"
+     ("p" "Proceed on error" "-p")]
+    "Exit status flags for the `port` command."))
+
 ;;;###autoload (autoload 'macports "macports-core" nil t)
 (transient-define-prefix macports-selfupdate ()
   "Transient for MacPorts selfupdate."
@@ -198,6 +204,7 @@ This is quite slow!"
   "Transient for MacPorts upgrade."
   macports-core--output-flags-infix
   macports-core--sources-flags-infix
+  macports-core--exit-status-flags-infix
   ["Commands"
    ("u"
     (lambda ()
