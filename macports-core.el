@@ -235,9 +235,13 @@ This is quite slow!"
 
 (defun macports-core--macports-buffers ()
   "List all macports.el buffers."
-  (match-buffers `(or . ,(mapcar
-                          (lambda (m) (cons 'major-mode m))
-                          macports-core--refresh-major-modes))))
+  (seq-filter
+   (lambda (buf) (buffer-match-p
+                  `(or . ,(mapcar
+                           (lambda (m) (cons 'major-mode m))
+                           macports-core--refresh-major-modes))
+                  buf))
+   (buffer-list)))
 
 (defun macports-core--refresh-macports-buffers ()
   "Revert all macports.el buffers."
