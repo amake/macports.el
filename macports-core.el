@@ -236,11 +236,7 @@ This is quite slow!"
 (defun macports-core--macports-buffers ()
   "List all macports.el buffers."
   (seq-filter
-   (lambda (buf) (buffer-match-p
-                  `(or . ,(mapcar
-                           (lambda (m) (cons 'major-mode m))
-                           macports-core--refresh-major-modes))
-                  buf))
+   (lambda (buf) (memq (buffer-local-value 'major-mode buf)  macports-core--refresh-major-modes))
    (buffer-list)))
 
 (defun macports-core--refresh-macports-buffers ()
