@@ -187,6 +187,8 @@ See `macports-installed--init-flag' for details.")
   (tabulated-list-init-header)
   (macports-dispatch-mode))
 
+(add-to-list 'macports-core--refresh-major-modes 'macports-outdated-mode)
+
 (defun macports-outdated-refresh ()
   "Refresh the list of outdated ports."
   (macports-outdated--ensure-macports-outdated-mode)

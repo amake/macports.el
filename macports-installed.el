@@ -290,8 +290,7 @@ invocation of the former.")
             (macports-core--exec
              (string-join
               (remq nil (list uninstall-cmd deactivate-cmd activate-cmd requested-cmd unrequested-cmd))
-              " && ")
-             (macports-core--revert-buffer-func))))
+              " && "))))
       (user-error "No ports specified"))))
 
 (defun macports-installed--prompt-transaction-p (uninstall deactivate activate requested unrequested)
@@ -343,6 +342,8 @@ invocation of the former.")
   (add-hook 'tabulated-list-revert-hook #'macports-installed-refresh nil t)
   (tabulated-list-init-header)
   (macports-dispatch-mode))
+
+(add-to-list 'macports-core--refresh-major-modes 'macports-installed-mode)
 
 (defun macports-installed-refresh ()
   "Refresh the list of installed ports."

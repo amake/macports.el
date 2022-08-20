@@ -57,6 +57,9 @@
   :group 'macports
   :type 'boolean)
 
+(defvar macports-core--refresh-major-modes nil
+  "Major modes identifying buffers to refresh after operations.")
+
 ;;;###autoload (autoload 'macports "macports-core" nil t)
 (transient-define-prefix macports ()
   "Transient for MacPorts."
@@ -221,16 +224,26 @@ This is quite slow!"
                 (or (oref transient-current-prefix scope) '("outdated"))
                 (transient-args transient-current-command)))
   (macports-core--exec
-   (macports-core--privileged-command `(,@args "upgrade" ,@ports))
-   (macports-core--revert-buffer-func)))
+   (macports-core--privileged-command `(,@args "upgrade" ,@ports))))
 
-(defun macports-core--exec (command &optional after)
-  "Execute COMMAND, and then AFTER if supplied."
-  (when after
-    (macports-core--post-compilation-setup after))
+(defun macports-core--exec (command)
+  "Execute COMMAND."
+  (macports-core--post-compilation-setup #'macports-core--refresh-macports-buffers)
   (let ((buf (compilation-start command t)))
     (with-current-buffer buf
       (macports-dispatch-mode))))
+
+(defun macports-core--macports-buffers ()
+  "List all macports.el buffers."
+  (match-buffers `(or . ,(mapcar
+                          (lambda (m) (cons 'major-mode m))
+                          macports-core--refresh-major-modes))))
+
+(defun macports-core--refresh-macports-buffers ()
+  "Revert all macports.el buffers."
+  (dolist (buf (macports-core--macports-buffers))
+    (with-current-buffer buf
+      (revert-buffer))))
 
 (defun macports-core--post-compilation-setup (func)
   "Arrange to execute FUNC when the compilation process exits."
@@ -242,15 +255,6 @@ This is quite slow!"
                          (funcall func))
                      (advice-remove #'compilation-handle-exit advice))))
     (advice-add #'compilation-handle-exit :around advice)))
-
-(defun macports-core--revert-buffer-func ()
-  "Return a function that reverts the current buffer at the time of execution."
-  (let ((buf (current-buffer)))
-    (lambda ()
-      (when (buffer-live-p buf)
-        (with-current-buffer buf
-          (when (string-prefix-p "macports-" (symbol-name major-mode))
-            (revert-buffer)))))))
 
 (defun macports-edit-portfile (port)
   "Open the portfile for PORT in a new buffer."

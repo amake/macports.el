@@ -70,8 +70,7 @@ See `macports-installed--init-flag' for details.")
         (let* ((options (split-string (elt (tabulated-list-get-entry) 2)))
                (selection (completing-read "Select option: " options nil t)))
           (macports-core--exec
-           (macports-core--privileged-command `("-N" "select" "--set" ,group ,selection))
-           (macports-core--revert-buffer-func)))
+           (macports-core--privileged-command `("-N" "select" "--set" ,group ,selection))))
       (user-error "No group selected"))))
 
 (defun macports-select--ensure-macports-select-mode ()
@@ -87,6 +86,8 @@ See `macports-installed--init-flag' for details.")
   (add-hook 'tabulated-list-revert-hook #'macports-select-refresh nil t)
   (tabulated-list-init-header)
   (macports-dispatch-mode))
+
+(add-to-list 'macports-core--refresh-major-modes 'macports-select-mode)
 
 (defun macports-select-refresh ()
   "Refresh the list of select ports."
