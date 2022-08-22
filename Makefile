@@ -7,10 +7,23 @@ run_emacs = $(emacs) -Q --batch -L . -L $(elpa_dir) -l package \
 	--eval '(package-initialize)'
 
 dependencies := transient
+test_versions := 25 26 27 28
 
 .PHONY: test
 test: ## Compile and run unit tests
 test: test-compile test-unit
+
+define test_one
+  .PHONY: test-$(1)
+  test-$(1):
+	  $$(MAKE) test elpa_dir=elpa-$(1) emacs='docker run --rm -it -v $$(PWD):/work -w /work silex/emacs:$(1) emacs'
+endef
+
+$(foreach _,$(test_versions),$(eval $(call test_one,$(_))))
+
+.PHONY: test-matrix
+test-matrix: ## Run `test` target on all Emacs versions
+test-matrix: $(addprefix test-,$(test_versions))
 
 $(elpa_dir):
 	$(run_emacs) \
@@ -70,7 +83,7 @@ clean: ## Clean files
 .PHONY: clobber
 clobber: ## Remove all generated files
 clobber: clean
-	rm -rf $(elpa_dir)
+	rm -rf $(elpa_dir) $(elpa_dir)-*
 
 # Hooks
 
