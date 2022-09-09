@@ -41,6 +41,11 @@
   "Face used for loading text in MacPorts Describe buffers."
   :group 'macports)
 
+(defface macports-build-only-rdeps
+  '((t (:slant italic)))
+  "Face used for build-only rdeps text in MacPorts Describe buffers."
+  :group 'macports)
+
 (defun macports-describe-port (port)
   "Display detailed information about PORT."
   (interactive (list (macports-core--prompt-port)))
@@ -56,16 +61,21 @@
       (macports-describe--heading "Dependents:")
       (macports-describe--async-insert (concat macports-command " -q rdependents " port) "None\n")
       (macports-describe--heading "Deps:")
-      (macports-describe--async-insert (concat macports-command " -q rdeps " port) "None\n"))))
+      (macports-describe--async-insert (concat macports-command " -q rdeps " port) "None\n"
+                                       (lambda (s-marker e-marker)
+                                         (macports-describe--async-mark-build-rdeps port s-marker e-marker))))))
 
 (defun macports-describe--heading (text)
   "Insert a heading with content TEXT."
   (insert (format "\n%s\n" (propertize text 'face 'macports-describe-heading))))
 
-(defun macports-describe--async-insert (command empty-msg)
+(defun macports-describe--async-insert (command empty-msg &optional after)
   "Insert output of COMMAND with temporary loading message.
 
-If result is blank, show EMPTY-MSG instead."
+If result is blank, show EMPTY-MSG instead.
+
+AFTER is a function that accepts the start and end markers of the inserted text.
+AFTER is responsible for setting the markers to nil when finished."
   (let ((s-marker (point-marker))
         e-marker
         (buf (current-buffer)))
@@ -83,8 +93,11 @@ If result is blank, show EMPTY-MSG instead."
            (delete-region (marker-position s-marker) (marker-position e-marker))
            (goto-char (marker-position s-marker))
            (insert to-insert)
-           (set-marker s-marker nil)
-           (set-marker e-marker nil)))))))
+           (set-marker e-marker (point))
+           (if after
+               (funcall after s-marker e-marker)
+             (set-marker s-marker nil)
+             (set-marker e-marker nil))))))))
 
 (defun macports-describe--linkify-urls ()
   "Linkify URLs in current buffer."
@@ -122,6 +135,29 @@ If result is blank, show EMPTY-MSG instead."
     (goto-char (point-min))
     (while (re-search-forward "^[^[:blank:]][^:\n]+:" nil t)
       (add-text-properties (match-beginning 0) (match-end 0) '(face macports-describe-heading)))))
+
+(defun macports-describe--async-mark-build-rdeps (port s-marker e-marker)
+  "Mark build-only rdeps for PORT within the bounded region (S-MARKER to E-MARKER).
+
+Will null-out the markers upon completion."
+  (let ((buf (current-buffer)))
+    (macports-core--async-shell-command-to-string
+     (concat macports-command " -q rdeps --no-build " port)
+     (lambda (result)
+       (with-current-buffer buf
+         (let ((inhibit-read-only t)
+               (no-build (split-string (string-trim result))))
+           (save-excursion
+             (goto-char (marker-position s-marker))
+             (while (re-search-forward "[^[:blank:]\n]+" (marker-position e-marker) t)
+               (let ((port (match-string-no-properties 0)))
+                 (unless (member port no-build)
+                   (add-text-properties (match-beginning 0) (match-end 0) '(face macports-build-only-rdeps))
+                   (insert "*"))))
+             (goto-char (marker-position e-marker))
+             (insert "\n *Build-only dependency")
+             (set-marker s-marker nil)
+             (set-marker e-marker nil))))))))
 
 (defun macports-describe-port-contents (port)
   "Display contents of PORT in a new buffer."
