@@ -104,9 +104,9 @@ AFTER is responsible for setting the markers to nil when finished."
   (save-excursion
     (goto-char (point-min))
     (while (re-search-forward "https?://[^ \n]+" nil t)
-      (let ((url (thing-at-point-url-at-point))
-            (bounds (bounds-of-thing-at-point 'url)))
-        (delete-region (car bounds) (cdr bounds))
+      (pcase-let ((url (thing-at-point-url-at-point))
+                  (`(,beg . ,end) (bounds-of-thing-at-point 'url)))
+        (delete-region beg end)
         (help-insert-xref-button url 'help-url url)))))
 
 (defun macports-describe--linkify-emails ()
@@ -114,9 +114,9 @@ AFTER is responsible for setting the markers to nil when finished."
   (save-excursion
     (goto-char (point-min))
     (while (re-search-forward "[^[:blank:]]+@[^[:blank:]]" nil t)
-      (let ((email (thing-at-point 'email))
-            (bounds (bounds-of-thing-at-point 'email)))
-        (delete-region (car bounds) (cdr bounds))
+      (pcase-let ((email (thing-at-point 'email))
+                  (`(,beg . ,end) (bounds-of-thing-at-point 'email)))
+        (delete-region beg end)
         (help-insert-xref-button email 'help-url (concat "mailto:" email))))))
 
 (defun macports-describe--linkify-github ()
@@ -124,9 +124,9 @@ AFTER is responsible for setting the markers to nil when finished."
   (save-excursion
     (goto-char (point-min))
     (while (re-search-forward "GitHub:[[:blank:]]*[^[:blank:]]" nil t)
-      (let ((username (thing-at-point 'symbol))
-            (bounds (bounds-of-thing-at-point 'symbol)))
-        (delete-region (car bounds) (cdr bounds))
+      (pcase-let ((username (thing-at-point 'symbol))
+                  (`(,beg . ,end) (bounds-of-thing-at-point 'symbol)))
+        (delete-region beg end)
         (help-insert-xref-button username 'help-url (concat "https://github.com/" username))))))
 
 (defun macports-describe--style-headings ()
