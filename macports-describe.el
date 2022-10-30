@@ -50,6 +50,9 @@
   "Display detailed information about PORT."
   (interactive (list (macports-core--prompt-port)))
   (with-help-window (get-buffer-create (format "*Port: %s*" port))
+    (setq-local revert-buffer-function
+                (lambda (&rest _)
+                  (macports-describe-port port)))
     (with-current-buffer standard-output
       (macports-dispatch-mode)
       (shell-command (concat macports-command " -q info " port) standard-output)
