@@ -165,7 +165,7 @@ Will null-out the markers upon completion."
 
 (defun macports-describe-port-contents (port)
   "Display contents of PORT in a new buffer."
-  (with-help-window (help-buffer)
+  (with-help-window (get-buffer-create (format "*Port contents: %s*" port))
     (with-current-buffer standard-output
       (macports-dispatch-mode)
       (shell-command (concat macports-command " -q contents " port) standard-output))))
