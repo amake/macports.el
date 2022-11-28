@@ -290,7 +290,8 @@ invocation of the former.")
             (macports-core--exec
              (string-join
               (remq nil (list uninstall-cmd deactivate-cmd activate-cmd requested-cmd unrequested-cmd))
-              " && "))))
+              " && ")
+             "*macports-installed-operation*")))
       (user-error "No ports specified"))))
 
 (defun macports-installed--prompt-transaction-p (uninstall deactivate activate requested unrequested)

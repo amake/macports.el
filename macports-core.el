@@ -118,7 +118,9 @@
 (defun macports-core--selfupdate-exec (args)
   "Run MacPorts selfupdate with ARGS."
   (interactive (list (transient-args transient-current-command)))
-  (macports-core--exec (macports-core--privileged-command `(,@args "selfupdate"))))
+  (macports-core--exec
+   (macports-core--privileged-command `(,@args "selfupdate"))
+   "*macports-selfupdate*"))
 
 ;;;###autoload (autoload 'macports "macports-core" nil t)
 (transient-define-prefix macports-reclaim ()
@@ -130,7 +132,9 @@
 (defun macports-core--reclaim-exec (args)
   "Run MacPorts reclaim with ARGS."
   (interactive (list (transient-args transient-current-command)))
-  (macports-core--exec (macports-core--privileged-command `(,@args "reclaim"))))
+  (macports-core--exec
+   (macports-core--privileged-command `(,@args "reclaim"))
+   "*macports-reclaim*"))
 
 ;; TODO: Support choosing variants
 ;;;###autoload (autoload 'macports "macports-core" nil t)
@@ -152,7 +156,9 @@ If PORT not supplied, choose interactively."
   (interactive (list
                 (oref transient-current-prefix scope)
                 (transient-args transient-current-command)))
-  (macports-core--exec (macports-core--privileged-command `(,@args "install" ,@ports))))
+  (macports-core--exec
+   (macports-core--privileged-command `(,@args "install" ,@ports))
+   "*macports-install*"))
 
 (eval-and-compile
   (defconst macports-core--clean-flags-infix
@@ -191,7 +197,8 @@ If PORT not supplied, choose interactively."
          (clean-args (seq-filter (lambda (e) (member e args)) all-clean-args))
          (other-args (seq-filter (lambda (e) (not (member e clean-args))) args)))
     (macports-core--exec
-     (macports-core--privileged-command `(,@other-args "clean" ,@clean-args ,@ports)))))
+     (macports-core--privileged-command `(,@other-args "clean" ,@clean-args ,@ports))
+     "*macports-clean*")))
 
 (defun macports-core--prompt-port ()
   "Prompt user to choose a port from a list of all available ports.
@@ -224,12 +231,13 @@ This is quite slow!"
                 (or (oref transient-current-prefix scope) '("outdated"))
                 (transient-args transient-current-command)))
   (macports-core--exec
-   (macports-core--privileged-command `(,@args "upgrade" ,@ports))))
+   (macports-core--privileged-command `(,@args "upgrade" ,@ports))
+   "*macports-upgrade*"))
 
-(defun macports-core--exec (command)
-  "Execute COMMAND."
+(defun macports-core--exec (command buf-name)
+  "Execute COMMAND in buffer named BUF-NAME."
   (macports-core--post-compilation-setup #'macports-core--refresh-macports-buffers)
-  (let ((buf (compilation-start command t)))
+  (let ((buf (compilation-start command t (lambda (_) buf-name))))
     (with-current-buffer buf
       (macports-dispatch-mode))))
 

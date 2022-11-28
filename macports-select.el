@@ -70,7 +70,8 @@ See `macports-installed--init-flag' for details.")
         (let* ((options (split-string (elt (tabulated-list-get-entry) 2)))
                (selection (completing-read "Select option: " options nil t)))
           (macports-core--exec
-           (macports-core--privileged-command `("-N" "select" "--set" ,group ,selection))))
+           (macports-core--privileged-command `("-N" "select" "--set" ,group ,selection))
+           "*macports-select-operation*"))
       (user-error "No group selected"))))
 
 (defun macports-select--ensure-macports-select-mode ()

@@ -67,7 +67,7 @@
                               options))
                "autofoo-2"))
             ((symbol-function #'macports-core--exec)
-             (lambda (cmd)
+             (lambda (cmd &rest _)
                (should (equal "sudo port -N select --set autofoo autofoo-2"
                               cmd)))))
     (macports-select)

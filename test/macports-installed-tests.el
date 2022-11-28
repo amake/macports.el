@@ -171,7 +171,7 @@
                               prompt))
                t))
             ((symbol-function #'macports-core--exec)
-             (lambda (cmd)
+             (lambda (cmd &rest _)
                (should (equal (concat "sudo port -N uninstall piyo @2.0.1 && "
                                       "sudo port -N deactivate foobar @1.0_0 && "
                                       "sudo port -N activate hogefuga @123_4 && "
