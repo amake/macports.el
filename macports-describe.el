@@ -153,13 +153,16 @@ Will null-out the markers upon completion."
            (when no-build
              (save-excursion
                (goto-char (marker-position s-marker))
-               (while (re-search-forward "[^[:blank:]\n]+" (marker-position e-marker) t)
-                 (let ((dep (match-string-no-properties 0)))
-                   (unless (member dep no-build)
-                     (add-text-properties (match-beginning 0) (match-end 0) '(face macports-build-only-rdeps))
-                     (insert "*"))))
-               (goto-char (marker-position e-marker))
-               (insert "\n *Build-only dependency")))
+               (let (had-build-only)
+                 (while (re-search-forward "[^[:blank:]\n]+" (marker-position e-marker) t)
+                   (let ((dep (match-string-no-properties 0)))
+                     (unless (member dep no-build)
+                       (add-text-properties (match-beginning 0) (match-end 0) '(face macports-build-only-rdeps))
+                       (insert "*")
+                       (setq had-build-only t))))
+                 (when had-build-only
+                   (goto-char (marker-position e-marker))
+                   (insert "\n *Build-only dependency")))))
            (set-marker s-marker nil)
            (set-marker e-marker nil)))))))
 
