@@ -110,6 +110,19 @@
                (should (string-prefix-p "sudo foobar " cmd)))))
     (macports-core--selfupdate-exec '("-N"))))
 
+(ert-deftest macports-reclaim-test ()
+  (cl-letf (((symbol-function #'macports-core--exec)
+             (lambda (cmd &rest _)
+               (should (equal "sudo port -N reclaim" cmd)))))
+    (macports-core--reclaim-exec '("-N"))))
+
+(ert-deftest macports-reclaim-test-custom-command ()
+  (cl-letf ((macports-command "foobar")
+            ((symbol-function #'macports-core--exec)
+             (lambda (cmd &rest _)
+               (should (string-prefix-p "sudo foobar " cmd)))))
+    (macports-core--reclaim-exec '("-N"))))
+
 (ert-deftest macports-clean-test ()
   (cl-letf (((symbol-function #'macports-core--exec)
              (lambda (cmd &rest _)
