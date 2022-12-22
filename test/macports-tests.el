@@ -97,6 +97,19 @@
                (should (string-prefix-p "sudo foobar " cmd)))))
     (macports-core--install-exec '("foo") '("-N"))))
 
+(ert-deftest macports-selfupdate-test ()
+  (cl-letf (((symbol-function #'macports-core--exec)
+             (lambda (cmd &rest _)
+               (should (equal "sudo port -N selfupdate" cmd)))))
+    (macports-core--selfupdate-exec '("-N"))))
+
+(ert-deftest macports-selfupdate-test-custom-command ()
+  (cl-letf ((macports-command "foobar")
+            ((symbol-function #'macports-core--exec)
+             (lambda (cmd &rest _)
+               (should (string-prefix-p "sudo foobar " cmd)))))
+    (macports-core--selfupdate-exec '("-N"))))
+
 (ert-deftest macports-clean-test ()
   (cl-letf (((symbol-function #'macports-core--exec)
              (lambda (cmd &rest _)
