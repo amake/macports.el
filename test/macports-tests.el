@@ -136,6 +136,19 @@
                (should (string-prefix-p "sudo foobar " cmd)))))
     (macports-core--clean-exec '("foo") '("--all" "-N"))))
 
+(ert-deftest macports-upgrade-test ()
+  (cl-letf (((symbol-function #'macports-core--exec)
+             (lambda (cmd &rest _)
+               (should (equal "sudo port -N upgrade foo" cmd)))))
+    (macports-core--upgrade-exec '("foo") '("-N"))))
+
+(ert-deftest macports-upgrade-test-custom-command ()
+  (cl-letf ((macports-command "foobar")
+            ((symbol-function #'macports-core--exec)
+             (lambda (cmd &rest _)
+               (should (string-prefix-p "sudo foobar " cmd)))))
+    (macports-core--upgrade-exec '("foo") '("-N"))))
+
 (ert-deftest macports-fetch-test ()
   (cl-letf (((symbol-function #'macports-core--exec)
              (lambda (cmd &rest _)
