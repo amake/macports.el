@@ -234,6 +234,38 @@ This is quite slow!"
    (macports-core--privileged-command `(,@args "upgrade" ,@ports))
    "*macports-upgrade*"))
 
+(eval-and-compile
+  (defconst macports-core--fetch-flags-infix
+    ["Fetch"
+     ("N" "No mirrors" "--no-mirrors")]
+    "Flags for the `port fetch` subcommand."))
+
+;;;###autoload (autoload 'macports "macports-core" nil t)
+(transient-define-prefix macports-fetch (port)
+  "Transient for MacPorts fetch.
+
+If PORT not supplied, choose interactively."
+  macports-core--output-flags-infix
+  macports-core--fetch-flags-infix
+  ["Commands"
+   ("f"
+    (lambda () (concat "Fetch " (car (oref transient--prefix scope))))
+    macports-core--fetch-exec)]
+  (interactive (list (macports-core--prompt-port)))
+  (transient-setup 'macports-fetch nil nil :scope `(,port)))
+
+(defun macports-core--fetch-exec (ports args)
+  "Run MacPorts fetch with PORTS and ARGS."
+  (interactive (list
+                (oref transient-current-prefix scope)
+                (transient-args transient-current-command)))
+  (let* ((all-fetch-args (mapcar #'cl-caddr (substring macports-core--fetch-flags-infix 1)))
+         (fetch-args (seq-filter (lambda (e) (member e args)) all-fetch-args))
+         (other-args (seq-filter (lambda (e) (not (member e fetch-args))) args)))
+    (macports-core--exec
+     (macports-core--privileged-command `(,@other-args "fetch" ,@fetch-args ,@ports))
+     "*macports-fetch*")))
+
 (defun macports-core--exec (command buf-name)
   "Execute COMMAND in buffer named BUF-NAME."
   (macports-core--post-compilation-setup #'macports-core--refresh-macports-buffers)

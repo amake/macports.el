@@ -97,5 +97,18 @@
                (should (string-prefix-p "sudo foobar " cmd)))))
     (macports-core--install-exec '("foo") '("-N"))))
 
+(ert-deftest macports-fetch-test ()
+  (cl-letf (((symbol-function #'macports-core--exec)
+             (lambda (cmd &rest _)
+               (should (equal "sudo port -N fetch --no-mirrors foo" cmd)))))
+    (macports-core--fetch-exec '("foo") '("--no-mirrors" "-N"))))
+
+(ert-deftest macports-fetch-test-custom-command ()
+  (cl-letf ((macports-command "foobar")
+            ((symbol-function #'macports-core--exec)
+             (lambda (cmd &rest _)
+               (should (string-prefix-p "sudo foobar " cmd)))))
+    (macports-core--fetch-exec '("foo") '("--no-mirrors" "-N"))))
+
 (provide 'macports-tests)
 ;;; macports-tests.el ends here
