@@ -126,7 +126,7 @@ AFTER is responsible for setting the markers to nil when finished."
   "Linkify GitHub usernames in current buffer."
   (save-excursion
     (goto-char (point-min))
-    (while (re-search-forward "GitHub:[[:blank:]]*[^[:blank:]]" nil t)
+    (while (re-search-forward "GitHub:[[:blank:]\n]*[^[:blank:]]" nil t)
       (pcase-let ((username (thing-at-point 'symbol))
                   (`(,beg . ,end) (bounds-of-thing-at-point 'symbol)))
         (delete-region beg end)
