@@ -65,8 +65,9 @@
       (macports-describe--async-insert (concat macports-command " -q rdependents " port) "None\n")
       (macports-describe--heading "Deps:")
       (macports-describe--async-insert (concat macports-command " -q rdeps " port) "None\n"
-                                       (lambda (s-marker e-marker)
-                                         (macports-describe--async-mark-build-rdeps port s-marker e-marker))))))
+                                       (lambda (s-marker e-marker had-output)
+                                         (when had-output
+                                           (macports-describe--async-mark-build-rdeps port s-marker e-marker)))))))
 
 (defun macports-describe--heading (text)
   "Insert a heading with content TEXT."
@@ -77,7 +78,11 @@
 
 If result is blank, show EMPTY-MSG instead.
 
-AFTER is a function that accepts the start and end markers of the inserted text.
+AFTER is a function that accepts:
+- The start marker of the inserted text
+- The end marker of the inserted text
+- A boolean that is nil if EMPTY-MSG was used
+
 AFTER is responsible for setting the markers to nil when finished."
   (let ((s-marker (point-marker))
         e-marker
@@ -90,15 +95,13 @@ AFTER is responsible for setting the markers to nil when finished."
        (with-current-buffer buf
          (let* ((inhibit-read-only t)
                 (cleaned (replace-regexp-in-string "\r" "" result))
-                (to-insert (if (string-blank-p cleaned)
-                               empty-msg
-                             cleaned)))
+                (had-output (not (string-blank-p cleaned))))
            (delete-region (marker-position s-marker) (marker-position e-marker))
            (goto-char (marker-position s-marker))
-           (insert to-insert)
+           (insert (if had-output cleaned empty-msg))
            (set-marker e-marker (point))
            (if after
-               (funcall after s-marker e-marker)
+               (funcall after s-marker e-marker had-output)
              (set-marker s-marker nil)
              (set-marker e-marker nil))))))))
 
@@ -148,23 +151,22 @@ Will null-out the markers upon completion."
      (concat macports-command " -q rdeps --no-build " port)
      (lambda (result)
        (with-current-buffer buf
-         (let ((inhibit-read-only t)
-               (no-build (split-string (string-trim result))))
-           (when no-build
-             (save-excursion
-               (goto-char (marker-position s-marker))
-               (let (had-build-only)
-                 (while (re-search-forward "[^[:blank:]\n]+" (marker-position e-marker) t)
-                   (let ((dep (match-string-no-properties 0)))
-                     (unless (member dep no-build)
-                       (add-text-properties (match-beginning 0) (match-end 0) '(face macports-build-only-rdeps))
-                       (insert "*")
-                       (setq had-build-only t))))
-                 (when had-build-only
-                   (goto-char (marker-position e-marker))
-                   (insert "\n *Build-only dependency")))))
-           (set-marker s-marker nil)
-           (set-marker e-marker nil)))))))
+         (save-excursion
+           (goto-char (marker-position s-marker))
+           (let (had-build-only
+                 (inhibit-read-only t)
+                 (no-build (split-string (string-trim result))))
+             (while (re-search-forward "[^[:blank:]\n]+" (marker-position e-marker) t)
+               (let ((dep (match-string-no-properties 0)))
+                 (unless (member dep no-build)
+                   (add-text-properties (match-beginning 0) (match-end 0) '(face macports-build-only-rdeps))
+                   (insert "*")
+                   (setq had-build-only t))))
+             (when had-build-only
+               (goto-char (marker-position e-marker))
+               (insert "\n *Build-only dependency"))))
+         (set-marker s-marker nil)
+         (set-marker e-marker nil))))))
 
 (defun macports-describe-port-contents (port)
   "Display contents of PORT in a new buffer."
