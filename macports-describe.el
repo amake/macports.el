@@ -46,14 +46,18 @@
   "Face used for build-only rdeps text in MacPorts Describe buffers."
   :group 'macports)
 
+(defvar-local macports-describe--status nil
+  "A variable indicating the buffer's loading status.")
+
 (defun macports-describe-port (port)
   "Display detailed information about PORT."
   (interactive (list (macports-core--prompt-port)))
   (with-help-window (get-buffer-create (format "*Port: %s*" port))
-    (setq-local revert-buffer-function
-                (lambda (&rest _)
-                  (macports-describe-port port)))
     (with-current-buffer standard-output
+      (setq-local revert-buffer-function
+                  (lambda (&rest _)
+                    (macports-describe-port port)))
+      (setq-local macports-describe--status (list :rdependents nil :rdeps nil :rdeps-build-only nil))
       (macports-dispatch-mode)
       (shell-command (concat macports-command " -q info " port) standard-output)
       (macports-describe--linkify-urls)
@@ -62,28 +66,37 @@
       (macports-describe--style-headings)
       (goto-char (point-max))
       (macports-describe--heading "Dependents:")
-      (macports-describe--async-insert (concat macports-command " -q rdependents " port) "None\n")
+      (macports-describe--async-insert
+       (concat macports-command " -q rdependents " port) "None\n"
+       (lambda (s-marker e-marker _)
+         (macports-describe--update-status :rdependents t)
+         (macports-describe--dispose-markers s-marker e-marker)))
       (macports-describe--heading "Deps:")
-      (macports-describe--async-insert (concat macports-command " -q rdeps " port) "None\n"
-                                       (lambda (s-marker e-marker had-output)
-                                         (when had-output
-                                           (macports-describe--async-mark-build-rdeps port s-marker e-marker)))))))
+      (macports-describe--async-insert
+       (concat macports-command " -q rdeps " port) "None\n"
+       (lambda (s-marker e-marker had-output)
+         (macports-describe--update-status :rdeps t)
+         (if had-output
+             (macports-describe--async-mark-build-rdeps port s-marker e-marker)
+           (macports-describe--update-status :rdeps-build-only t))))
+                                        ; Return the created buffer, which is the current buffer
+      (current-buffer))))
 
 (defun macports-describe--heading (text)
   "Insert a heading with content TEXT."
   (insert (format "\n%s\n" (propertize text 'face 'macports-describe-heading))))
 
-(defun macports-describe--async-insert (command empty-msg &optional after)
+(defun macports-describe--async-insert (command empty-msg callback)
   "Insert output of COMMAND with temporary loading message.
 
 If result is blank, show EMPTY-MSG instead.
 
-AFTER is a function that accepts:
+CALLBACK is a function that accepts:
 - The start marker of the inserted text
 - The end marker of the inserted text
 - A boolean that is nil if EMPTY-MSG was used
 
-AFTER is responsible for setting the markers to nil when finished."
+CALLBACK is responsible for setting the markers to nil when finished."
   (let ((s-marker (point-marker))
         e-marker
         (buf (current-buffer)))
@@ -100,10 +113,7 @@ AFTER is responsible for setting the markers to nil when finished."
            (goto-char (marker-position s-marker))
            (insert (if had-output cleaned empty-msg))
            (set-marker e-marker (point))
-           (if after
-               (funcall after s-marker e-marker had-output)
-             (set-marker s-marker nil)
-             (set-marker e-marker nil))))))))
+           (funcall callback s-marker e-marker had-output)))))))
 
 (defun macports-describe--linkify-urls ()
   "Linkify URLs in current buffer."
@@ -165,8 +175,16 @@ Will null-out the markers upon completion."
              (when had-build-only
                (goto-char (marker-position e-marker))
                (insert "\n *Build-only dependency"))))
-         (set-marker s-marker nil)
-         (set-marker e-marker nil))))))
+         (macports-describe--dispose-markers s-marker e-marker)
+         (macports-describe--update-status :rdeps-build-only t))))))
+
+(defun macports-describe--update-status (key value)
+  "Update the load status with KEY and VALUE."
+  (setq macports-describe--status (plist-put macports-describe--status key value)))
+
+(defun macports-describe--dispose-markers (&rest markers)
+  "Dispose of all MARKERS."
+  (mapcar (lambda (m) (set-marker m nil)) markers))
 
 (defun macports-describe-port-contents (port)
   "Display contents of PORT in a new buffer."

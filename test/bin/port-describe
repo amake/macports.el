@@ -1,0 +1,50 @@
+#!/bin/bash
+
+port="${*: -1}"
+
+if [[ "$*" =~ info ]]; then
+    cat <<EOF
+$port @1.0 (test)
+Variants:             docs
+
+Description:          $port is a thing
+Homepage:             http://example.com
+Maintainers:          Email: me@example.com, GitHub: me
+EOF
+elif [[ "$*" =~ rdependents\ foo$ ]]; then
+    cat <<EOF
+hoge
+  fuga
+piyo
+EOF
+elif [[ "$*" =~ rdeps\ --no-build\ foo$ ]]; then
+    cat <<EOF
+bar
+  baz
+buzz
+EOF
+elif [[ "$*" =~ rdeps\ foo$ ]]; then
+    cat <<EOF
+bar
+  baz
+buzz
+  bazinga
+    bazonga
+EOF
+elif [[ "$*" =~ rdeps\ (--no-build\ )?baz$ ]]; then
+    cat <<EOF
+foo
+  bar
+buzz
+  bazinga
+    bazonga
+EOF
+elif [[ "$*" =~ rdeps\ buzz$ ]]; then
+    cat <<EOF
+foo
+  bar
+baz
+  bazinga
+    bazonga
+EOF
+fi
