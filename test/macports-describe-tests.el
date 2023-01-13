@@ -41,7 +41,8 @@
 
 (ert-deftest macports-describe-test ()
   (let* ((macports-command (concat macports-test-bin-dir "port-describe"))
-         (content (with-current-buffer (macports-describe-port "foo")
+         (buf (macports-describe-port "foo"))
+         (content (with-current-buffer buf
                     (macports-describe-tests--wait-for-load)
                     (buffer-substring-no-properties (point-min) (point-max)))))
     (should (equal "foo @1.0 (test)
@@ -64,11 +65,13 @@ buzz
     bazonga*
 
  *Build-only dependency
-" content))))
+" content))
+    (kill-buffer buf)))
 
 (ert-deftest macports-describe-test-no-deps ()
   (let* ((macports-command (concat macports-test-bin-dir "port-describe"))
-         (content (with-current-buffer (macports-describe-port "bar")
+         (buf (macports-describe-port "bar"))
+         (content (with-current-buffer buf
                     (macports-describe-tests--wait-for-load)
                     (buffer-substring-no-properties (point-min) (point-max)))))
     (should (equal "bar @1.0 (test)
@@ -84,11 +87,13 @@ None
 Deps:
 None
 
-" content))))
+" content))
+    (kill-buffer buf)))
 
 (ert-deftest macports-describe-test-no-build-only-deps ()
   (let* ((macports-command (concat macports-test-bin-dir "port-describe"))
-         (content (with-current-buffer (macports-describe-port "baz")
+         (buf (macports-describe-port "baz"))
+         (content (with-current-buffer buf
                     (macports-describe-tests--wait-for-load)
                     (buffer-substring-no-properties (point-min) (point-max)))))
     (should (equal "baz @1.0 (test)
@@ -108,11 +113,13 @@ buzz
   bazinga
     bazonga
 
-" content))))
+" content))
+    (kill-buffer buf)))
 
 (ert-deftest macports-describe-test-all-build-only-deps ()
   (let* ((macports-command (concat macports-test-bin-dir "port-describe"))
-         (content (with-current-buffer (macports-describe-port "buzz")
+         (buf (macports-describe-port "buzz"))
+         (content (with-current-buffer buf
                     (macports-describe-tests--wait-for-load)
                     (buffer-substring-no-properties (point-min) (point-max)))))
     (should (equal "buzz @1.0 (test)
@@ -133,7 +140,8 @@ baz*
     bazonga*
 
  *Build-only dependency
-" content))))
+" content))
+    (kill-buffer buf)))
 
 (provide 'macports-describe-tests)
 ;;; macports-describe-tests.el ends here
