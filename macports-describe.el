@@ -79,7 +79,7 @@
          (if had-output
              (macports-describe--async-mark-build-rdeps port s-marker e-marker)
            (macports-describe--update-status :rdeps-build-only t))))
-                                        ; Return the created buffer, which is the current buffer
+      ;; Return the created buffer, which is the current buffer
       (current-buffer))))
 
 (defun macports-describe--heading (text)
