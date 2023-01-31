@@ -41,9 +41,9 @@
   "Face used for loading text in MacPorts Describe buffers."
   :group 'macports)
 
-(defface macports-build-only-rdeps
+(defface macports-build-test-only-rdeps
   '((t (:slant italic)))
-  "Face used for build-only rdeps text in MacPorts Describe buffers."
+  "Face used for build- or test-only rdeps text in MacPorts Describe buffers."
   :group 'macports)
 
 (defvar-local macports-describe--status nil
@@ -57,7 +57,7 @@
       (setq-local revert-buffer-function
                   (lambda (&rest _)
                     (macports-describe-port port)))
-      (setq-local macports-describe--status (list :rdependents nil :rdeps nil :rdeps-build-only nil))
+      (setq-local macports-describe--status (list :rdependents nil :rdeps nil :rdeps-build-test-only nil))
       (macports-dispatch-mode)
       (shell-command (concat macports-command " -q info " port) standard-output)
       (macports-describe--linkify-urls)
@@ -77,8 +77,8 @@
        (lambda (s-marker e-marker had-output)
          (macports-describe--update-status :rdeps t)
          (if had-output
-             (macports-describe--async-mark-build-rdeps port s-marker e-marker)
-           (macports-describe--update-status :rdeps-build-only t))))
+             (macports-describe--async-mark-build-test-rdeps port s-marker e-marker)
+           (macports-describe--update-status :rdeps-build-test-only t))))
       ;; Return the created buffer, which is the current buffer
       (current-buffer))))
 
@@ -152,31 +152,31 @@ CALLBACK is responsible for setting the markers to nil when finished."
     (while (re-search-forward "^[^[:blank:]][^:\n]+:" nil t)
       (add-text-properties (match-beginning 0) (match-end 0) '(face macports-describe-heading)))))
 
-(defun macports-describe--async-mark-build-rdeps (port s-marker e-marker)
-  "Mark build-only rdeps for PORT within the bounded region (S-MARKER to E-MARKER).
+(defun macports-describe--async-mark-build-test-rdeps (port s-marker e-marker)
+  "Mark build/test-only rdeps for PORT within the bounded region.
 
-Will null-out the markers upon completion."
+Will null-out S-MARKER and E-MARKER markers upon completion."
   (let ((buf (current-buffer)))
     (macports-core--async-shell-command-to-string
-     (concat macports-command " -q rdeps --no-build " port)
+     (concat macports-command " -q rdeps --no-build --no-test " port)
      (lambda (result)
        (with-current-buffer buf
          (save-excursion
            (goto-char (marker-position s-marker))
-           (let (had-build-only
+           (let (had-build-test-only
                  (inhibit-read-only t)
                  (no-build (split-string (string-trim result))))
              (while (re-search-forward "[^[:blank:]\n]+" (marker-position e-marker) t)
                (let ((dep (match-string-no-properties 0)))
                  (unless (member dep no-build)
-                   (add-text-properties (match-beginning 0) (match-end 0) '(face macports-build-only-rdeps))
+                   (add-text-properties (match-beginning 0) (match-end 0) '(face macports-build-test-only-rdeps))
                    (insert "*")
-                   (setq had-build-only t))))
-             (when had-build-only
+                   (setq had-build-test-only t))))
+             (when had-build-test-only
                (goto-char (marker-position e-marker))
-               (insert "\n *Build-only dependency"))))
+               (insert "\n *Build- or test-only dependency"))))
          (macports-describe--dispose-markers s-marker e-marker)
-         (macports-describe--update-status :rdeps-build-only t))))))
+         (macports-describe--update-status :rdeps-build-test-only t))))))
 
 (defun macports-describe--update-status (key value)
   "Update the load status with KEY and VALUE."

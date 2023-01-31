@@ -17,7 +17,7 @@ hoge
   fuga
 piyo
 EOF
-elif [[ "$*" =~ rdeps\ --no-build\ foo$ ]]; then
+elif [[ "$*" =~ rdeps\ --no-build\ --no-test\ foo$ ]]; then
     cat <<EOF
 bar
   baz
@@ -31,7 +31,7 @@ buzz
   bazinga
     bazonga
 EOF
-elif [[ "$*" =~ rdeps\ (--no-build\ )?baz$ ]]; then
+elif [[ "$*" =~ rdeps\ (--no-build\ --no-test\ )?baz$ ]]; then
     cat <<EOF
 foo
   bar

@@ -64,7 +64,7 @@ buzz
   bazinga*
     bazonga*
 
- *Build-only dependency
+ *Build- or test-only dependency
 " content))
     (kill-buffer buf)))
 
@@ -90,7 +90,7 @@ None
 " content))
     (kill-buffer buf)))
 
-(ert-deftest macports-describe-test-no-build-only-deps ()
+(ert-deftest macports-describe-test-no-build-test-only-deps ()
   (let* ((macports-command (concat macports-test-bin-dir "port-describe"))
          (buf (macports-describe-port "baz"))
          (content (with-current-buffer buf
@@ -116,7 +116,7 @@ buzz
 " content))
     (kill-buffer buf)))
 
-(ert-deftest macports-describe-test-all-build-only-deps ()
+(ert-deftest macports-describe-test-all-build-test-only-deps ()
   (let* ((macports-command (concat macports-test-bin-dir "port-describe"))
          (buf (macports-describe-port "buzz"))
          (content (with-current-buffer buf
@@ -139,7 +139,7 @@ baz*
   bazinga*
     bazonga*
 
- *Build-only dependency
+ *Build- or test-only dependency
 " content))
     (kill-buffer buf)))
 
