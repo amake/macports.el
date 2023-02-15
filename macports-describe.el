@@ -130,8 +130,11 @@ CALLBACK is responsible for setting the markers to nil when finished."
   (save-excursion
     (goto-char (point-min))
     (while (re-search-forward "[^[:blank:]]+@[^[:blank:]]" nil t)
-      (pcase-let ((email (thing-at-point 'email))
-                  (`(,beg . ,end) (bounds-of-thing-at-point 'email)))
+      ;; Using 'email fails in cases where the email contains a number, so we
+      ;; use 'symbol which happens to give good results.
+      ;; https://debbugs.gnu.org/cgi/bugreport.cgi?bug=61519
+      (pcase-let ((email (thing-at-point 'symbol))
+                  (`(,beg . ,end) (bounds-of-thing-at-point 'symbol)))
         (delete-region beg end)
         (help-insert-xref-button email 'help-url (concat "mailto:" email))))))
 
