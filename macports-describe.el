@@ -41,7 +41,7 @@
   "Face used for loading text in MacPorts Describe buffers."
   :group 'macports)
 
-(defface macports-build-test-only-rdeps
+(defface macports-describe-build-test-only-rdeps
   '((t (:slant italic)))
   "Face used for build- or test-only rdeps text in MacPorts Describe buffers."
   :group 'macports)
@@ -172,7 +172,7 @@ Will null-out S-MARKER and E-MARKER markers upon completion."
              (while (re-search-forward "[^[:blank:]\n]+" (marker-position e-marker) t)
                (let ((dep (match-string-no-properties 0)))
                  (unless (member dep no-build)
-                   (add-text-properties (match-beginning 0) (match-end 0) '(face macports-build-test-only-rdeps))
+                   (add-text-properties (match-beginning 0) (match-end 0) '(face macports-describe-build-test-only-rdeps))
                    (insert "*")
                    (setq had-build-test-only t))))
              (when had-build-test-only
