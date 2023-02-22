@@ -135,7 +135,7 @@ See `macports-installed--init-flag' for details.")
   "Mark all ports from START to END for upgrade.
 
 Acts within the region when active, otherwise on entire buffer."
-  (interactive "r")
+  (interactive)
   (macports-outdated--ensure-macports-outdated-mode)
   ;; `use-region-beginning', `use-region-end' not available in Emacs 25
   (setq start (or start (and (use-region-p) (region-beginning)) (point-min)))
