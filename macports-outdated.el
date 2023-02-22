@@ -131,14 +131,19 @@ See `macports-installed--init-flag' for details.")
   (macports-outdated--ensure-macports-outdated-mode)
   (tabulated-list-put-tag "U" t))
 
-(defun macports-outdated-mark-upgrades ()
-  "Mark all ports for upgrade."
-  (interactive)
+(defun macports-outdated-mark-upgrades (&optional start end)
+  "Mark all ports from START to END for upgrade.
+
+Acts within the region when active, otherwise on entire buffer."
+  (interactive "r")
   (macports-outdated--ensure-macports-outdated-mode)
+  ;; `use-region-beginning', `use-region-end' not available in Emacs 25
+  (setq start (or start (and (use-region-p) (region-beginning)) (point-min)))
+  (setq end (or end (and (use-region-p) (region-end)) (point-max)))
   (save-excursion
-    (goto-char (point-min))
+    (goto-char start)
     (let ((count 0))
-      (while (not (eobp))
+      (while (and (< (point) end) (not (eobp)))
         (macports-outdated-mark-upgrade)
         (setq count (1+ count)))
       (message "Outdated ports marked for upgrade: %d" count))))

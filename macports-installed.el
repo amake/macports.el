@@ -184,14 +184,19 @@ invocation of the former.")
   (macports-installed--ensure-macports-installed-mode)
   (not (string-blank-p (elt (tabulated-list-get-entry) 2))))
 
-(defun macports-installed-mark-inactive ()
-  "Mark all inactive ports for uninstall."
+(defun macports-installed-mark-inactive (&optional start end)
+  "Mark all inactive ports from START to END for uninstall.
+
+Acts within the region when active, otherwise on entire buffer."
   (interactive)
   (macports-installed--ensure-macports-installed-mode)
+  ;; `use-region-beginning', `use-region-end' not available in Emacs 25
+  (setq start (or start (and (use-region-p) (region-beginning)) (point-min)))
+  (setq end (or end (and (use-region-p) (region-end)) (point-max)))
   (save-excursion
-    (goto-char (point-min))
+    (goto-char start)
     (let ((count 0))
-      (while (not (eobp))
+      (while (and (< (point) end) (not (eobp)))
         (if (macports-installed-item-active-p)
             (forward-line)
           (macports-installed-mark-uninstall)
@@ -203,14 +208,19 @@ invocation of the former.")
   (macports-installed--ensure-macports-installed-mode)
   (not (string-blank-p (elt (tabulated-list-get-entry) 4))))
 
-(defun macports-installed-mark-leaves ()
-  "Mark all leaf ports for uninstall."
+(defun macports-installed-mark-leaves (&optional start end)
+  "Mark all leaf ports from START to END for uninstall.
+
+Acts within the region when active, otherwise on entire buffer."
   (interactive)
   (macports-installed--ensure-macports-installed-mode)
+  ;; `use-region-beginning', `use-region-end' not available in Emacs 25
+  (setq start (or start (and (use-region-p) (region-beginning)) (point-min)))
+  (setq end (or end (and (use-region-p) (region-end)) (point-max)))
   (save-excursion
-    (goto-char (point-min))
+    (goto-char start)
     (let ((count 0))
-      (while (not (eobp))
+      (while (and (< (point) end) (not (eobp)))
         (if (not (macports-installed-item-leaf-p))
             (forward-line)
           (macports-installed-mark-uninstall)
