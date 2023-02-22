@@ -41,6 +41,11 @@
   "Face used for loading text in MacPorts Describe buffers."
   :group 'macports)
 
+(defface macports-describe-port-button-hover
+  '((t (:underline t)))
+  "Face used when mouse-hovering over link buttons to other ports."
+  :group 'macports)
+
 (defface macports-describe-build-test-only-rdeps
   '((t (:slant italic)))
   "Face used for build- or test-only rdeps text in MacPorts Describe buffers."
@@ -63,12 +68,17 @@
       (macports-describe--linkify-urls)
       (macports-describe--linkify-emails)
       (macports-describe--linkify-github)
+      (macports-describe--linkify-ports-in-headers
+       "Replaced by:" "Sub-ports:" "Build Dependencies:" "Library Dependencies:"
+       "Runtime Dependencies:" "Test Dependencies:" "Conflicts with:")
       (macports-describe--style-headings)
       (goto-char (point-max))
       (macports-describe--heading "Dependents:")
       (macports-describe--async-insert
        (concat macports-command " -q rdependents " port) "None\n"
-       (lambda (s-marker e-marker _)
+       (lambda (s-marker e-marker had-output)
+         (if had-output
+             (macports-describe--linkify-ports (marker-position s-marker) (marker-position e-marker)))
          (macports-describe--update-status :rdependents t)
          (macports-describe--dispose-markers s-marker e-marker)))
       (macports-describe--heading "Deps:")
@@ -77,7 +87,9 @@
        (lambda (s-marker e-marker had-output)
          (macports-describe--update-status :rdeps t)
          (if had-output
-             (macports-describe--async-mark-build-test-rdeps port s-marker e-marker)
+             (progn
+               (macports-describe--linkify-ports (marker-position s-marker) (marker-position e-marker))
+               (macports-describe--async-mark-build-test-rdeps port s-marker e-marker))
            (macports-describe--update-status :rdeps-build-test-only t))))
       ;; Return the created buffer, which is the current buffer
       (current-buffer))))
@@ -154,6 +166,30 @@ CALLBACK is responsible for setting the markers to nil when finished."
     (goto-char (point-min))
     (while (re-search-forward "^[^[:blank:]][^:\n]+:" nil t)
       (add-text-properties (match-beginning 0) (match-end 0) '(face macports-describe-heading)))))
+
+(defun macports-describe--linkify-ports-in-headers (&rest headers)
+  "Linkify ports listed under the specified HEADERS."
+  (save-excursion
+    (dolist (header headers)
+      (goto-char (point-min))
+      (when (re-search-forward (concat "^" header) nil t)
+        (let ((start (match-end 0))
+              (end (save-excursion (and (re-search-forward "^[^[:blank:]]" nil t) (match-beginning 0)))))
+          (macports-describe--linkify-ports start end))))))
+
+(defun macports-describe--linkify-ports (start end)
+  "Linkify ports between START and END."
+  (save-excursion
+    (goto-char start)
+    (while (re-search-forward "[^[:blank:]\n,]+" end t)
+      (let ((start (match-beginning 0))
+            (end (match-end 0))
+            (port (match-string-no-properties 0)))
+        (make-text-button
+         start end
+         'action (lambda (_) (macports-describe-port port))
+         'face 'default
+         'mouse-face 'macports-describe-port-button-hover)))))
 
 (defun macports-describe--async-mark-build-test-rdeps (port s-marker e-marker)
   "Mark build/test-only rdeps for PORT within the bounded region.
