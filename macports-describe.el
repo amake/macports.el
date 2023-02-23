@@ -57,11 +57,19 @@
 (defun macports-describe-port (port)
   "Display detailed information about PORT."
   (interactive (list (macports-core--prompt-port)))
-  (with-help-window (get-buffer-create (format "*Port: %s*" port))
+  (let* ((buf-name (format "*Port: %s*" port))
+         (buf (get-buffer buf-name)))
+    (if buf
+        (pop-to-buffer buf)
+      (macports-describe--init-buffer port (get-buffer-create buf-name)))))
+
+(defun macports-describe--init-buffer (port buf)
+  "Init help BUF describing PORT."
+  (with-help-window buf
     (with-current-buffer standard-output
       (setq-local revert-buffer-function
                   (lambda (&rest _)
-                    (macports-describe-port port)))
+                    (macports-describe--init-buffer port buf)))
       (setq-local macports-describe--status (list :rdependents nil :rdeps nil :rdeps-build-test-only nil))
       (macports-dispatch-mode)
       (shell-command (concat macports-command " -q info " port) standard-output)
