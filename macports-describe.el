@@ -77,8 +77,8 @@
       (macports-describe--linkify-emails)
       (macports-describe--linkify-github)
       (macports-describe--linkify-ports-in-headers
-       "Replaced by:" "Sub-ports:" "Extract Dependencies:" "Build Dependencies:" "Library Dependencies:"
-       "Runtime Dependencies:" "Test Dependencies:" "Conflicts with:")
+       "Replaced by:" "Sub-ports:" "Fetch Dependencies:" "Extract Dependencies:" "Build Dependencies:"
+       "Library Dependencies:" "Runtime Dependencies:" "Test Dependencies:" "Conflicts with:")
       (macports-describe--style-headings)
       (goto-char (point-max))
       (macports-describe--heading "Dependents:")
