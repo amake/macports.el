@@ -124,7 +124,7 @@ CALLBACK is responsible for setting the markers to nil when finished."
     (setq e-marker (point-marker))
     (macports-core--async-shell-command-to-string
      command
-     (lambda (result)
+     (lambda (result _exit-status)
        (with-current-buffer buf
          (let* ((inhibit-read-only t)
                 (cleaned (replace-regexp-in-string "\r" "" result))
@@ -206,7 +206,7 @@ Will null-out S-MARKER and E-MARKER markers upon completion."
   (let ((buf (current-buffer)))
     (macports-core--async-shell-command-to-string
      (concat macports-command " -q rdeps --no-build --no-test " port)
-     (lambda (result)
+     (lambda (result _exit-status)
        (with-current-buffer buf
          (save-excursion
            (goto-char (marker-position s-marker))

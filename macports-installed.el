@@ -89,17 +89,17 @@ invocation of the former.")
                 (transient--redisplay)))))
       (macports-core--async-shell-command-to-string
        (concat macports-command " -q installed")
-       (lambda (output)
+       (lambda (output _exit-status)
          (setq installed (funcall count-fn output))
          (funcall update-fn)))
       (macports-core--async-shell-command-to-string
        (concat macports-command " -q echo leaves")
-       (lambda (output)
+       (lambda (output _exit-status)
          (setq leaves (funcall count-fn output))
          (funcall update-fn)))
       (macports-core--async-shell-command-to-string
        (concat macports-command " -q echo inactive")
-       (lambda (output)
+       (lambda (output _exit-status)
          (setq inactive (funcall count-fn output))
          (funcall update-fn))))))
 

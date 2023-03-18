@@ -60,7 +60,7 @@ See `macports-installed--init-flag' for details.")
   (when macports-show-status
     (macports-core--async-shell-command-to-string
      (concat macports-command " -q outdated")
-     (lambda (output)
+     (lambda (output _exit-status)
        (let* ((trimmed (string-trim output))
               (count (if (string-empty-p trimmed)
                          0

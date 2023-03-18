@@ -324,8 +324,10 @@ If PORT not supplied, choose interactively."
 
 Return the temporary output buffer which command is writing to during execution.
 
-When the command is finished, call CALLBACK with the resulting output as a
-string.
+When the command is finished, call CALLBACK with the result. The provided
+function should accept two parameters:
+- The command output as a string
+- The process's exit code
 
 Inspired by https://lists.gnu.org/archive/html/help-gnu-emacs/2008-06/msg00032.html"
   (let ((buf (macports-core--gen-temp-buffer)))
@@ -335,8 +337,9 @@ Inspired by https://lists.gnu.org/archive/html/help-gnu-emacs/2008-06/msg00032.h
        (when (memq (process-status process) '(exit signal))
          (with-current-buffer buf
            (let ((output
-                  (buffer-substring-no-properties (point-min) (point-max))))
-             (funcall callback output)))
+                  (buffer-substring-no-properties (point-min) (point-max)))
+                 (exit-status (process-exit-status process)))
+             (funcall callback output exit-status)))
          (kill-buffer buf))))
     buf))
 
