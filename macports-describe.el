@@ -84,17 +84,17 @@
       (macports-describe--heading "Dependents:")
       (macports-describe--async-insert
        (concat macports-command " -q rdependents " port) "None\n"
-       (lambda (s-marker e-marker had-output)
-         (if had-output
+       (lambda (s-marker e-marker had-output succeeded)
+         (if (and had-output succeeded)
              (macports-describe--linkify-ports (marker-position s-marker) (marker-position e-marker)))
          (macports-describe--update-status :rdependents t)
          (macports-describe--dispose-markers s-marker e-marker)))
       (macports-describe--heading "Deps:")
       (macports-describe--async-insert
        (concat macports-command " -q rdeps " port) "None\n"
-       (lambda (s-marker e-marker had-output)
+       (lambda (s-marker e-marker had-output succeeded)
          (macports-describe--update-status :rdeps t)
-         (if had-output
+         (if (and had-output succeeded)
              (progn
                (macports-describe--linkify-ports (marker-position s-marker) (marker-position e-marker))
                (macports-describe--async-mark-build-test-rdeps port s-marker e-marker))
@@ -115,6 +115,7 @@ CALLBACK is a function that accepts:
 - The start marker of the inserted text
 - The end marker of the inserted text
 - A boolean that is nil if EMPTY-MSG was used
+- A boolean that is nil if the command exited with an error
 
 CALLBACK is responsible for setting the markers to nil when finished."
   (let ((s-marker (point-marker))
@@ -124,7 +125,7 @@ CALLBACK is responsible for setting the markers to nil when finished."
     (setq e-marker (point-marker))
     (macports-core--async-shell-command-to-string
      command
-     (lambda (result _exit-status)
+     (lambda (result exit-status)
        (with-current-buffer buf
          (let* ((inhibit-read-only t)
                 (cleaned (replace-regexp-in-string "\r" "" result))
@@ -133,7 +134,7 @@ CALLBACK is responsible for setting the markers to nil when finished."
            (goto-char (marker-position s-marker))
            (insert (if had-output cleaned empty-msg))
            (set-marker e-marker (point))
-           (funcall callback s-marker e-marker had-output)))))))
+           (funcall callback s-marker e-marker had-output (= exit-status 0))))))))
 
 (defun macports-describe--linkify-urls ()
   "Linkify URLs in current buffer."
