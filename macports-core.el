@@ -138,18 +138,18 @@
 
 ;; TODO: Support choosing variants
 ;;;###autoload (autoload 'macports "macports-core" nil t)
-(transient-define-prefix macports-install (port)
+(transient-define-prefix macports-install (ports)
   "Transient for MacPorts install.
 
-If PORT not supplied, choose interactively."
+PORTS is a list of port names; if not supplied, choose interactively."
   macports-core--output-flags-infix
   macports-core--sources-flags-infix
   ["Commands"
    ("i"
-    (lambda () (concat "Install " (car (oref transient--prefix scope))))
+    (lambda () (concat "Install " (string-join (oref transient--prefix scope) ", ")))
     macports-core--install-exec)]
-  (interactive (list (macports-core--prompt-port)))
-  (transient-setup 'macports-install nil nil :scope `(,port)))
+  (interactive (list (macports-core--prompt-ports)))
+  (transient-setup 'macports-install nil nil :scope ports))
 
 (defun macports-core--install-exec (ports args)
   "Run MacPorts install with PORTS and ARGS."
@@ -207,6 +207,15 @@ This is quite slow!"
   (let* ((cmd (concat macports-command " -q echo name:")))
     (completing-read
      "Search: "
+     (split-string (shell-command-to-string cmd)))))
+
+(defun macports-core--prompt-ports ()
+  "Prompt user to choose multiple ports from a list of all available ports.
+
+This is quite slow!"
+  (let* ((cmd (concat macports-command " -q echo name:")))
+    (completing-read-multiple
+     "Ports (separated by comma): "
      (split-string (shell-command-to-string cmd)))))
 
 ;;;###autoload (autoload 'macports "macports-core" nil t)
