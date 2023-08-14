@@ -43,8 +43,9 @@ lint: ## Check for issues
 lint: | $(elpa_dir)
 	$(run_emacs) \
 		-l package-lint \
+		--eval '(setq enable-local-variables nil)' \
 		--eval '(setq package-lint-main-file "macports.el")' \
-		-f package-lint-batch-and-exit *.el
+		-f package-lint-batch-and-exit *.el test/*.el
 
 .PHONY: test-unit
 test-unit:
