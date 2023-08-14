@@ -43,7 +43,6 @@ lint: ## Check for issues
 lint: | $(elpa_dir)
 	$(run_emacs) \
 		-l package-lint \
-		--eval '(setq package-lint--sane-prefixes (concat "\\`macports\\|" package-lint--sane-prefixes))' \
 		-f package-lint-batch-and-exit *.el
 
 .PHONY: test-unit
