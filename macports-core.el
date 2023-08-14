@@ -355,7 +355,7 @@ Inspired by https://lists.gnu.org/archive/html/help-gnu-emacs/2008-06/msg00032.h
 (defun macports-core--gen-temp-buffer ()
   "Get a temp buffer. Adapter for pre-Emacs 28 compatibility."
   (let ((args '(" *temp*")))
-    (when (and (functionp 'func-arity)
+    (when (and (fboundp 'func-arity)
                (> (cdr (func-arity #'generate-new-buffer)) 1))
       (setq args `(,@args t)))
     (apply #'generate-new-buffer args)))
