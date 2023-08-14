@@ -1,4 +1,3 @@
-SHELL := /bin/bash
 # Run an arbitrary Emacs version like
 #   make test emacs="docker run --rm -it -v $PWD:/work -w /work silex/emacs:26 emacs"
 emacs := emacs
@@ -44,8 +43,7 @@ lint: ## Check for issues
 lint: | $(elpa_dir)
 	$(run_emacs) \
 		-l package-lint \
-		--eval '(setq package-lint--sane-prefixes \
-			(concat "\\`macports\\|" package-lint--sane-prefixes))' \
+		--eval '(setq package-lint--sane-prefixes (concat "\\`macports\\|" package-lint--sane-prefixes))' \
 		-f package-lint-batch-and-exit *.el
 
 .PHONY: test-unit
