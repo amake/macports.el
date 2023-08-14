@@ -15,7 +15,7 @@ test_versions := 25 26 27 28 29
 
 .PHONY: test
 test: ## Compile and run unit tests
-test: test-compile test-unit
+test: lint test-compile test-unit
 
 define test_one
   .PHONY: test-$(1)
