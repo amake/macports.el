@@ -43,6 +43,7 @@ lint: ## Check for issues
 lint: | $(elpa_dir)
 	$(run_emacs) \
 		-l package-lint \
+		--eval '(setq package-lint-main-file "macports.el")' \
 		-f package-lint-batch-and-exit *.el
 
 .PHONY: test-unit
