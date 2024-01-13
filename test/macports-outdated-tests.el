@@ -34,12 +34,15 @@
 (ert-deftest macports-outdated-test ()
   (cl-letf (((symbol-function #'shell-command-to-string)
              (lambda (_) (concat "foobar                               1.0_0 < 2.0_0\n"
-                                 "bizzbazz                             0.1_0 < 0.1_1\n"))))
+                                 "bizzbazz                             0.1_0 < 0.1_1\n"
+                                 "bazinga                              0.2_0 < 0.1_0  (epoch 0 < 1)\n"))))
     (macports-outdated)
-    (should (equal '(("bizzbazz"
-                      ["bizzbazz" "0.1_0" "0.1_1"])
+    (should (equal '(("bazinga"
+                      ["bazinga" "0.2_0" "0.1_0" "(epoch 0 < 1)"])
+                     ("bizzbazz"
+                      ["bizzbazz" "0.1_0" "0.1_1" ""])
                      ("foobar"
-                      ["foobar" "1.0_0" "2.0_0"]))
+                      ["foobar" "1.0_0" "2.0_0" ""]))
                    tabulated-list-entries))))
 
 (ert-deftest macports-outdated-test-empty ()

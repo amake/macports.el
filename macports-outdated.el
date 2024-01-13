@@ -76,7 +76,8 @@ See `macports-installed--init-flag' for details.")
 (defvar macports-outdated-columns
   [("Port" 32 t)
    ("Current" 16 t)
-   ("Latest" 16 t)]
+   ("Latest" 16 t)
+   ("Remarks" 16 t)]
   "Columns to be shown in `macports-outdated-mode'.")
 
 (defvar macports-outdated-mode-map
@@ -207,13 +208,15 @@ Acts within the region when active, otherwise on entire buffer."
          (lambda (e)
            (let ((name (nth 0 e))
                  (curr-version (nth 1 e))
-                 (new-version (nth 3 e)))
+                 (new-version (nth 3 e))
+                 (remarks (mapconcat #'identity (nthcdr 4 e) " ")))
              (list
               name
               (vector
                name
                curr-version
-               new-version))))
+               new-version
+               remarks))))
          (macports-outdated--outdated-items))
         macports-outdated--init-flag
         t))
