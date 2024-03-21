@@ -232,7 +232,7 @@ Will null-out S-MARKER and E-MARKER markers upon completion."
 
 (defun macports-describe--dispose-markers (&rest markers)
   "Dispose of all MARKERS."
-  (mapcar (lambda (m) (set-marker m nil)) markers))
+  (mapc (lambda (m) (set-marker m nil)) markers))
 
 (defun macports-describe-port-contents (port)
   "Display contents of PORT in a new buffer."
