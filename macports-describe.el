@@ -126,14 +126,15 @@ CALLBACK is responsible for setting the markers to nil when finished."
      command
      (lambda (result exit-status)
        (with-current-buffer buf
-         (let* ((inhibit-read-only t)
-                (cleaned (replace-regexp-in-string "\r" "" result))
-                (had-output (not (string-blank-p cleaned))))
-           (delete-region (marker-position s-marker) (marker-position e-marker))
-           (goto-char (marker-position s-marker))
-           (insert (if had-output cleaned empty-msg))
-           (set-marker e-marker (point))
-           (funcall callback s-marker e-marker had-output (= exit-status 0))))))))
+         (save-excursion
+           (let* ((inhibit-read-only t)
+                  (cleaned (replace-regexp-in-string "\r" "" result))
+                  (had-output (not (string-blank-p cleaned))))
+             (delete-region (marker-position s-marker) (marker-position e-marker))
+             (goto-char (marker-position s-marker))
+             (insert (if had-output cleaned empty-msg))
+             (set-marker e-marker (point))
+             (funcall callback s-marker e-marker had-output (= exit-status 0)))))))))
 
 (defun macports-describe--linkify-urls ()
   "Linkify URLs in current buffer."
