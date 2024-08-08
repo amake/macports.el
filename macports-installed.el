@@ -417,15 +417,16 @@ Acts within the region when active, otherwise on entire buffer."
     (macports-core--async-shell-command-to-string
      (concat macports-command " -N space active")
      (lambda (output _exit-status)
-       (with-current-buffer buf
-         (let ((sizes (macports-installed--parse-spaces output)))
-           (dolist (entry tabulated-list-entries)
-             (let* ((id (nth 0 entry))
-                    (size (gethash id sizes)))
-               (when size
-                 (setf (elt (nth 1 entry) 5) size))))
-           (macports-installed--save-tags
-            (tabulated-list-print t))))))))
+       (when (buffer-live-p buf)
+         (with-current-buffer buf
+           (let ((sizes (macports-installed--parse-spaces output)))
+             (dolist (entry tabulated-list-entries)
+               (let* ((id (nth 0 entry))
+                      (size (gethash id sizes)))
+                 (when size
+                   (setf (elt (nth 1 entry) 5) size))))
+             (macports-installed--save-tags
+              (tabulated-list-print t)))))))))
 
 (defun macports-installed--installed-items ()
   "Return linewise output of `port installed'."
