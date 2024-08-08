@@ -125,16 +125,17 @@ CALLBACK is responsible for setting the markers to nil when finished."
     (macports-core--async-shell-command-to-string
      command
      (lambda (result exit-status)
-       (with-current-buffer buf
-         (save-excursion
-           (let* ((inhibit-read-only t)
-                  (cleaned (replace-regexp-in-string "\r" "" result))
-                  (had-output (not (string-blank-p cleaned))))
-             (delete-region (marker-position s-marker) (marker-position e-marker))
-             (goto-char (marker-position s-marker))
-             (insert (if had-output cleaned empty-msg))
-             (set-marker e-marker (point))
-             (funcall callback s-marker e-marker had-output (= exit-status 0)))))))))
+       (when (buffer-live-p buf)
+         (with-current-buffer buf
+           (save-excursion
+             (let* ((inhibit-read-only t)
+                    (cleaned (replace-regexp-in-string "\r" "" result))
+                    (had-output (not (string-blank-p cleaned))))
+               (delete-region (marker-position s-marker) (marker-position e-marker))
+               (goto-char (marker-position s-marker))
+               (insert (if had-output cleaned empty-msg))
+               (set-marker e-marker (point))
+               (funcall callback s-marker e-marker had-output (= exit-status 0))))))))))
 
 (defun macports-describe--linkify-urls ()
   "Linkify URLs in current buffer."
@@ -208,23 +209,24 @@ Will null-out S-MARKER and E-MARKER markers upon completion."
     (macports-core--async-shell-command-to-string
      (concat macports-command " -q rdeps --no-build --no-test " port)
      (lambda (result _exit-status)
-       (with-current-buffer buf
-         (save-excursion
-           (goto-char (marker-position s-marker))
-           (let (had-build-test-only
-                 (inhibit-read-only t)
-                 (no-build (split-string (string-trim result))))
-             (while (re-search-forward "[^[:blank:]\n]+" (marker-position e-marker) t)
-               (let ((dep (match-string-no-properties 0)))
-                 (unless (member dep no-build)
-                   (add-text-properties (match-beginning 0) (match-end 0) '(face macports-describe-build-test-only-rdeps))
-                   (insert "*")
-                   (setq had-build-test-only t))))
-             (when had-build-test-only
-               (goto-char (marker-position e-marker))
-               (insert "\n *Build- or test-only dependency"))))
-         (macports-describe--dispose-markers s-marker e-marker)
-         (macports-describe--update-status :rdeps-build-test-only t))))))
+       (when (buffer-live-p buf)
+         (with-current-buffer buf
+           (save-excursion
+             (goto-char (marker-position s-marker))
+             (let (had-build-test-only
+                   (inhibit-read-only t)
+                   (no-build (split-string (string-trim result))))
+               (while (re-search-forward "[^[:blank:]\n]+" (marker-position e-marker) t)
+                 (let ((dep (match-string-no-properties 0)))
+                   (unless (member dep no-build)
+                     (add-text-properties (match-beginning 0) (match-end 0) '(face macports-describe-build-test-only-rdeps))
+                     (insert "*")
+                     (setq had-build-test-only t))))
+               (when had-build-test-only
+                 (goto-char (marker-position e-marker))
+                 (insert "\n *Build- or test-only dependency"))))
+           (macports-describe--dispose-markers s-marker e-marker)
+           (macports-describe--update-status :rdeps-build-test-only t)))))))
 
 (defun macports-describe--update-status (key value)
   "Update the load status with KEY and VALUE."
