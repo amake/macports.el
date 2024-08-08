@@ -42,11 +42,11 @@
                                   "bizzbazz\n")))))
     (macports-installed)
     (should (equal '(("bazinga@20220426+blah"
-                      ["bazinga" "@20220426+blah" "" "" "Yes"])
+                      ["bazinga" "@20220426+blah" "" "" "Yes" ""])
                      ("bizzbazz@0.1_0"
-                      ["bizzbazz" "@0.1_0" "" "Yes" ""])
+                      ["bizzbazz" "@0.1_0" "" "Yes" "" ""])
                      ("foobar@1.0_0"
-                      ["foobar" "@1.0_0" "Yes" "" ""]))
+                      ["foobar" "@1.0_0" "Yes" "" "" ""]))
                    tabulated-list-entries))))
 
 (ert-deftest macports-installed-test-empty ()

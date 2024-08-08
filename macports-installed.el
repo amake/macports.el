@@ -106,10 +106,11 @@ invocation of the former.")
 
 (defvar macports-installed-columns
   [("Port" 32 t)
-   ("Version" 48 t)
+   ("Version" 32 t)
    ("Active" 8 t)
    ("Requested" 10 t)
-   ("Leaf" 8 t)]
+   ("Leaf" 8 t)
+   ("Size" 8 macports-installed--size-compare)]
   "Columns to be shown in `macports-installed-mode'.")
 
 (defvar macports-installed-mode-map
@@ -355,6 +356,34 @@ Acts within the region when active, otherwise on entire buffer."
 
 (add-to-list 'macports-core--refresh-major-modes 'macports-installed-mode)
 
+(defmacro macports-installed--save-tags (&rest body)
+  "Save tags, execute BODY, and restore tags."
+  `(let ((tags (macports-installed--get-tags)))
+     ,@body
+     (macports-installed--restore-tags tags)))
+
+(defun macports-installed--get-tags ()
+  "Return a list of tags for each line in the buffer."
+  (save-excursion
+    (goto-char (point-min))
+    (let ((tags (make-hash-table :test #'equal))
+          ;; Below pattern adapted from `tabulated-list-clear-all-tags'
+          ;; Match non-space in the first n characters.
+          (re (format "^ \\{0,%d\\}\\([^ ]\\)" (1- tabulated-list-padding))))
+      (while (re-search-forward re nil 'noerror)
+        (puthash (tabulated-list-get-id) (match-string-no-properties 1) tags))
+      tags)))
+
+(defun macports-installed--restore-tags (tags)
+  "Restore tags from TAGS."
+  (save-excursion
+    (goto-char (point-min))
+    (let ((inhibit-read-only t))
+      (while (not (eobp))
+        (when-let ((tag (gethash (tabulated-list-get-id) tags)))
+          (tabulated-list-put-tag tag))
+        (forward-line)))))
+
 (defun macports-installed-refresh ()
   "Refresh the list of installed ports."
   (macports-installed--ensure-macports-installed-mode)
@@ -378,10 +407,25 @@ Acts within the region when active, otherwise on entire buffer."
                  version
                  (if active "Yes" "")
                  (if (gethash name requested) "Yes" "")
-                 (if (gethash name leaves) "Yes" "")))))
+                 (if (gethash name leaves) "Yes" "")
+                 ""                   ; Data size. Will populate asynchronously.
+                 ))))
            installed)
           macports-installed--init-flag
-          t)))
+          t))
+  (let ((buf (current-buffer)))
+    (macports-core--async-shell-command-to-string
+     (concat macports-command " -N space active")
+     (lambda (output _exit-status)
+       (with-current-buffer buf
+         (let ((sizes (macports-installed--parse-spaces output)))
+           (dolist (entry tabulated-list-entries)
+             (let* ((id (nth 0 entry))
+                    (size (gethash id sizes)))
+               (when size
+                 (setf (elt (nth 1 entry) 5) size))))
+           (macports-installed--save-tags
+            (tabulated-list-print t))))))))
 
 (defun macports-installed--installed-items ()
   "Return linewise output of `port installed'."
@@ -405,6 +449,36 @@ Acts within the region when active, otherwise on entire buffer."
          (output (string-trim (shell-command-to-string cmd))))
     (unless (string-empty-p output)
       (split-string output))))
+
+(defun macports-installed--parse-spaces (output)
+  "Parse the OUTPUT of `port space'."
+  (let ((lines (split-string (string-trim output) "\n"))
+        (sizes (make-hash-table :test #'equal)))
+    (dolist (line lines)
+      (let* ((parts (split-string line))
+             (id (concat (nth 2 parts) (nth 3 parts)))
+             (size (concat (nth 0 parts) " " (nth 1 parts))))
+        (puthash id size sizes)))
+    sizes))
+
+(defun macports-installed--size-compare (a b)
+  "Compare the size of A and B."
+  (let ((size-a (macports-installed--size-compare-key a))
+        (size-b (macports-installed--size-compare-key b)))
+    (< size-a size-b)))
+
+(defun macports-installed--size-compare-key (entry)
+  "Return the size of ENTRY for comparison."
+  (let ((size (elt (nth 1 entry) 5)))
+    (if (string-empty-p size)
+        0
+      (let* ((parts (split-string size))
+             (coefficient (pcase (car (last parts))
+                            ("B" 1)
+                            ("KiB" 1024)
+                            ("MiB" (* 1024 1024))
+                            ("GiB" (* 1024 1024 1024)))))
+        (* coefficient (string-to-number size))))))
 
 (provide 'macports-installed)
 ;;; macports-installed.el ends here
