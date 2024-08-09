@@ -32,6 +32,7 @@ test-matrix: $(addprefix test-,$(test_versions))
 $(elpa_dir):
 	$(run_emacs) \
 		--eval '(make-directory "$(@)")' \
+		--eval '(when (= emacs-major-version 26) (setq package-check-signature nil))' \
 		--eval "(let ((to-install (seq-filter (lambda (e) (not (require e nil t))) '($(all_deps))))) \
 			(when to-install (package-refresh-contents) (mapc #'package-install to-install)))"
 
