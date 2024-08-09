@@ -1,5 +1,5 @@
 # Run an arbitrary Emacs version like
-#   make test emacs="docker run --rm -it -v $PWD:/work -w /work silex/emacs:26-alpine emacs"
+#   make test emacs="docker run --rm -it -v $PWD:/work -w /work silex/emacs:26 emacs"
 emacs := emacs
 elpa_dir := elpa
 run_emacs = $(emacs) -Q --batch -L . -L $(elpa_dir) -l package \
@@ -20,7 +20,7 @@ test: lint test-compile test-unit
 define test_one
   .PHONY: test-$(1)
   test-$(1):
-	  $$(MAKE) test elpa_dir=elpa-$(1) emacs='docker run --rm -it -v $$(PWD):/work -w /work silex/emacs:$(1)-alpine emacs'
+	  $$(MAKE) test elpa_dir=elpa-$(1) emacs='docker run --rm -it -v $$(PWD):/work -w /work silex/emacs:$(1) emacs'
 endef
 
 $(foreach _,$(test_versions),$(eval $(call test_one,$(_))))
@@ -92,7 +92,7 @@ prettify-staged:
 
 .PHONY: pull
 pull: ## Pull latest Docker images for tests
-	$(foreach _,$(test_versions),docker pull silex/emacs:$(_)-alpine;)
+	$(foreach _,$(test_versions),docker pull silex/emacs:$(_);)
 
 .PHONY: clean
 clean: ## Clean files
