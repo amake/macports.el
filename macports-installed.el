@@ -284,19 +284,19 @@ Acts within the region when active, otherwise on entire buffer."
         (when (macports-installed--prompt-transaction-p uninstall deactivate activate requested unrequested)
           (let ((uninstall-cmd (when uninstall
                                  (macports-core--privileged-command
-                                  `("-N" "uninstall" ,@(macports-installed--list-to-args uninstall)))))
+                                  `("-q" "uninstall" ,@(macports-installed--list-to-args uninstall)))))
                 (deactivate-cmd (when deactivate
                                   (macports-core--privileged-command
-                                   `("-N" "deactivate" ,@(macports-installed--list-to-args deactivate)))))
+                                   `("-q" "deactivate" ,@(macports-installed--list-to-args deactivate)))))
                 (activate-cmd (when activate
                                 (macports-core--privileged-command
-                                 `("-N" "activate" ,@(macports-installed--list-to-args activate)))))
+                                 `("-q" "activate" ,@(macports-installed--list-to-args activate)))))
                 (requested-cmd (when requested
                                  (macports-core--privileged-command
-                                  `("-N" "setrequested" ,@(macports-installed--list-to-args requested)))))
+                                  `("-q" "setrequested" ,@(macports-installed--list-to-args requested)))))
                 (unrequested-cmd (when unrequested
                                    (macports-core--privileged-command
-                                    `("-N" "unsetrequested" ,@(macports-installed--list-to-args unrequested))))))
+                                    `("-q" "unsetrequested" ,@(macports-installed--list-to-args unrequested))))))
             (macports-core--exec
              (string-join
               (remq nil (list uninstall-cmd deactivate-cmd activate-cmd requested-cmd unrequested-cmd))

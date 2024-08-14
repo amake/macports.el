@@ -171,11 +171,11 @@
                t))
             ((symbol-function #'macports-core--exec)
              (lambda (cmd &rest _)
-               (should (equal (concat "sudo port -N uninstall piyo @2.0.1 && "
-                                      "sudo port -N deactivate foobar @1.0_0 && "
-                                      "sudo port -N activate hogefuga @123_4 && "
-                                      "sudo port -N setrequested bizzbazz @0.1_0 && "
-                                      "sudo port -N unsetrequested bazinga @20220426+blah")
+               (should (equal (concat "sudo port -q uninstall piyo @2.0.1 && "
+                                      "sudo port -q deactivate foobar @1.0_0 && "
+                                      "sudo port -q activate hogefuga @123_4 && "
+                                      "sudo port -q setrequested bizzbazz @0.1_0 && "
+                                      "sudo port -q unsetrequested bazinga @20220426+blah")
                               cmd)))))
     (macports-installed)
     (macports-installed-mark-toggle-requested)
