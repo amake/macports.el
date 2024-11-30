@@ -117,6 +117,7 @@ invocation of the former.")
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "RET") #'macports-installed-describe-port)
     (define-key map (kbd "c") #'macports-installed-port-contents)
+    (define-key map (kbd "d") #'macports-installed-port-distfiles)
     (define-key map (kbd "e") #'macports-installed-edit-port)
     (define-key map (kbd "f") #'macports-installed-edit-port)
     (define-key map (kbd "L") #'macports-installed-port-log)
@@ -142,6 +143,12 @@ invocation of the former.")
   (interactive)
   (macports-installed--ensure-macports-installed-mode)
   (macports-describe-port-contents (macports-installed--get-port)))
+
+(defun macports-installed-port-distfiles ()
+  "Show distfiles of the current port."
+  (interactive)
+  (macports-installed--ensure-macports-installed-mode)
+  (macports-describe-port-distfiles (macports-installed--get-port)))
 
 (defun macports-installed-edit-port ()
   "Open portfile for the current port."

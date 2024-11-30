@@ -84,6 +84,7 @@ See `macports-installed--init-flag' for details.")
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "RET") #'macports-outdated-describe-port)
     (define-key map (kbd "c") #'macports-outdated-port-contents)
+    (define-key map (kbd "d") #'macports-outdated-port-distfiles)
     (define-key map (kbd "e") #'macports-outdated-edit-port)
     (define-key map (kbd "f") #'macports-outdated-fetch-port)
     (define-key map (kbd "L") #'macports-outdated-port-log)
@@ -106,6 +107,12 @@ See `macports-installed--init-flag' for details.")
   (interactive)
   (macports-outdated--ensure-macports-outdated-mode)
   (macports-describe-port-contents (macports-outdated--get-id)))
+
+(defun macports-outdated-port-distfiles ()
+  "Show distfiles of the current port."
+  (interactive)
+  (macports-outdated--ensure-macports-outdated-mode)
+  (macports-describe-port-distfiles (macports-outdated--get-id)))
 
 (defun macports-outdated-edit-port ()
   "Open portfile for the current port."

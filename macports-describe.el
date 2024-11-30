@@ -248,15 +248,26 @@ Will null-out S-MARKER and E-MARKER markers upon completion."
   "Linkify files in buffer."
   (save-excursion
     (goto-char (point-min))
-    (while (re-search-forward "[^[:blank:]\n,]+" nil t)
-      (let ((start (match-beginning 0))
-            (end (match-end 0))
-            (file (match-string-no-properties 0)))
-        (make-text-button
-         start end
-         'action (lambda (_) (find-file file))
-         'face 'default
-         'mouse-face 'macports-describe-port-button-hover)))))
+    (while (re-search-forward "\\(https?:\\)?\\(/[^[:blank:]\n,]+\\)" nil t)
+      (let ((scheme (match-string-no-properties 1))
+            (start (match-beginning 2))
+            (end (match-end 2))
+            (file (match-string-no-properties 2)))
+        (unless scheme
+          (make-text-button
+           start end
+           'action (lambda (_) (find-file file))
+           'face 'default
+           'mouse-face 'macports-describe-port-button-hover))))))
+
+(defun macports-describe-port-distfiles (port)
+  "Display distfiles of PORT in a new buffer."
+  (with-help-window (get-buffer-create (format "*Port distfiles: %s*" port))
+    (with-current-buffer standard-output
+      (macports-dispatch-mode)
+      (shell-command (concat macports-command " -q distfiles " port) standard-output))
+    (macports-describe--linkify-urls)
+    (macports-describe--linkify-files)))
 
 (provide 'macports-describe)
 ;;; macports-describe.el ends here
