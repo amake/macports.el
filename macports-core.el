@@ -91,8 +91,27 @@
      ("v" "Verbose" "-v")
      ("d" "Debug" "-d")
      ("q" "Quiet" "-q")
-     ("n" "Non-interactive" "-N")]
+     ("N" "Non-interactive" "-N")]
     "Global flags for the `port` command."))
+
+(eval-and-compile
+  (defconst macports-core--installation-flags-infix
+    ["Installation"
+     ("n" "Don't follow dependencies in upgrade" "-n")
+     ("u" "Uninstall inactive ports" "-u")
+     ("y" "Dry run" "-y")]))
+
+(eval-and-compile
+  (defconst macports-core--upgrade-flags-infix
+    ["Installation"
+     ("n" "Don't follow dependencies in upgrade" "-n")
+     ("r" "Also upgrade dependents" "-R")
+     ("u" "Uninstall inactive ports" "-u")
+     ("y" "Dry run" "-y")]))
+
+(eval-and-compile
+  (defconst macports-core--reclaim-flags-infix
+    ["Reclaim" ("y" "Dry run" "-y")]))
 
 (eval-and-compile
   (defconst macports-core--sources-flags-infix
@@ -125,6 +144,7 @@
 (transient-define-prefix macports-reclaim ()
   "Transient for MacPorts reclaim."
   macports-core--output-flags-infix
+  macports-core--reclaim-flags-infix
   ["Commands"
    ("r" "Reclaim" macports-core--reclaim-exec)])
 
@@ -141,8 +161,8 @@
   "Transient for MacPorts install.
 
 PORTS is a list of port names; if not supplied, choose interactively."
-  macports-core--output-flags-infix
-  macports-core--sources-flags-infix
+  [macports-core--output-flags-infix macports-core--sources-flags-infix]
+  macports-core--installation-flags-infix
   ["Commands"
    ("i"
     (lambda () (concat "Install " (string-join (oref transient--prefix scope) ", ")))
@@ -220,9 +240,8 @@ This is quite slow!"
 ;;;###autoload (autoload 'macports "macports-core" nil t)
 (transient-define-prefix macports-upgrade (&optional ports)
   "Transient for MacPorts upgrade."
-  macports-core--output-flags-infix
-  macports-core--sources-flags-infix
-  macports-core--exit-status-flags-infix
+  [macports-core--output-flags-infix macports-core--upgrade-flags-infix]
+  [macports-core--sources-flags-infix macports-core--exit-status-flags-infix]
   ["Commands"
    ("u"
     (lambda ()
