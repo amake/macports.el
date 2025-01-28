@@ -127,19 +127,28 @@
     ["Execution"
      ("y" "Dry run" "-y")]))
 
+(eval-and-compile
+  (defconst macports-core--reclaim-flags-infix
+    ["Reclaim"
+     ("k" "Keep build deps" "--keep-build-deps")]))
+
 ;;;###autoload (autoload 'macports "macports-core" nil t)
 (transient-define-prefix macports-reclaim ()
   "Transient for MacPorts reclaim."
   [macports-core--output-flags-infix macports-core--reclaim-global-flags-infix]
+  macports-core--reclaim-flags-infix
   ["Commands"
    ("r" "Reclaim" macports-core--reclaim-exec)])
 
 (defun macports-core--reclaim-exec (args)
   "Run MacPorts reclaim with ARGS."
   (interactive (list (transient-args transient-current-command)))
-  (macports-core--exec
-   (macports-core--privileged-command `(,@args "reclaim"))
-   "*macports-reclaim*"))
+  (let* ((all-reclaim-args (mapcar #'caddr (substring macports-core--reclaim-flags-infix 1)))
+         (reclaim-args (seq-filter (lambda (e) (member e args)) all-reclaim-args))
+         (global-args (seq-filter (lambda (e) (not (member e reclaim-args))) args)))
+    (macports-core--exec
+     (macports-core--privileged-command `(,@global-args "reclaim" ,@reclaim-args))
+     "*macports-reclaim*")))
 
 ;; These are flags relevant for install but accepted only in the global scope
 (eval-and-compile
