@@ -243,7 +243,7 @@ This is quite slow!"
 ;; These are flags relevant for upgrade but accepted only in the global scope
 (eval-and-compile
   (defconst macports-core--upgrade-global-flags-infix
-    ["Installation"
+    ["Upgrade"
      ("n" "Don't follow dependencies in upgrade" "-n")
      ("r" "Also upgrade dependents" "-R")
      ("u" "Uninstall inactive ports" "-u")
