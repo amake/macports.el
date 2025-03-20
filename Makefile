@@ -91,7 +91,7 @@ prettify-staged:
 
 .PHONY: pull
 pull: ## Pull latest Docker images for tests
-	$(foreach _,$(test_versions),docker pull silex/emacs:$(_);)
+	$(foreach _,$(test_versions),docker pull --platform linux/x86_64 silex/emacs:$(_);)
 
 .PHONY: clean
 clean: ## Clean files
