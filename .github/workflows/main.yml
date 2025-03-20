@@ -27,7 +27,7 @@ jobs:
         version: ${{ matrix.emacs_version }}
 
     - name: Check out the source code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Test
       run: make test
