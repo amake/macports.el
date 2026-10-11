@@ -11,7 +11,7 @@ dependencies := transient
 dev_dependencies := package-lint
 all_deps := $(dependencies) $(dev_dependencies)
 
-test_versions := 28 29 30
+test_versions := 28 29 30 31
 
 .PHONY: test
 test: ## Compile and run unit tests
